@@ -291,6 +291,12 @@ select {
   flex-shrink: 0;
 }
 
+.club-card-img {
+  flex-shrink: 0;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
 .club-card-level-badge {
   font-size: 0.72rem;
   font-weight: 700;
@@ -618,6 +624,12 @@ select {
   flex-shrink: 0;
 }
 
+.club-chart-img {
+  flex-shrink: 0;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+}
+
 .club-chart-titles {
   min-width: 0;
 }
@@ -634,6 +646,26 @@ select {
   font-size: 0.72rem;
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.acc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface-2);
+  color: var(--text-primary);
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.acc-badge strong {
+  color: var(--chart-accent, var(--series-1));
+  font-weight: 800;
 }
 
 .club-chart-table-wrap {
@@ -1064,9 +1096,10 @@ table.levels-editor .remove-level-btn:hover {
   margin-bottom: 2px;
 }
 
-.fullscreen-body .club-chart-icon {
-  width: 16px;
-  height: 16px;
+.fullscreen-body .club-chart-icon,
+.fullscreen-body .club-chart-img {
+  width: 20px;
+  height: 20px;
 }
 
 .fullscreen-body .club-chart-name {
@@ -1187,9 +1220,10 @@ table.wind-table-print td.print-split {
     margin-bottom: 2px;
   }
 
-  .club-chart-icon {
-    width: 16px;
-    height: 16px;
+  .club-chart-icon,
+  .club-chart-img {
+    width: 20px;
+    height: 20px;
   }
 
   .club-chart-name {

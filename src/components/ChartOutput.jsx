@@ -1,5 +1,5 @@
 import React from 'react';
-import { accentVar } from '../utils';
+import { accentVar, getClubImageUrl } from '../utils';
 import { WIND_MODES, buildWindPerRingTable, buildRingsPerWindTable } from '../lib/wind';
 
 function ringShadeStyle(ringValue) {
@@ -142,10 +142,26 @@ export function ClubChartCard({ club, level, mode, settings, isFullscreen }) {
   return (
     <div className="club-chart-card" style={{ '--chart-accent': accentVar(club.category) }}>
       <div className="club-chart-head">
-        <svg className="club-chart-icon" width="24" height="24"><use href={`#icon-${club.category}`} /></svg>
+        <img 
+          src={getClubImageUrl(club.name, '64x64')} 
+          alt="" 
+          className="club-chart-img"
+          width="32" 
+          height="32"
+          onError={(e) => {
+            e.target.style.display = 'none';
+            if (e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'block';
+          }}
+        />
+        <svg className="club-chart-icon" width="32" height="32" style={{ display: 'none' }}><use href={`#icon-${club.category}`} /></svg>
         <div className="club-chart-titles">
           <div className="club-chart-name">{club.name}</div>
-          <div className="club-chart-sub">Lv {level} &middot; {isFullscreen ? 'Acc' : 'Accuracy'} {accuracy}</div>
+          <div className="club-chart-sub">
+            Lv {level}
+            <span className="acc-badge">
+              {isFullscreen ? 'Acc' : 'Accuracy'} <strong>{accuracy}</strong>
+            </span>
+          </div>
         </div>
       </div>
       {!isFullscreen ? (

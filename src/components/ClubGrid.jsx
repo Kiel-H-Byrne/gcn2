@@ -1,5 +1,5 @@
 import React from 'react';
-import { CATEGORY_ORDER, CATEGORY_LABELS, accentVar } from '../utils';
+import { CATEGORY_ORDER, CATEGORY_LABELS, accentVar, getClubImageUrl } from '../utils';
 import LevelPicker from './LevelPicker';
 
 export default function ClubGrid({ clubs, activeCategory, setActiveCategory, bag, setBag, lastLevel, setLastLevel, openEditorModal }) {
@@ -63,7 +63,18 @@ export default function ClubGrid({ clubs, activeCategory, setActiveCategory, bag
               }}
             >
               <div className="club-card-top">
-                <svg className="club-card-icon" width="22" height="22"><use href={`#icon-${club.category}`} /></svg>
+                <img 
+                  src={getClubImageUrl(club.name, '64x64')} 
+                  alt="" 
+                  className="club-card-img"
+                  width="42" 
+                  height="42"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    if (e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'block';
+                  }}
+                />
+                <svg className="club-card-icon" width="22" height="22" style={{ display: 'none' }}><use href={`#icon-${club.category}`} /></svg>
                 {bagEntry && (
                   <span className="club-card-level-badge" data-role="level-text">Lv {bagEntry.level}</span>
                 )}
