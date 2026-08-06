@@ -16,6 +16,7 @@ export default function App() {
     settings, setSettings,
     lastLevel, setLastLevel,
     activeCategory, setActiveCategory,
+    theme, setTheme,
     clubs, getClubById, isSeedClub
   } = useApp();
 
@@ -27,11 +28,22 @@ export default function App() {
       <IconSprite />
       
       <header className="app-header">
-        <div className="brand">
-          <svg className="brand-icon" width="26" height="26">
-            <use href="#icon-flag" />
-          </svg>
-          <h1>Wind Chart Builder</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="brand">
+            <svg className="brand-icon" width="26" height="26">
+              <use href="#icon-flag" />
+            </svg>
+            <h1>Wind Chart Builder</h1>
+          </div>
+          <select 
+            value={theme} 
+            onChange={e => setTheme(e.target.value)}
+            style={{ padding: '6px 10px', borderRadius: '6px', background: 'var(--surface-2)', border: '1px solid var(--border-strong)', color: 'var(--text-secondary)', fontSize: '0.8rem', outline: 'none', cursor: 'pointer' }}
+          >
+            <option value="system">Auto</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
         </div>
         <p className="subtitle">
           Tap your clubs, dial in levels, get an instant wind chart. No dropdowns.

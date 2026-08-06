@@ -12,6 +12,8 @@ export function useApp() {
   }));
   const [lastLevel, setLastLevel] = useState(() => readJSON(STORAGE_KEYS.lastLevel, null));
   const [activeCategory, setActiveCategory] = useState('Drivers');
+  
+  const [theme, setTheme] = useState(() => localStorage.getItem('gcwind.theme') || 'system');
 
   // Persistence hooks
   useEffect(() => writeJSON(STORAGE_KEYS.customClubs, customClubs), [customClubs]);
@@ -19,6 +21,16 @@ export function useApp() {
   useEffect(() => writeJSON(STORAGE_KEYS.bag, bag), [bag]);
   useEffect(() => writeJSON(STORAGE_KEYS.settings, settings), [settings]);
   useEffect(() => writeJSON(STORAGE_KEYS.lastLevel, lastLevel), [lastLevel]);
+
+  // Theme hook
+  useEffect(() => {
+    localStorage.setItem('gcwind.theme', theme);
+    if (theme === 'system') {
+      delete document.documentElement.dataset.theme;
+    } else {
+      document.documentElement.dataset.theme = theme;
+    }
+  }, [theme]);
 
   // Derived clubs data
   const clubs = useMemo(() => {
@@ -47,6 +59,7 @@ export function useApp() {
     settings, setSettings,
     lastLevel, setLastLevel,
     activeCategory, setActiveCategory,
+    theme, setTheme,
     clubs, getClubById, isSeedClub
   };
 }
