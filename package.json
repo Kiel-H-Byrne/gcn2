@@ -1,0 +1,31 @@
+{
+  "name": "gcbags",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A fast, tap-first tool for building a Golf Clash wind adjustment chart: pick your clubs, dial in their levels, and read off max/mid/min power-ring adjustments for any wind speed -- no dropdowns, no PDF generation step.",
+  "main": ".tmp-convert.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kiel-H-Byrne/gcn2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kiel-H-Byrne/gcn2/issues"
+  },
+  "homepage": "https://github.com/Kiel-H-Byrne/gcn2#readme",
+  "dependencies": {
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.5",
+    "vite": "^8.2.0"
+  }
+}
