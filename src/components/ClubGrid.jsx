@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Plus } from 'lucide-react';
+import CategoryIcon from './CategoryIcon';
 import { CATEGORY_ORDER, CATEGORY_LABELS, accentVar, getClubImageUrl } from '../utils';
 import LevelPicker from './LevelPicker';
 
 export default function ClubGrid({ clubs, activeCategory, setActiveCategory, bag, setBag, lastLevel, setLastLevel, openEditorModal }) {
+  const [imageError, setImageError] = useState({});
+
   const handleAddToBag = (club) => {
     if (bag.some(b => b.clubId === club.id)) return;
     const suggested = lastLevel ? Math.min(Math.max(lastLevel, 1), club.maxLevel) : club.maxLevel;
@@ -27,21 +31,21 @@ export default function ClubGrid({ clubs, activeCategory, setActiveCategory, bag
             <button
               key={cat}
               type="button"
-              className={`tab-btn ${activeCategory === cat ? 'is-active' : ''}`}
+              className={`category-tab ${activeCategory === cat ? 'is-active' : ''}`}
               style={{ '--tab-accent': accentVar(cat) }}
               role="tab"
               aria-selected={activeCategory === cat}
               onClick={() => setActiveCategory(cat)}
             >
-              <svg width="15" height="15"><use href={`#icon-${cat}`} /></svg>
+              <CategoryIcon category={cat} size={15} />
               <span>{CATEGORY_LABELS[cat]}</span>
             </button>
           ))}
         </div>
         {hasAdminEdit && (
-          <button className="btn-ghost btn-manage" type="button" onClick={openEditorModal}>
-            <svg width="15" height="15"><use href="#icon-plus" /></svg>
-            Manage Clubs
+          <button className="category-tab add-club-tab" type="button" onClick={openEditorModal}>
+            <Plus size={15} />
+            <span>Manage Clubs</span>
           </button>
         )}
       </div>
@@ -63,18 +67,18 @@ export default function ClubGrid({ clubs, activeCategory, setActiveCategory, bag
               }}
             >
               <div className="club-card-top">
-                <img 
-                  src={getClubImageUrl(club.name, '64x64')} 
-                  alt="" 
-                  className="club-card-img"
-                  width="42" 
-                  height="42"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    if (e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'block';
-                  }}
-                />
-                <svg className="club-card-icon" width="22" height="22" style={{ display: 'none' }}><use href={`#icon-${club.category}`} /></svg>
+                {!imageError[club.id] ? (
+                  <img 
+                    src={getClubImageUrl(club.name, '64x64')} 
+                    alt="" 
+                    className="club-card-img"
+                    width="42" 
+                    height="42"
+                    onError={() => setImageError(prev => ({ ...prev, [club.id]: true }))}
+                  />
+                ) : (
+                  <CategoryIcon category={club.category} size={22} className="club-card-icon" />
+                )}
                 {bagEntry && (
                   <span className="club-card-level-badge" data-role="level-text">Lv {bagEntry.level}</span>
                 )}

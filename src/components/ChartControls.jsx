@@ -1,4 +1,5 @@
 import React from 'react';
+import { Maximize, Wind } from 'lucide-react';
 import { WIND_MODES } from '../lib/wind';
 import balls from '../data/balls';
 
@@ -104,12 +105,12 @@ export default function ChartControls({ settings, setSettings, openFullscreen })
       </div>
 
       <button className="btn-ghost" type="button" onClick={openFullscreen}>
-        <svg width="15" height="15"><use href="#icon-expand" /></svg>
+        <Maximize size={15} />
         Full-Screen View
       </button>
 
       <button className="btn-primary" type="button" onClick={() => window.print()}>
-        <svg width="16" height="16"><use href="#icon-wind" /></svg>
+        <Wind size={16} />
         Print / Save PDF
       </button>
     </section>

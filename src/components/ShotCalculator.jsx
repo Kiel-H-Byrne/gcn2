@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { ArrowUp } from 'lucide-react';
+import CategoryIcon from './CategoryIcon';
 import { WIND_MODES, maxPower, midPower, minPower, windPerRing } from '../lib/wind';
 import balls from '../data/balls';
 import { accentVar } from '../utils';
@@ -56,7 +58,7 @@ export default function ShotCalculator({ bag, clubs, settings }) {
   return (
     <section className="shot-calculator" style={{ '--calc-accent': accentVar(club.category) }}>
       <div className="calc-header">
-        <svg width="20" height="20" style={{ color: 'var(--calc-accent)' }}><use href={`#icon-${club.category}`} /></svg>
+        <CategoryIcon category={club.category} size={20} style={{ color: 'var(--calc-accent)' }} />
         <h3>Shot Calculator</h3>
       </div>
       
@@ -94,13 +96,19 @@ export default function ShotCalculator({ bag, clubs, settings }) {
                 style={{ width: '60px' }}
               />
               <div 
+                title="Wind direction (arrow points where wind blows)"
                 style={{ 
-                  width: '24px', height: '24px', borderRadius: '50%', border: '2px solid var(--border-strong)', 
-                  position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transform: `rotate(${windAngle}deg)`
+                  width: '32px', height: '32px', borderRadius: '50%', 
+                  background: 'var(--surface-1)', border: '2px solid var(--border-strong)', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)',
                 }}
               >
-                <div style={{ width: '2px', height: '10px', background: 'var(--brand)', position: 'absolute', top: 0 }}></div>
+                <ArrowUp 
+                  size={16} 
+                  color="var(--brand)" 
+                  style={{ transform: `rotate(${windAngle}deg)`, transition: 'transform 0.2s ease' }} 
+                />
               </div>
             </div>
           </div>

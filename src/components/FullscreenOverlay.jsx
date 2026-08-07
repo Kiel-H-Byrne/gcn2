@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { X } from 'lucide-react';
 import { WIND_MODES } from '../lib/wind';
 import balls from '../data/balls';
 import { ClubChartCard } from './ChartOutput';
@@ -49,7 +50,7 @@ export default function FullscreenOverlay({ bag, clubs, settings, onClose }) {
           )}
         </div>
         <button className="icon-btn fullscreen-close" type="button" aria-label="Close full-screen view" onClick={onClose}>
-          <svg width="26" height="26"><use href="#icon-close" /></svg>
+          <X size={26} />
         </button>
       </div>
       <div className="fullscreen-body">

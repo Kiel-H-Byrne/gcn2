@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { X } from 'lucide-react';
+import CategoryIcon from './CategoryIcon';
 import { accentVar, slugifyClubName } from '../utils';
 import LevelPicker from './LevelPicker';
 
@@ -104,7 +106,7 @@ export default function BagPanel({ bag, setBag, clubs, setLastLevel, settings, s
           return (
             <div key={club.id} className="bag-chip" style={{ '--card-accent': accentVar(club.category) }}>
               <div className="bag-chip-top">
-                <svg className="bag-chip-icon" width="18" height="18"><use href={`#icon-${club.category}`} /></svg>
+                <CategoryIcon category={club.category} size={18} className="bag-chip-icon" />
                 <span className="bag-chip-name">{club.name}</span>
                 <span className="club-card-level-badge" style={{ background: accentVar(club.category) }}>Lv {entry.level}</span>
                 <button 
@@ -113,7 +115,7 @@ export default function BagPanel({ bag, setBag, clubs, setLastLevel, settings, s
                   aria-label={`Remove ${club.name}`}
                   onClick={() => handleRemove(club.id)}
                 >
-                  <svg width="14" height="14"><use href="#icon-close"/></svg>
+                  <X size={14} />
                 </button>
               </div>
               <LevelPicker club={club} level={entry.level} onChange={(lvl) => handleSetLevel(club.id, lvl)} source="bag" />

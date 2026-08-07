@@ -1,4 +1,5 @@
 import React from 'react';
+import CategoryIcon from './CategoryIcon';
 import { accentVar, getClubImageUrl } from '../utils';
 import { WIND_MODES, buildWindPerRingTable, buildRingsPerWindTable } from '../lib/wind';
 import balls from '../data/balls';
@@ -154,7 +155,7 @@ export function ClubChartCard({ club, level, mode, settings, isFullscreen }) {
             if (e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'block';
           }}
         />
-        <svg className="club-chart-icon" width="32" height="32" style={{ display: 'none' }}><use href={`#icon-${club.category}`} /></svg>
+        <CategoryIcon category={club.category} size={32} className="club-chart-icon" style={{ display: 'none' }} />
         <div className="club-chart-titles">
           <div className="club-chart-name">{club.name}</div>
           <div className="club-chart-sub">
