@@ -40,16 +40,10 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div className="brand">
-            <Flag className="brand-icon" size={26} />
-            <h1>Wind Chart Builder</h1>
+            <img src="/pwa-192x192.png" alt="Logo" className="brand-icon-img" />
+            <h1>The Caddie's Compass</h1>
           </div>
           <div style={{ display: "flex", gap: "8px" }}>
             <button
@@ -86,10 +80,14 @@ export default function App() {
             </select>
           </div>
         </div>
-        <p className="subtitle">
-          Tap your clubs, dial in levels, get an instant wind chart. No
-          dropdowns.
-        </p>
+        <div className="intro-blurb" style={{ marginTop: '12px', padding: '14px', background: 'var(--surface-2)', borderRadius: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+          <p style={{ margin: '0 0 10px 0', fontWeight: 'bold', color: 'var(--text-primary)' }}>How to use:</p>
+          <ul style={{ margin: 0, paddingLeft: '24px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <li><strong>Pick your clubs:</strong> Tap on the clubs to add them to your bag.</li>
+            <li><strong>Set the levels:</strong> Adjust the level sliders to match your clubs in-game.</li>
+            <li><strong>Read the chart:</strong> View the calculated wind adjustments below instantly!</li>
+          </ul>
+        </div>
       </header>
 
       <main

@@ -11,8 +11,8 @@ export default defineConfig({
         enabled: true
       },
       manifest: {
-        name: 'Golf Clash Wind Chart Builder',
-        short_name: 'GC Wind',
+        name: 'The Caddie\'s Compass',
+        short_name: 'Compass',
         description: 'A fast, tap-first tool for building a Golf Clash wind adjustment chart.',
         theme_color: '#0f172a',
         background_color: '#ffffff',

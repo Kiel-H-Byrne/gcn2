@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { ArrowUp } from 'lucide-react';
+import React, { useState, useRef } from 'react';
 import CategoryIcon from './CategoryIcon';
 import { WIND_MODES, maxPower, midPower, minPower, windPerRing } from '../lib/wind';
 import balls from '../data/balls';
@@ -10,6 +9,35 @@ export default function ShotCalculator({ bag, clubs, settings }) {
   const [wind, setWind] = useState('');
   const [windAngle, setWindAngle] = useState(0); // 0 = straight tailwind, 90 = straight crosswind
   const [slider, setSlider] = useState(50);
+  const compassRef = useRef(null);
+
+  const handleCompassDrag = (e) => {
+    if (!compassRef.current) return;
+    const rect = compassRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    
+    const dx = clientX - centerX;
+    const dy = clientY - centerY;
+    
+    let theta = (Math.atan2(dy, dx) * (180 / Math.PI)) + 90;
+    if (theta < 0) theta += 360;
+    setWindAngle(Math.round(theta));
+  };
+
+  const handlePointerDown = (e) => {
+    e.target.setPointerCapture(e.pointerId);
+    handleCompassDrag(e);
+  };
+
+  const handlePointerMove = (e) => {
+    if (e.buttons > 0 || (e.touches && e.touches.length > 0)) {
+      handleCompassDrag(e);
+    }
+  };
   
   if (bag.length === 0) return null;
   
@@ -96,19 +124,33 @@ export default function ShotCalculator({ bag, clubs, settings }) {
                 style={{ width: '60px' }}
               />
               <div 
-                title="Wind direction (arrow points where wind blows)"
+                title="Drag to set wind direction"
                 style={{ 
-                  width: '32px', height: '32px', borderRadius: '50%', 
-                  background: 'var(--surface-1)', border: '2px solid var(--border-strong)', 
+                  width: '40px', height: '40px', borderRadius: '50%', 
+                  background: 'var(--surface-1)', border: '1px solid var(--border-strong)', 
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)',
+                  position: 'relative',
+                  touchAction: 'none'
                 }}
               >
-                <ArrowUp 
-                  size={16} 
-                  color="var(--brand)" 
-                  style={{ transform: `rotate(${windAngle}deg)`, transition: 'transform 0.2s ease' }} 
-                />
+                <svg 
+                  viewBox="0 0 200 200" 
+                  ref={compassRef}
+                  onPointerDown={handlePointerDown}
+                  onPointerMove={handlePointerMove}
+                  style={{ width: '100%', height: '100%', cursor: 'pointer' }}
+                >
+                  <circle cx="100" cy="100" r="95" fill="none" stroke="var(--border-strong)" strokeWidth="4" strokeDasharray="10,10" />
+                  <line x1="100" y1="0" x2="100" y2="200" stroke="var(--gridline)" strokeWidth="2" />
+                  <line x1="0" y1="100" x2="200" y2="100" stroke="var(--gridline)" strokeWidth="2" />
+                  <circle cx="100" cy="100" r="8" fill="var(--text-primary)" />
+                  <g transform={`rotate(${windAngle}, 100, 100)`}>
+                    <line x1="100" y1="100" x2="100" y2="30" stroke="var(--series-1)" strokeWidth="10" />
+                    <polygon points="80,45 100,10 120,45" fill="var(--series-1)" />
+                  </g>
+                  <circle cx="100" cy="100" r="100" fill="transparent" />
+                </svg>
               </div>
             </div>
           </div>

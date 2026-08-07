@@ -4,6 +4,14 @@ import { accentVar, getClubImageUrl } from '../utils';
 import { WIND_MODES, buildWindPerRingTable, buildRingsPerWindTable } from '../lib/wind';
 import balls from '../data/balls';
 
+function getAccuracyColor(acc) {
+  if (acc < 20) return '#dc2626'; // Dark Red
+  if (acc < 40) return '#ea580c'; // Orange
+  if (acc < 60) return '#eab308'; // Yellow
+  if (acc < 85) return '#3b82f6'; // Blue
+  return '#22c55e'; // Bright Green
+}
+
 function ringShadeStyle(ringValue) {
   const ringIdx = (Math.max(0, Math.ceil(ringValue) - 1) % 5) + 1;
   return { backgroundColor: `var(--ring-${ringIdx})` };
@@ -141,6 +149,8 @@ function PrintTable({ club, level, mode, settings, shorthandHeaders }) {
 
 export function ClubChartCard({ club, level, mode, settings, isFullscreen }) {
   const accuracy = club.accuracy[level - 1];
+  const accColor = getAccuracyColor(accuracy);
+  
   return (
     <div className="club-chart-card" style={{ '--chart-accent': accentVar(club.category) }}>
       <div className="club-chart-head">
@@ -160,8 +170,8 @@ export function ClubChartCard({ club, level, mode, settings, isFullscreen }) {
           <div className="club-chart-name">{club.name}</div>
           <div className="club-chart-sub">
             Lv {level}
-            <span className="acc-badge">
-              {isFullscreen ? 'Acc' : 'Accuracy'} <strong>{accuracy}</strong>
+            <span className="acc-badge" style={{ borderColor: accColor, background: `${accColor}15` }}>
+              <span style={{ color: 'var(--text-secondary)' }}>{isFullscreen ? 'Acc' : 'Accuracy'}</span> <strong style={{ color: accColor }}>{accuracy}</strong>
             </span>
           </div>
         </div>
