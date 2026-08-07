@@ -124,7 +124,7 @@ export default function App() {
       )}
 
       {bag.length > 0 && (
-        <ShotCalculator bag={bag} clubs={clubs} settings={settings} />
+        <ShotCalculator bag={bag} clubs={clubs} settings={settings} setSettings={setSettings} />
       )}
 
       <ChartOutput bag={bag} clubs={clubs} settings={settings} />

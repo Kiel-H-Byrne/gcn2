@@ -4,12 +4,14 @@ import { WIND_MODES, maxPower, midPower, minPower, windPerRing } from '../lib/wi
 import balls from '../data/balls';
 import { accentVar } from '../utils';
 
-export default function ShotCalculator({ bag, clubs, settings }) {
+export default function ShotCalculator({ bag, clubs, settings, setSettings }) {
   const [selectedClubId, setSelectedClubId] = useState(bag[0]?.clubId || '');
   const [wind, setWind] = useState(5.0);
   const [windAngle, setWindAngle] = useState(0);
   const [distance, setDistance] = useState(50);
-  const [elevation, setElevation] = useState(Number(settings.elevation) || 0);
+  
+  const elevation = Number(settings.elevation) || 0;
+  const setElevation = (val) => setSettings({ ...settings, elevation: val });
 
   const compassRef = useRef(null);
 
@@ -92,34 +94,59 @@ export default function ShotCalculator({ bag, clubs, settings }) {
   };
 
   // Ring target visualization math
-  const ringColors = [
-    'var(--ring-5)', 'var(--ring-4)', 'var(--ring-3)', 'var(--ring-2)', 'var(--ring-1)'
+  const maxRings = Math.max(5, Math.ceil(rings / 5) * 5);
+  const center = maxRings * 20;
+  const svgSize = maxRings * 40;
+  const scale = maxRings / 5;
+  // Flipped logic: red line now shows the Counter-Adjustment (pull direction) instead of wind push
+  const targetX = center - (rings * 20 * Math.sin(angleRad));
+  const targetY = center + (rings * 20 * Math.cos(angleRad));
+  
+  const ringColorsArray = [
+    'var(--ring-1)', 'var(--ring-2)', 'var(--ring-3)', 'var(--ring-4)', 'var(--ring-5)'
   ];
-  // 1 ring = 20px visually in a 200x200 svg
-  const visualRingOffset = rings > 10 ? 10 : rings;
-  const targetX = 100 + (visualRingOffset * 20 * Math.sin(angleRad));
-  const targetY = 100 - (visualRingOffset * 20 * Math.cos(angleRad));
+  const renderedRings = [];
+  for (let i = maxRings; i >= 1; i--) {
+    const r = i * 20;
+    const color = ringColorsArray[(i - 1) % 5];
+    renderedRings.push(<circle key={i} cx={center} cy={center} r={r} fill={color} />);
+  }
 
   // Determine vector arrow length for compass (0 to 100 max)
   const arrowLength = Math.min((wind / 20) * 100, 100);
 
   return (
     <section className="shot-calculator hud-widget" style={{ '--calc-accent': accentVar(club.category) }}>
-      <div className="calc-header">
-        <CategoryIcon category={club.category} size={20} style={{ color: 'var(--calc-accent)' }} />
-        <h3>HUD: Quick Calculator</h3>
+      <div className="calc-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <CategoryIcon category={club.category} size={20} style={{ color: 'var(--calc-accent)' }} />
+          <h3 style={{ margin: 0 }}>HUD: Quick Calculator</h3>
+        </div>
+        <p style={{ margin: '4px 0 0 0', fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4', maxWidth: '280px', whiteSpace: 'normal' }}>
+          <strong>How to use:</strong> Drag the wind compass to simultaneously set angle & speed. Tweak distance/elevation below, and read your exact ring adjustment and counter-drag vector on the right.
+        </p>
       </div>
       
       <div className="hud-grid">
         {/* Left Side: Vector Compass & Sliders */}
         <div className="hud-controls">
           
-          <div className="control-group">
-            <select value={currentClubId} onChange={e => setSelectedClubId(e.target.value)} className="hud-club-select">
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <select value={currentClubId} onChange={e => setSelectedClubId(e.target.value)} className="hud-club-select" style={{ flex: 1 }}>
               {bag.map(b => {
                 const c = clubs.find(cl => cl.id === b.clubId);
                 return <option key={c.id} value={c.id}>{c.name} (Lv {b.level})</option>;
               })}
+            </select>
+            <select 
+              value={settings.ballName} 
+              onChange={e => setSettings({ ...settings, ballName: e.target.value })} 
+              className="hud-club-select" 
+              style={{ flex: 1 }}
+            >
+              {balls.map((b) => (
+                <option key={b.name} value={b.name}>{b.name}</option>
+              ))}
             </select>
           </div>
 
@@ -172,7 +199,7 @@ export default function ShotCalculator({ bag, clubs, settings }) {
         {/* Right Side: LED Screen & Target Vis */}
         <div className="hud-results">
           
-          <div className="calc-result">
+          <div className="calc-result hud-screen">
             <div className="result-label">Adjust Rings</div>
             <div className="result-value">{displayRings}</div>
             {wind > 0 && (
@@ -183,15 +210,15 @@ export default function ShotCalculator({ bag, clubs, settings }) {
             )}
           </div>
 
-          <div className="hud-target-vis">
-             <svg viewBox="0 0 200 200">
-              <defs><clipPath id="rc"><circle cx="100" cy="100" r="100"/></clipPath></defs>
+          <div className="hud-target-vis hud-screen">
+             <svg viewBox={`0 0 ${svgSize} ${svgSize}`}>
+              <defs><clipPath id="rc"><circle cx={center} cy={center} r={center}/></clipPath></defs>
               <g clipPath="url(#rc)">
-                {[100, 80, 60, 40, 20].map((r, i) => <circle key={i} cx="100" cy="100" r={r} fill={ringColors[i]} />)}
-                <line x1="0" y1="100" x2="200" y2="100" stroke="rgba(0,0,0,0.5)" strokeWidth="1" />
-                <line x1="100" y1="0" x2="100" y2="200" stroke="rgba(0,0,0,0.5)" strokeWidth="1" />
-                <circle cx={targetX} cy={targetY} r="8" fill="var(--danger)" stroke="#fff" strokeWidth="2" />
-                <line x1="100" y1="100" x2={targetX} y2={targetY} stroke="var(--danger)" strokeWidth="2" strokeDasharray="4,4" />
+                {renderedRings}
+                <line x1="0" y1={center} x2={svgSize} y2={center} stroke="rgba(255,255,255,0.3)" strokeWidth={1 * scale} />
+                <line x1={center} y1="0" x2={center} y2={svgSize} stroke="rgba(255,255,255,0.3)" strokeWidth={1 * scale} />
+                <circle cx={targetX} cy={targetY} r={8 * scale} fill="var(--danger)" stroke="var(--surface-1)" strokeWidth={2 * scale} />
+                <line x1={center} y1={center} x2={targetX} y2={targetY} stroke="var(--danger)" strokeWidth={2 * scale} strokeDasharray={`${4 * scale},${4 * scale}`} />
               </g>
             </svg>
           </div>
