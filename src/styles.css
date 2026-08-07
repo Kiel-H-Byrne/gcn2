@@ -696,9 +696,24 @@ select {
 
 .chart-title-banner {
   grid-column: 1 / -1;
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin: 4px 0 -2px;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.chart-notes-banner {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  background: var(--surface-1);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  margin-bottom: 8px;
+  white-space: pre-wrap;
 }
 
 .club-chart-card {

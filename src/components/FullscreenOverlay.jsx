@@ -42,6 +42,11 @@ export default function FullscreenOverlay({ bag, clubs, settings, onClose }) {
         <div className="fullscreen-heading">
           <h2>{settings.title.trim() || 'Wind Chart'}</h2>
           <p>{subtitle}</p>
+          {settings.notes?.trim() && (
+            <p style={{ marginTop: '8px', fontSize: '0.9rem', color: 'var(--text)', whiteSpace: 'pre-wrap', background: 'var(--surface-1)', padding: '8px', borderRadius: '4px', border: '1px solid var(--border)' }}>
+              {settings.notes.trim()}
+            </p>
+          )}
         </div>
         <button className="icon-btn fullscreen-close" type="button" aria-label="Close full-screen view" onClick={onClose}>
           <svg width="26" height="26"><use href="#icon-close" /></svg>

@@ -200,6 +200,9 @@ export default function ChartOutput({ bag, clubs, settings }) {
       {settings.title.trim() && (
         <div className="chart-title-banner">{settings.title.trim()}</div>
       )}
+      {settings.notes?.trim() && (
+        <div className="chart-notes-banner">{settings.notes.trim()}</div>
+      )}
       {bag.map(entry => {
         const club = clubs.find(c => c.id === entry.clubId);
         if (!club) return null;

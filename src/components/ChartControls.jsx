@@ -81,6 +81,28 @@ export default function ChartControls({ settings, setSettings, openFullscreen })
         </div>
       )}
 
+      <div className="control-group" style={{ gridColumn: '1 / -1' }}>
+        <label htmlFor="chart-notes">Hole Notes</label>
+        <textarea 
+          id="chart-notes" 
+          placeholder="e.g. Drive: +10% Max, Approach: +5% Mid"
+          value={settings.notes || ''}
+          onChange={(e) => setSettings({ ...settings, notes: e.target.value })}
+          rows={2}
+          style={{ 
+            width: '100%', 
+            resize: 'vertical', 
+            padding: '8px', 
+            borderRadius: '6px', 
+            border: '1px solid var(--border)',
+            background: 'var(--surface-1)',
+            color: 'var(--text)',
+            fontFamily: 'inherit',
+            fontSize: '0.9rem'
+          }}
+        />
+      </div>
+
       <button className="btn-ghost" type="button" onClick={openFullscreen}>
         <svg width="15" height="15"><use href="#icon-expand" /></svg>
         Full-Screen View

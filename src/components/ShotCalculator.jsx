@@ -6,6 +6,7 @@ import { accentVar } from '../utils';
 export default function ShotCalculator({ bag, clubs, settings }) {
   const [selectedClubId, setSelectedClubId] = useState(bag[0]?.clubId || '');
   const [wind, setWind] = useState('');
+  const [windAngle, setWindAngle] = useState(0); // 0 = straight tailwind, 90 = straight crosswind
   const [slider, setSlider] = useState(50);
   
   if (bag.length === 0) return null;
@@ -37,10 +38,20 @@ export default function ShotCalculator({ bag, clubs, settings }) {
   }
   
   const wpr = windPerRing(club, level, currentPower);
-  const elevMult = 1 + (settings.elevation / 100);
+  const elevMult = 1 + ((Number(settings.elevation) || 0) / 100);
   const effectiveWind = (parseFloat(wind) || 0) * elevMult;
   
   const rings = effectiveWind / wpr;
+  const displayRings = (wind && !isNaN(rings)) ? rings.toFixed(2) : '0.00';
+  
+  // Secondary Wind Effect (SWE) - Rule of thumb: ~20% of wind component for ball guide offset
+  const angleRad = (windAngle * Math.PI) / 180;
+  const cwComponent = effectiveWind * Math.sin(angleRad);
+  const hwComponent = effectiveWind * Math.cos(angleRad);
+  
+  const sweCross = Math.abs(cwComponent * 0.2).toFixed(1);
+  const sweHead = Math.abs(hwComponent * 0.2).toFixed(1);
+  const isHeadwind = hwComponent < 0;
   
   return (
     <section className="shot-calculator" style={{ '--calc-accent': accentVar(club.category) }}>
@@ -71,6 +82,28 @@ export default function ShotCalculator({ bag, clubs, settings }) {
               style={{ width: '80px' }}
             />
           </div>
+          <div className="control-group">
+            <label>Wind Angle (deg)</label>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <input 
+                type="number"
+                min="0"
+                max="359"
+                value={windAngle}
+                onChange={e => setWindAngle(Number(e.target.value) % 360)}
+                style={{ width: '60px' }}
+              />
+              <div 
+                style={{ 
+                  width: '24px', height: '24px', borderRadius: '50%', border: '2px solid var(--border-strong)', 
+                  position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transform: `rotate(${windAngle}deg)`
+                }}
+              >
+                <div style={{ width: '2px', height: '10px', background: 'var(--brand)', position: 'absolute', top: 0 }}></div>
+              </div>
+            </div>
+          </div>
         </div>
         
         <div className="calc-slider-wrap">
@@ -91,9 +124,16 @@ export default function ShotCalculator({ bag, clubs, settings }) {
         </div>
       </div>
       
-      <div className="calc-result">
+      <div className="calc-result" style={{ flex: 1 }}>
         <div className="result-label">Adjust Rings</div>
-        <div className="result-value">{wind ? rings.toFixed(2) : '0.00'}</div>
+        <div className="result-value">{displayRings}</div>
+        {wind && (
+          <div style={{ marginTop: '8px', fontSize: '0.75rem', opacity: 0.8, textAlign: 'center' }}>
+            <strong>SWE Ball Guide Offset:</strong><br/>
+            {sweCross > 0 && `${sweCross} squares ${cwComponent > 0 ? 'Right' : 'Left'}`}<br/>
+            {sweHead > 0 && `${sweHead} squares ${isHeadwind ? 'Push Up (Headwind)' : 'Pull Back (Tailwind)'}`}
+          </div>
+        )}
       </div>
     </section>
   );

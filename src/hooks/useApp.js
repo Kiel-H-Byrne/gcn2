@@ -1,19 +1,63 @@
 import { useState, useMemo, useEffect } from 'react';
-import { readJSON, writeJSON, STORAGE_KEYS, CATEGORY_ORDER } from '../utils';
+import { readJSON, writeJSON, STORAGE_KEYS, CATEGORY_ORDER, slugifyClubName } from '../utils';
 import seedClubs from '../data/clubs';
 
 export function useApp() {
   const [customClubs, setCustomClubs] = useState(() => readJSON(STORAGE_KEYS.customClubs, {}));
   const [deletedSeedIds, setDeletedSeedIds] = useState(() => readJSON(STORAGE_KEYS.deletedSeedIds, []));
-  const [bag, setBag] = useState(() => readJSON(STORAGE_KEYS.bag, []));
-  const [settings, setSettings] = useState(() => ({
-    title: '', variant: 'ring', ballName: 'Basic', elevation: 0, windStep: 0.5,
-    ...readJSON(STORAGE_KEYS.settings, {})
-  }));
+  const [bag, setBag] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const shared = params.get('bag');
+    if (shared) {
+      try {
+        const parsed = JSON.parse(atob(shared));
+        if (Array.isArray(parsed)) {
+          window.history.replaceState(null, '', window.location.pathname);
+          return parsed;
+        }
+      } catch(e) {
+        // Fallback to readable format: apoc7-sniper10-goliath8
+        const slugMap = {};
+        for (const c of seedClubs) {
+          slugMap[slugifyClubName(c.name)] = c.id;
+        }
+        const parts = shared.split('-');
+        const parsedBag = [];
+        for (const part of parts) {
+          for (let i = 1; i <= 2; i++) {
+            if (part.length <= i) continue;
+            const prefix = part.slice(0, -i);
+            const levelStr = part.slice(-i);
+            if (!isNaN(levelStr) && slugMap[prefix]) {
+              parsedBag.push({ clubId: slugMap[prefix], level: parseInt(levelStr, 10) });
+              break;
+            }
+          }
+        }
+        if (parsedBag.length > 0) {
+          window.history.replaceState(null, '', window.location.pathname);
+          return parsedBag;
+        }
+      }
+    }
+    return readJSON(STORAGE_KEYS.bag, []);
+  });
+  
+  const [settings, setSettings] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const shared = params.get('bag');
+    const base = {
+      title: '', notes: '', variant: 'ring', ballName: 'Basic', elevation: 0, windStep: 0.5,
+      ...readJSON(STORAGE_KEYS.settings, {})
+    };
+    if (shared) base.title = 'Shared Bag';
+    return base;
+  });
   const [lastLevel, setLastLevel] = useState(() => readJSON(STORAGE_KEYS.lastLevel, null));
   const [activeCategory, setActiveCategory] = useState('Drivers');
   
   const [theme, setTheme] = useState(() => localStorage.getItem('gcwind.theme') || 'system');
+  const [savedProfiles, setSavedProfiles] = useState(() => readJSON('gcwind.profiles', {}));
 
   // Persistence hooks
   useEffect(() => writeJSON(STORAGE_KEYS.customClubs, customClubs), [customClubs]);
@@ -21,6 +65,7 @@ export function useApp() {
   useEffect(() => writeJSON(STORAGE_KEYS.bag, bag), [bag]);
   useEffect(() => writeJSON(STORAGE_KEYS.settings, settings), [settings]);
   useEffect(() => writeJSON(STORAGE_KEYS.lastLevel, lastLevel), [lastLevel]);
+  useEffect(() => writeJSON('gcwind.profiles', savedProfiles), [savedProfiles]);
 
   // Theme hook
   useEffect(() => {
@@ -60,6 +105,7 @@ export function useApp() {
     lastLevel, setLastLevel,
     activeCategory, setActiveCategory,
     theme, setTheme,
-    clubs, getClubById, isSeedClub
+    clubs, getClubById, isSeedClub,
+    savedProfiles, setSavedProfiles
   };
 }

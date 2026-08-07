@@ -18,7 +18,8 @@ export default function App() {
     lastLevel, setLastLevel,
     activeCategory, setActiveCategory,
     theme, setTheme,
-    clubs, getClubById, isSeedClub
+    clubs, getClubById, isSeedClub,
+    savedProfiles, setSavedProfiles
   } = useApp();
 
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -67,6 +68,10 @@ export default function App() {
           setBag={setBag} 
           clubs={clubs} 
           setLastLevel={setLastLevel} 
+          settings={settings}
+          setSettings={setSettings}
+          savedProfiles={savedProfiles}
+          setSavedProfiles={setSavedProfiles}
         />
       </main>
 

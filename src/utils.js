@@ -64,3 +64,18 @@ export function getClubImageUrl(clubName, size = '64x64') {
   // Using locally hosted images from public/img/clubs/
   return `/img/clubs/${sanitized}-${size}.png`;
 }
+
+export function slugifyClubName(name) {
+  const lower = name.toLowerCase();
+  const abbr = {
+    'the apocalypse': 'apoc',
+    'the extra mile': 'em',
+    'the quarterback': 'qb',
+    "thor's hammer": 'th',
+    'the b52': 'b52',
+    'the downinone': 'dio',
+    'the endbringer': 'eb'
+  };
+  if (abbr[lower]) return abbr[lower];
+  return lower.replace(/^the\s+/, '').replace(/[^a-z0-9]/g, '');
+}
