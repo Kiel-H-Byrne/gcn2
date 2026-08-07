@@ -7,7 +7,6 @@ import ClubEditorModal from "./components/ClubEditorModal";
 import ClubGrid from "./components/ClubGrid";
 import FullscreenOverlay from "./components/FullscreenOverlay";
 import ShotCalculator from "./components/ShotCalculator";
-import Visualizers from "./components/Visualizers";
 import { useApp } from "./hooks/useApp";
 
 export default function App() {
@@ -115,10 +114,6 @@ export default function App() {
           setSavedProfiles={setSavedProfiles}
         />
       </main>
-
-      {bag.length > 0 && (
-        <Visualizers bag={bag} clubs={clubs} settings={settings} />
-      )}
 
       {bag.length > 0 && !isWidgetMode && (
         <ChartControls
