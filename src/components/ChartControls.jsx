@@ -1,5 +1,6 @@
 import React from 'react';
 import { WIND_MODES } from '../lib/wind';
+import balls from '../data/balls';
 
 export default function ChartControls({ settings, setSettings, openFullscreen }) {
   return (
@@ -41,16 +42,28 @@ export default function ChartControls({ settings, setSettings, openFullscreen })
       </div>
 
       <div className="control-group">
-        <label htmlFor="mode-select">Power mode</label>
+        <label htmlFor="ball-select">Ball</label>
         <select 
-          id="mode-select"
-          value={settings.modeIndex}
-          onChange={(e) => setSettings({ ...settings, modeIndex: Number(e.target.value) })}
+          id="ball-select"
+          value={settings.ballName}
+          onChange={(e) => setSettings({ ...settings, ballName: e.target.value })}
         >
-          {WIND_MODES.map((mode, i) => (
-            <option key={i} value={i}>{mode.name}</option>
+          {balls.map((b) => (
+            <option key={b.name} value={b.name}>{b.name} (P{b.power} W{b.windResistance} S{b.sideSpin})</option>
           ))}
         </select>
+      </div>
+
+      <div className="control-group">
+        <label htmlFor="elevation-input">Elevation %</label>
+        <input
+          id="elevation-input"
+          type="number"
+          step="5"
+          value={settings.elevation}
+          onChange={(e) => setSettings({ ...settings, elevation: Number(e.target.value) })}
+          style={{ width: '80px' }}
+        />
       </div>
 
       {settings.variant === 'wind' && (

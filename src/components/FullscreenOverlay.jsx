@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { WIND_MODES } from '../lib/wind';
+import balls from '../data/balls';
 import { ClubChartCard } from './ChartOutput';
 
 export default function FullscreenOverlay({ bag, clubs, settings, onClose }) {
@@ -31,8 +32,9 @@ export default function FullscreenOverlay({ bag, clubs, settings, onClose }) {
 
   if (bag.length === 0) return null;
 
-  const mode = WIND_MODES[settings.modeIndex];
-  const subtitle = `${mode.name} · ${settings.variant === 'ring' ? 'Wind per Ring' : 'Rings per Wind'}`;
+  const selectedBall = balls.find(b => b.name === settings.ballName) || balls[0];
+  const mode = WIND_MODES[selectedBall.power] || WIND_MODES[0];
+  const subtitle = `${selectedBall.name} Ball (P${selectedBall.power}) · ${settings.variant === 'ring' ? 'Wind per Ring' : 'Rings per Wind'}`;
 
   return (
     <div className="fullscreen-overlay" role="dialog" aria-modal="true" aria-label="Full-screen wind chart" ref={overlayRef}>

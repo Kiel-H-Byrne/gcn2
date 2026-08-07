@@ -7,7 +7,7 @@ export function useApp() {
   const [deletedSeedIds, setDeletedSeedIds] = useState(() => readJSON(STORAGE_KEYS.deletedSeedIds, []));
   const [bag, setBag] = useState(() => readJSON(STORAGE_KEYS.bag, []));
   const [settings, setSettings] = useState(() => ({
-    title: '', variant: 'ring', modeIndex: 0, windStep: 0.5,
+    title: '', variant: 'ring', ballName: 'Basic', elevation: 0, windStep: 0.5,
     ...readJSON(STORAGE_KEYS.settings, {})
   }));
   const [lastLevel, setLastLevel] = useState(() => readJSON(STORAGE_KEYS.lastLevel, null));

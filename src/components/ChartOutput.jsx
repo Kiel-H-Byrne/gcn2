@@ -1,14 +1,15 @@
 import React from 'react';
 import { accentVar, getClubImageUrl } from '../utils';
 import { WIND_MODES, buildWindPerRingTable, buildRingsPerWindTable } from '../lib/wind';
+import balls from '../data/balls';
 
 function ringShadeStyle(ringValue) {
   const ringIdx = (Math.max(0, Math.ceil(ringValue) - 1) % 5) + 1;
   return { backgroundColor: `var(--ring-${ringIdx})` };
 }
 
-function WindTableRing({ club, level, mode }) {
-  const rows = buildWindPerRingTable(club, level, mode, 10);
+function WindTableRing({ club, level, mode, elevation }) {
+  const rows = buildWindPerRingTable(club, level, mode, elevation, 10);
   return (
     <table className="wind-table">
       <thead>
@@ -28,8 +29,8 @@ function WindTableRing({ club, level, mode }) {
   );
 }
 
-function WindTableWind({ club, level, mode, windStep }) {
-  const rows = buildRingsPerWindTable(club, level, mode, { minWind: 1, maxWind: 16, step: windStep });
+function WindTableWind({ club, level, mode, elevation, windStep }) {
+  const rows = buildRingsPerWindTable(club, level, mode, elevation, { minWind: 1, maxWind: 16, step: windStep });
   return (
     <table className="wind-table">
       <thead>
@@ -57,7 +58,7 @@ function PrintTable({ club, level, mode, settings, shorthandHeaders }) {
   const L_MIN = shorthandHeaders ? 'Mn' : 'Min';
 
   if (settings.variant === 'ring') {
-    const rows = buildWindPerRingTable(club, level, mode, 10);
+    const rows = buildWindPerRingTable(club, level, mode, settings.elevation, 10);
     const left = rows.slice(0, 5);
     const right = rows.slice(5, 10);
     return (
@@ -88,7 +89,7 @@ function PrintTable({ club, level, mode, settings, shorthandHeaders }) {
       </table>
     );
   } else {
-    const rows = buildRingsPerWindTable(club, level, mode, { minWind: 1, maxWind: 16, step: settings.windStep });
+    const rows = buildRingsPerWindTable(club, level, mode, settings.elevation, { minWind: 1, maxWind: 16, step: settings.windStep });
     const numCols = 4;
     const rowsPerCol = Math.ceil(rows.length / numCols);
     const cols = [];
@@ -168,9 +169,9 @@ export function ClubChartCard({ club, level, mode, settings, isFullscreen }) {
         <>
           <div className="club-chart-table-wrap screen-only">
             {settings.variant === 'ring' ? (
-              <WindTableRing club={club} level={level} mode={mode} />
+              <WindTableRing club={club} level={level} mode={mode} elevation={settings.elevation} />
             ) : (
-              <WindTableWind club={club} level={level} mode={mode} windStep={settings.windStep} />
+              <WindTableWind club={club} level={level} mode={mode} elevation={settings.elevation} windStep={settings.windStep} />
             )}
           </div>
           <div className="club-chart-table-wrap print-only">
@@ -191,7 +192,8 @@ export default function ChartOutput({ bag, clubs, settings }) {
     return <div className="chart-empty">Add clubs to your bag to build a wind chart.</div>;
   }
 
-  const mode = WIND_MODES[settings.modeIndex];
+  const selectedBall = balls.find(b => b.name === settings.ballName) || balls[0];
+  const mode = WIND_MODES[selectedBall.power] || WIND_MODES[0];
 
   return (
     <section className="chart-output">

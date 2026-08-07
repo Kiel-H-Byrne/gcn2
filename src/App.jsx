@@ -3,6 +3,7 @@ import IconSprite from './components/IconSprite';
 import ClubGrid from './components/ClubGrid';
 import BagPanel from './components/BagPanel';
 import ChartControls from './components/ChartControls';
+import ShotCalculator from './components/ShotCalculator';
 import ChartOutput from './components/ChartOutput';
 import FullscreenOverlay from './components/FullscreenOverlay';
 import ClubEditorModal from './components/ClubEditorModal';
@@ -75,6 +76,10 @@ export default function App() {
           setSettings={setSettings} 
           openFullscreen={() => setIsFullscreenOpen(true)} 
         />
+      )}
+
+      {bag.length > 0 && (
+        <ShotCalculator bag={bag} clubs={clubs} settings={settings} />
       )}
       
       <ChartOutput bag={bag} clubs={clubs} settings={settings} />
