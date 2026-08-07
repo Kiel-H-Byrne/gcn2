@@ -52,3 +52,30 @@ export const STORAGE_KEYS = {
   settings: 'gcwind.settings',
   lastLevel: 'gcwind.lastLevel',
 };
+
+/**
+ * Returns the URL for the club's image from the Golf Clash Notebook GitHub repo.
+ * @param {string} clubName - The name of the club.
+ * @param {string} size - The size of the image ('64x64', '256x256', 'Card').
+ * @returns {string} The full URL to the image.
+ */
+export function getClubImageUrl(clubName, size = '64x64') {
+  const sanitized = clubName.replace(/^The\s+/i, '').replace(/[^a-zA-Z0-9]/g, '');
+  // Using locally hosted images from public/img/clubs/
+  return `/img/clubs/${sanitized}-${size}.png`;
+}
+
+export function slugifyClubName(name) {
+  const lower = name.toLowerCase();
+  const abbr = {
+    'the apocalypse': 'apoc',
+    'the extra mile': 'em',
+    'the quarterback': 'qb',
+    "thor's hammer": 'th',
+    'the b52': 'b52',
+    'the downinone': 'dio',
+    'the endbringer': 'eb'
+  };
+  if (abbr[lower]) return abbr[lower];
+  return lower.replace(/^the\s+/, '').replace(/[^a-z0-9]/g, '');
+}

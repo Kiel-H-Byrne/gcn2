@@ -104,33 +104,36 @@ function windPerRingByPower(club, level, mode) {
 }
 
 /** Rows of { ring, max, mid, min } wind-adjustment values, ring = 1..10. */
-function buildWindPerRingTable(club, level, mode, ringCount = 10) {
+function buildWindPerRingTable(club, level, mode, elevation = 0, ringCount = 10) {
   const perRing = windPerRingByPower(club, level, mode);
+  const elevMult = 1 + ((Number(elevation) || 0) / 100);
   const rows = [];
   for (let ring = 1; ring <= ringCount; ring++) {
     rows.push({
       ring,
-      max: perRing.max * ring,
-      mid: perRing.mid * ring,
-      min: perRing.min * ring,
+      max: (perRing.max * ring) / elevMult,
+      mid: (perRing.mid * ring) / elevMult,
+      min: (perRing.min * ring) / elevMult,
     });
   }
   return rows;
 }
 
 /** Rows of { wind, max, mid, min } ring counts for wind speeds minWind..maxWind. */
-function buildRingsPerWindTable(club, level, mode, { minWind = 1, maxWind = 16, step = 0.5 } = {}) {
+function buildRingsPerWindTable(club, level, mode, elevation = 0, { minWind = 1, maxWind = 16, step = 0.5 } = {}) {
   const perRing = windPerRingByPower(club, level, mode);
+  const elevMult = 1 + ((Number(elevation) || 0) / 100);
   const rows = [];
   // Guard against float accumulation drift over many steps.
   const steps = Math.round((maxWind - minWind) / step);
   for (let i = 0; i <= steps; i++) {
     const wind = Math.round((minWind + i * step) * 100) / 100;
+    const effectiveWind = wind * elevMult;
     rows.push({
       wind,
-      max: Math.floor((wind / perRing.max) * 10) / 10,
-      mid: Math.floor((wind / perRing.mid) * 10) / 10,
-      min: Math.floor((wind / perRing.min) * 10) / 10,
+      max: Math.floor((effectiveWind / perRing.max) * 10) / 10,
+      mid: Math.floor((effectiveWind / perRing.mid) * 10) / 10,
+      min: Math.floor((effectiveWind / perRing.min) * 10) / 10,
     });
   }
   return rows;

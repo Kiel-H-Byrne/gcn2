@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { X, Plus } from 'lucide-react';
 import { CATEGORY_ORDER, CATEGORY_LABELS, TYPE_SUGGESTIONS, generateId, accentVar } from '../utils';
 
 function blankClub(activeCategory) {
@@ -103,7 +104,7 @@ export default function ClubEditorModal({
         <div className="modal-header">
           <h2>Manage Clubs</h2>
           <button className="icon-btn" type="button" aria-label="Close" onClick={onClose}>
-            <svg width="18" height="18"><use href="#icon-close" /></svg>
+            <X size={18} />
           </button>
         </div>
         <p className="modal-subtitle">
@@ -114,7 +115,7 @@ export default function ClubEditorModal({
           <div className="editor-list-pane">
             <div className="editor-toolbar">
               <button className="btn-primary" type="button" onClick={() => setEditingClubId('new')}>
-                <svg width="14" height="14"><use href="#icon-plus" /></svg>
+                <Plus size={14} />
                 Add Club
               </button>
               <div className="editor-io">
@@ -285,7 +286,7 @@ function ClubForm({ initialClub, isNew, onSave, onCancel, onDelete }) {
               </td>
               <td>
                 <button type="button" className="remove-level-btn" onClick={() => removeLevel(i)}>
-                  <svg width="14" height="14"><use href="#icon-close"/></svg>
+                  <X size={14} />
                 </button>
               </td>
             </tr>

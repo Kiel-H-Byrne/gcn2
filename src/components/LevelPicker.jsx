@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { Minus, Plus } from 'lucide-react';
 import { clamp, accentVar } from '../utils';
 
 export default function LevelPicker({ club, level, onChange, source }) {
@@ -42,7 +43,7 @@ export default function LevelPicker({ club, level, onChange, source }) {
         aria-label="Decrease level"
         onClick={(e) => { e.stopPropagation(); setLevel(level - 1); }}
       >
-        <svg width="11" height="11"><use href="#icon-minus"/></svg>
+        <Minus size={11} />
       </button>
 
       <div 
@@ -91,7 +92,7 @@ export default function LevelPicker({ club, level, onChange, source }) {
         aria-label="Increase level"
         onClick={(e) => { e.stopPropagation(); setLevel(level + 1); }}
       >
-        <svg width="11" height="11"><use href="#icon-plus"/></svg>
+        <Plus size={11} />
       </button>
     </div>
   );
