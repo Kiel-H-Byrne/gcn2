@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import IconSprite from './components/IconSprite';
+import { Flag, Maximize, X } from 'lucide-react';
 import ClubGrid from './components/ClubGrid';
 import BagPanel from './components/BagPanel';
 import ChartControls from './components/ChartControls';
+import ShotCalculator from './components/ShotCalculator';
 import ChartOutput from './components/ChartOutput';
 import FullscreenOverlay from './components/FullscreenOverlay';
 import ClubEditorModal from './components/ClubEditorModal';
@@ -17,40 +18,50 @@ export default function App() {
     lastLevel, setLastLevel,
     activeCategory, setActiveCategory,
     theme, setTheme,
-    clubs, getClubById, isSeedClub
+    clubs, getClubById, isSeedClub,
+    savedProfiles, setSavedProfiles
   } = useApp();
 
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
+  const [isWidgetMode, setIsWidgetMode] = useState(false);
 
   return (
     <div className="app">
-      <IconSprite />
-      
       <header className="app-header">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div className="brand">
-            <svg className="brand-icon" width="26" height="26">
-              <use href="#icon-flag" />
-            </svg>
+            <Flag className="brand-icon" size={26} />
             <h1>Wind Chart Builder</h1>
           </div>
-          <select 
-            value={theme} 
-            onChange={e => setTheme(e.target.value)}
-            style={{ padding: '6px 10px', borderRadius: '6px', background: 'var(--surface-2)', border: '1px solid var(--border-strong)', color: 'var(--text-secondary)', fontSize: '0.8rem', outline: 'none', cursor: 'pointer' }}
-          >
-            <option value="system">Auto</option>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button 
+              type="button" 
+              className={`btn-ghost ${isWidgetMode ? 'is-active' : ''}`}
+              onClick={() => setIsWidgetMode(!isWidgetMode)}
+              title="Toggle Widget Mode (compact view for split-screen)"
+              style={{ padding: '6px 10px', fontSize: '0.8rem' }}
+            >
+              {isWidgetMode ? <X size={14} style={{ marginRight: '4px' }} /> : <Maximize size={14} style={{ marginRight: '4px' }} />}
+              {isWidgetMode ? 'Exit Widget' : 'Widget'}
+            </button>
+            <select 
+              value={theme} 
+              onChange={e => setTheme(e.target.value)}
+              style={{ padding: '6px 10px', borderRadius: '6px', background: 'var(--surface-2)', border: '1px solid var(--border-strong)', color: 'var(--text-secondary)', fontSize: '0.8rem', outline: 'none', cursor: 'pointer' }}
+            >
+              <option value="system">Auto</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </div>
         </div>
         <p className="subtitle">
           Tap your clubs, dial in levels, get an instant wind chart. No dropdowns.
         </p>
       </header>
       
-      <main className="layout">
+      <main className="layout" style={{ display: isWidgetMode ? 'none' : 'grid' }}>
         <ClubGrid 
           clubs={clubs} 
           activeCategory={activeCategory} 
@@ -66,15 +77,23 @@ export default function App() {
           setBag={setBag} 
           clubs={clubs} 
           setLastLevel={setLastLevel} 
+          settings={settings}
+          setSettings={setSettings}
+          savedProfiles={savedProfiles}
+          setSavedProfiles={setSavedProfiles}
         />
       </main>
 
-      {bag.length > 0 && (
+      {bag.length > 0 && !isWidgetMode && (
         <ChartControls 
           settings={settings} 
           setSettings={setSettings} 
           openFullscreen={() => setIsFullscreenOpen(true)} 
         />
+      )}
+
+      {bag.length > 0 && (
+        <ShotCalculator bag={bag} clubs={clubs} settings={settings} />
       )}
       
       <ChartOutput bag={bag} clubs={clubs} settings={settings} />

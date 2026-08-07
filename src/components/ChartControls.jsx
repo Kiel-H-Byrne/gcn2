@@ -1,5 +1,7 @@
 import React from 'react';
+import { Maximize, Wind } from 'lucide-react';
 import { WIND_MODES } from '../lib/wind';
+import balls from '../data/balls';
 
 export default function ChartControls({ settings, setSettings, openFullscreen }) {
   return (
@@ -41,16 +43,28 @@ export default function ChartControls({ settings, setSettings, openFullscreen })
       </div>
 
       <div className="control-group">
-        <label htmlFor="mode-select">Power mode</label>
+        <label htmlFor="ball-select">Ball</label>
         <select 
-          id="mode-select"
-          value={settings.modeIndex}
-          onChange={(e) => setSettings({ ...settings, modeIndex: Number(e.target.value) })}
+          id="ball-select"
+          value={settings.ballName}
+          onChange={(e) => setSettings({ ...settings, ballName: e.target.value })}
         >
-          {WIND_MODES.map((mode, i) => (
-            <option key={i} value={i}>{mode.name}</option>
+          {balls.map((b) => (
+            <option key={b.name} value={b.name}>{b.name} (P{b.power} W{b.windResistance} S{b.sideSpin})</option>
           ))}
         </select>
+      </div>
+
+      <div className="control-group">
+        <label htmlFor="elevation-input">Elevation %</label>
+        <input
+          id="elevation-input"
+          type="number"
+          step="5"
+          value={settings.elevation}
+          onChange={(e) => setSettings({ ...settings, elevation: Number(e.target.value) })}
+          style={{ width: '80px' }}
+        />
       </div>
 
       {settings.variant === 'wind' && (
@@ -68,13 +82,35 @@ export default function ChartControls({ settings, setSettings, openFullscreen })
         </div>
       )}
 
+      <div className="control-group" style={{ gridColumn: '1 / -1' }}>
+        <label htmlFor="chart-notes">Hole Notes</label>
+        <textarea 
+          id="chart-notes" 
+          placeholder="e.g. Drive: +10% Max, Approach: +5% Mid"
+          value={settings.notes || ''}
+          onChange={(e) => setSettings({ ...settings, notes: e.target.value })}
+          rows={2}
+          style={{ 
+            width: '100%', 
+            resize: 'vertical', 
+            padding: '8px', 
+            borderRadius: '6px', 
+            border: '1px solid var(--border)',
+            background: 'var(--surface-1)',
+            color: 'var(--text)',
+            fontFamily: 'inherit',
+            fontSize: '0.9rem'
+          }}
+        />
+      </div>
+
       <button className="btn-ghost" type="button" onClick={openFullscreen}>
-        <svg width="15" height="15"><use href="#icon-expand" /></svg>
+        <Maximize size={15} />
         Full-Screen View
       </button>
 
       <button className="btn-primary" type="button" onClick={() => window.print()}>
-        <svg width="16" height="16"><use href="#icon-wind" /></svg>
+        <Wind size={16} />
         Print / Save PDF
       </button>
     </section>
