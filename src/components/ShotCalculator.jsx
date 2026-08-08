@@ -21,9 +21,24 @@ export default function ShotCalculator({ bag, clubs, settings, setSettings }) {
     }
   }, [bag, selectedClubId]);
 
-  if (bag.length === 0) return null;
+  // Set default distance based on club category when selected club changes
+  const currentClubId = bag.find(b => b.clubId === selectedClubId) ? selectedClubId : bag[0]?.clubId;
+  
+  useEffect(() => {
+    if (!currentClubId) return;
+    const c = clubs.find(cl => cl.id === currentClubId);
+    if (!c) return;
+    
+    if (c.category === 'Drivers' || c.category === 'Woods') {
+      setDistance(100);
+    } else if (c.category === 'ShortIrons') {
+      setDistance(15); // near min
+    } else {
+      setDistance(50); // middle for everything else
+    }
+  }, [currentClubId, clubs]);
 
-  const currentClubId = bag.find(b => b.clubId === selectedClubId) ? selectedClubId : bag[0].clubId;
+  if (bag.length === 0) return null;
   const bagEntry = bag.find(b => b.clubId === currentClubId);
   if (!bagEntry) return null;
 
@@ -115,6 +130,12 @@ export default function ShotCalculator({ bag, clubs, settings, setSettings }) {
   // Determine vector arrow length for compass (0 to 100 max)
   const arrowLength = Math.min((wind / 20) * 100, 100);
 
+  const getClubAbbr = (name) => {
+    const words = name.replace(/^The\s/i, '').split(' ');
+    if (words.length > 1) return words.map(w => w[0]).join('').toUpperCase().substring(0, 3);
+    return words[0].substring(0, 4);
+  };
+
   return (
     <section className="shot-calculator hud-widget" style={{ '--calc-accent': accentVar(club.category) }}>
       <div className="calc-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
@@ -131,18 +152,38 @@ export default function ShotCalculator({ bag, clubs, settings, setSettings }) {
         {/* Left Side: Vector Compass & Sliders */}
         <div className="hud-controls">
           
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <select value={currentClubId} onChange={e => setSelectedClubId(e.target.value)} className="hud-club-select" style={{ flex: 1 }}>
-              {bag.map(b => {
-                const c = clubs.find(cl => cl.id === b.clubId);
-                return <option key={c.id} value={c.id}>{c.name} (Lv {b.level})</option>;
-              })}
-            </select>
+          <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', paddingBottom: '4px', WebkitOverflowScrolling: 'touch' }}>
+            {bag.map(b => {
+              const c = clubs.find(cl => cl.id === b.clubId);
+              if (!c) return null;
+              const isActive = currentClubId === c.id;
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => setSelectedClubId(c.id)}
+                  style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    padding: '6px', borderRadius: '8px', minWidth: '46px', flexShrink: 0,
+                    background: isActive ? accentVar(c.category) : 'var(--surface-2)',
+                    color: isActive ? '#fff' : 'var(--text-primary)',
+                    border: `1px solid ${isActive ? 'transparent' : 'var(--border-strong)'}`,
+                    cursor: 'pointer'
+                  }}
+                >
+                  <CategoryIcon category={c.category} size={16} />
+                  <span style={{ fontSize: '0.65rem', fontWeight: 'bold', marginTop: '4px' }}>{getClubAbbr(c.name)}</span>
+                </button>
+              );
+            })}
+            
+            <div style={{ width: '1px', background: 'var(--border)', margin: '0 4px', flexShrink: 0 }} />
+
             <select 
               value={settings.ballName} 
               onChange={e => setSettings({ ...settings, ballName: e.target.value })} 
               className="hud-club-select" 
-              style={{ flex: 1 }}
+              style={{ flex: 1, minWidth: '100px' }}
             >
               {balls.map((b) => (
                 <option key={b.name} value={b.name}>{b.name}</option>
@@ -176,11 +217,29 @@ export default function ShotCalculator({ bag, clubs, settings, setSettings }) {
             <div className="hud-compass-inputs">
               <div className="control-group">
                 <label>Speed (mph)</label>
-                <input type="number" step="0.1" value={wind} onChange={e => setWind(Number(e.target.value))} />
+                <input 
+                  type="number" 
+                  step="0.1" 
+                  inputMode="decimal"
+                  value={wind} 
+                  onChange={e => {
+                    let val = parseFloat(e.target.value);
+                    if (!isNaN(val)) {
+                      setWind(Number(val.toFixed(1)));
+                    } else {
+                      setWind('');
+                    }
+                  }} 
+                />
               </div>
               <div className="control-group">
                 <label>Angle (&deg;)</label>
-                <input type="number" value={windAngle} onChange={e => setWindAngle(Number(e.target.value)%360)} />
+                <input 
+                  type="number" 
+                  inputMode="decimal"
+                  value={windAngle} 
+                  onChange={e => setWindAngle(Number(e.target.value)%360)} 
+                />
               </div>
             </div>
           </div>
@@ -192,7 +251,7 @@ export default function ShotCalculator({ bag, clubs, settings, setSettings }) {
 
           <div className="calc-slider-wrap">
             <div className="slider-labels"><span>-50%</span><span>Elev: {elevation}%</span><span>+50%</span></div>
-            <input type="range" min="-50" max="50" step="5" value={elevation} onChange={e => setElevation(Number(e.target.value))} className="slider-input" />
+            <input type="range" min="-50" max="50" step="10" value={elevation} onChange={e => setElevation(Number(e.target.value))} className="slider-input" />
           </div>
         </div>
 
