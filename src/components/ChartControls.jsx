@@ -42,30 +42,7 @@ export default function ChartControls({ settings, setSettings, openFullscreen })
         </div>
       </div>
 
-      <div className="control-group">
-        <label htmlFor="ball-select">Ball</label>
-        <select 
-          id="ball-select"
-          value={settings.ballName}
-          onChange={(e) => setSettings({ ...settings, ballName: e.target.value })}
-        >
-          {balls.map((b) => (
-            <option key={b.name} value={b.name}>{b.name} (P{b.power} W{b.windResistance} S{b.sideSpin})</option>
-          ))}
-        </select>
-      </div>
 
-      <div className="control-group">
-        <label htmlFor="elevation-input">Elevation %</label>
-        <input
-          id="elevation-input"
-          type="number"
-          step="5"
-          value={settings.elevation}
-          onChange={(e) => setSettings({ ...settings, elevation: Number(e.target.value) })}
-          style={{ width: '80px' }}
-        />
-      </div>
 
       {settings.variant === 'wind' && (
         <div className="control-group">

@@ -28,6 +28,13 @@
   --ring-3: rgba(59, 130, 246, 0.55); /* Blue */
   --ring-4: rgba(34, 197, 94, 0.55);  /* Green */
   --ring-5: rgba(148, 163, 184, 0.55); /* Gray/White equivalent */
+  
+  /* Radar ring strokes (Opaque) */
+  --radar-1: #eab308;
+  --radar-2: #f97316;
+  --radar-3: #3b82f6;
+  --radar-4: #22c55e;
+  --radar-5: #94a3b8;
 
   --danger: #d03b3b;
   --radius-sm: 8px;
@@ -80,6 +87,12 @@
   --ring-3: rgba(96, 165, 250, 0.45);  /* Blue */
   --ring-4: rgba(74, 222, 128, 0.45);  /* Green */
   --ring-5: rgba(255, 255, 255, 0.35); /* Pure White */
+  
+  --radar-1: #facc15;
+  --radar-2: #fb923c;
+  --radar-3: #60a5fa;
+  --radar-4: #4ade80;
+  --radar-5: #ffffff;
 
   --danger: #e66767;
   --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
@@ -876,16 +889,30 @@ select {
   color: var(--calc-accent, var(--text));
   text-align: center;
 }
-.calc-result {
-  background-color: #0a0a0a;
+/* ---------- HUD Screens (Universal LED) ---------- */
+.hud-screen {
+  background-color: rgba(10, 10, 10, 0.85); /* Translucent dark for light mode */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   background-image: 
     linear-gradient(rgba(0,0,0,0.2) 50%, transparent 50%),
     linear-gradient(90deg, rgba(0,0,0,0.2) 50%, transparent 50%);
   background-size: 4px 4px;
-  /* Mix the accent color with 60% white to ensure it is bright and legible on black */
-  color: color-mix(in srgb, var(--calc-accent, #22c55e) 40%, white);
   border-radius: var(--radius-md);
   border: 3px solid #1a1a1a;
+  box-shadow: 
+    inset 0 4px 15px rgba(0,0,0,0.8),
+    inset 0 0 10px rgba(0,0,0,0.5),
+    0 2px 4px rgba(0,0,0,0.1);
+}
+
+[data-theme="dark"] .hud-screen {
+  background-color: #0a0a0a;
+}
+
+.calc-result {
+  color: color-mix(in srgb, var(--calc-accent, #22c55e) 40%, white);
+  text-shadow: 0 0 4px var(--calc-accent, #22c55e), 0 0 12px var(--calc-accent, #22c55e);
   padding: 12px 20px;
   display: flex;
   flex-direction: column;
@@ -893,11 +920,6 @@ select {
   justify-content: center;
   flex-shrink: 0;
   min-width: 100px;
-  box-shadow: 
-    inset 0 4px 15px rgba(0,0,0,0.8),
-    inset 0 0 10px rgba(0,0,0,0.5),
-    0 2px 4px rgba(0,0,0,0.1);
-  text-shadow: 0 0 4px var(--calc-accent, #22c55e), 0 0 12px var(--calc-accent, #22c55e);
 }
 .calc-result .result-label {
   font-size: 0.65rem;
@@ -1538,6 +1560,7 @@ table.wind-table-print td.print-split {
   .picker-panel,
   .bag-panel,
   .chart-controls,
+  .hud-widget,
   .app-footer,
   .modal-overlay,
   .fullscreen-overlay {
@@ -1724,4 +1747,106 @@ table.wind-table-print td.print-split {
   border: 1px solid var(--border-strong);
   border-radius: 4px;
   background: var(--surface-2);
+}
+
+/* ---------- Unified HUD Widget ---------- */
+.hud-widget {
+  margin-top: 20px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+}
+
+.hud-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 20px;
+}
+
+@media (max-width: 600px) {
+  .hud-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hud-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hud-club-select {
+  width: 100%;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  outline: none;
+}
+
+.hud-compass-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+.hud-compass-wrap {
+  width: 140px;
+  height: 140px;
+  position: relative;
+  touch-action: none;
+}
+
+.hud-compass-svg {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  background: var(--surface-2);
+  border-radius: 50%;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+  border: 2px solid var(--border-strong);
+}
+
+.hud-compass-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hud-compass-inputs input {
+  width: 70px;
+  padding: 6px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+.hud-results {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hud-target-vis {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+}
+
+.hud-target-vis svg {
+  width: 100%;
+  max-width: 180px;
 }
