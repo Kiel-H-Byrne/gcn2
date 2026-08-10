@@ -214,8 +214,6 @@ export default function ShotCalculator({
               })}
             </div>
 
-            <div className="hud-club-divider" />
-
             <select
               value={settings.ballName}
               onChange={(e) =>
@@ -320,37 +318,39 @@ export default function ShotCalculator({
             </div>
           </div>
 
-          <div className="calc-slider-wrap">
-            <div className="slider-labels">
-              <span>Min</span>
-              <span>Dist: {distance}%</span>
-              <span>Max</span>
+          <div className="hud-sliders-row">
+            <div className="calc-slider-wrap">
+              <div className="slider-labels">
+                <span>Min</span>
+                <span>Dist: {distance}%</span>
+                <span>Max</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={distance}
+                onChange={(e) => setDistance(Number(e.target.value))}
+                className="slider-input"
+              />
             </div>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={distance}
-              onChange={(e) => setDistance(Number(e.target.value))}
-              className="slider-input"
-            />
-          </div>
 
-          <div className="calc-slider-wrap">
-            <div className="slider-labels">
-              <span>-50%</span>
-              <span>Elev: {elevation}%</span>
-              <span>+50%</span>
+            <div className="calc-slider-wrap">
+              <div className="slider-labels">
+                <span>-50%</span>
+                <span>Elev: {elevation}%</span>
+                <span>+50%</span>
+              </div>
+              <input
+                type="range"
+                min="-50"
+                max="50"
+                step="10"
+                value={elevation}
+                onChange={(e) => setElevation(Number(e.target.value))}
+                className="slider-input"
+              />
             </div>
-            <input
-              type="range"
-              min="-50"
-              max="50"
-              step="10"
-              value={elevation}
-              onChange={(e) => setElevation(Number(e.target.value))}
-              className="slider-input"
-            />
           </div>
         </div>
 
