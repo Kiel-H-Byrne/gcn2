@@ -1,3 +1,4 @@
+import { Flex } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import balls from "../data/balls";
 import {
@@ -9,6 +10,8 @@ import {
 } from "../lib/wind";
 import { accentVar } from "../utils";
 import CategoryIcon from "./CategoryIcon";
+import DialControl from "./DialControl";
+import HalfDialControl from "./HalfDialControl";
 
 export default function ShotCalculator({
   bag,
@@ -104,10 +107,21 @@ export default function ShotCalculator({
     if (theta < 0) theta += 360;
     setWindAngle(Math.round(theta));
 
-    // Magnitude calculation (max radius = 20 wind speed)
+    // Magnitude calculation: piecewise non-linear scale for precision
+    // 0-8mph takes up 80% of the radius. 8-20mph takes the last 20%.
     const maxRadiusPx = rect.width / 2;
     const distPx = Math.sqrt(dx * dx + dy * dy);
-    let speed = (distPx / maxRadiusPx) * 20;
+    const r = distPx / maxRadiusPx;
+
+    let speed = 0;
+    if (r <= 0.8) {
+      speed = (r / 0.8) * 8;
+    } else if (r <= 1.0) {
+      speed = 8 + ((r - 0.8) / 0.2) * 12; // 8 to 20
+    } else {
+      speed = 20 + ((r - 1.0) / 0.2) * 5; // >20 (dragging outside SVG)
+    }
+
     if (speed > 25) speed = 25;
     setWind(Number(speed.toFixed(1)));
   };
@@ -149,7 +163,39 @@ export default function ShotCalculator({
   }
 
   // Determine vector arrow length for compass (0 to 100 max)
-  const arrowLength = Math.min((wind / 20) * 100, 100);
+  let arrowLength = 0;
+  if (wind <= 8) {
+    arrowLength = (wind / 8) * 80;
+  } else if (wind <= 20) {
+    arrowLength = 80 + ((wind - 8) / 12) * 20;
+  } else {
+    arrowLength = 100 + ((wind - 20) / 5) * 20;
+  }
+  arrowLength = Math.min(arrowLength, 100);
+
+  // Dynamic compass rings to visually show the shrink/grow scale
+  const compassRings = [];
+  const compassMaxSpeed = wind > 8 ? 20 : 10;
+  const ringStep = compassMaxSpeed === 10 ? 2 : 5;
+  for (let i = ringStep; i <= compassMaxSpeed; i += ringStep) {
+    let r = 0;
+    if (i <= 8) {
+      r = (i / 8) * 80;
+    } else {
+      r = 80 + ((i - 8) / 12) * 20;
+    }
+    compassRings.push(
+      <circle
+        key={`cring-${i}`}
+        cx="100"
+        cy="100"
+        r={r}
+        fill="none"
+        stroke="var(--border)"
+        strokeWidth="1"
+      />,
+    );
+  }
 
   const getClubAbbr = (name) => {
     const words = name.replace(/^The\s/i, "").split(" ");
@@ -247,9 +293,10 @@ export default function ShotCalculator({
                   r="95"
                   fill="none"
                   stroke="var(--border-strong)"
-                  strokeWidth="4"
-                  strokeDasharray="10,10"
+                  strokeWidth="2"
+                  strokeDasharray="4,4"
                 />
+                {compassRings}
                 <line
                   x1="100"
                   y1="0"
@@ -288,70 +335,68 @@ export default function ShotCalculator({
               </svg>
             </div>
 
-            <div className="hud-compass-inputs">
-              <div className="control-group">
-                <label>Speed (mph)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  inputMode="decimal"
-                  value={wind}
-                  onChange={(e) => {
-                    let val = parseFloat(e.target.value);
-                    if (!isNaN(val)) {
-                      setWind(Number(val.toFixed(1)));
-                    } else {
-                      setWind("");
-                    }
-                  }}
-                />
-              </div>
-              <div className="control-group">
-                <label>Angle (&deg;)</label>
-                <input
-                  type="number"
-                  inputMode="decimal"
-                  value={windAngle}
-                  onChange={(e) => setWindAngle(Number(e.target.value) % 360)}
-                />
-              </div>
-            </div>
+            <Flex
+              className="hud-compass-inputs"
+              gap="16px"
+              justify="center"
+              align="center"
+            >
+              <DialControl
+                label="Speed (mph)"
+                value={wind}
+                onChange={(val) => setWind(Number(val.toFixed(1)))}
+                min={0}
+                max={25}
+                step={0.1}
+                unitsPerRotation={1}
+                formatValue={(v) => v.toFixed(1)}
+              />
+              <DialControl
+                label="Angle (&deg;)"
+                value={windAngle}
+                onChange={(val) => {
+                  let v = val;
+                  if (v >= 360) v = v % 360;
+                  if (v < 0) v = (v % 360) + 360;
+                  setWindAngle(Math.round(v));
+                }}
+                min={-Infinity} // allow infinite spinning to wrap
+                max={Infinity}
+                step={1}
+                unitsPerRotation={360}
+              />
+            </Flex>
           </div>
 
-          <div className="hud-sliders-row">
-            <div className="calc-slider-wrap">
-              <div className="slider-labels">
-                <span>Min</span>
-                <span>Dist: {distance}%</span>
-                <span>Max</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={distance}
-                onChange={(e) => setDistance(Number(e.target.value))}
-                className="slider-input"
-              />
-            </div>
+          <Flex
+            className="hud-sliders-row"
+            gap="24px"
+            justify="center"
+            align="center"
+            mt="16px"
+          >
+            <HalfDialControl
+              label="Distance"
+              value={distance}
+              onChange={setDistance}
+              min={0}
+              max={100}
+              step={1}
+              formatValue={(v) => `${v}%`}
+              tickLabels={["Min", "50%", "Max"]}
+            />
 
-            <div className="calc-slider-wrap">
-              <div className="slider-labels">
-                <span>-50%</span>
-                <span>Elev: {elevation}%</span>
-                <span>+50%</span>
-              </div>
-              <input
-                type="range"
-                min="-50"
-                max="50"
-                step="10"
-                value={elevation}
-                onChange={(e) => setElevation(Number(e.target.value))}
-                className="slider-input"
-              />
-            </div>
-          </div>
+            <HalfDialControl
+              label="Elevation"
+              value={elevation}
+              onChange={setElevation}
+              min={-50}
+              max={50}
+              step={10}
+              formatValue={(v) => `${v > 0 ? "+" : ""}${v}%`}
+              tickLabels={["-50%", "0", "+50%"]}
+            />
+          </Flex>
         </div>
 
         {/* Right Side: LED Screen & Target Vis */}
@@ -368,11 +413,15 @@ export default function ShotCalculator({
                   textAlign: "center",
                 }}
               >
-                {sweCross > 0 &&
-                  `SWE: ${sweCross} sq ${cwComponent > 0 ? "Right" : "Left"}`}
-                <br />
-                {sweHead > 0 &&
-                  `SWE: ${sweHead} sq ${isHeadwind ? "Push Up" : "Pull Back"}`}
+                <div>
+                  {sweCross > 0 &&
+                    `SWE: ${sweCross} sq ${cwComponent > 0 ? "Left" : "Right"}`}
+                  <br />
+                </div>
+                <div>
+                  {sweHead > 0 &&
+                    `SWE: ${sweHead} sq ${isHeadwind ? "Push Up" : "Pull Back"}`}
+                </div>
               </div>
             )}
             <div className="hud-target-vis">

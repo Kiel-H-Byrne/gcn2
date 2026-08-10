@@ -1,95 +1,115 @@
 import React from 'react';
+import { Box, Flex, Grid, GridItem, Input, Textarea, Text, Button, NativeSelect } from '@chakra-ui/react';
 import { Maximize, Wind } from 'lucide-react';
 import { WIND_MODES } from '../lib/wind';
 import balls from '../data/balls';
 
 export default function ChartControls({ settings, setSettings, openFullscreen }) {
   return (
-    <section className="chart-controls">
-      <div className="control-group">
-        <label htmlFor="chart-title">Title</label>
-        <input 
+    <Grid 
+      as="section" 
+      className="chart-controls" 
+      templateColumns="repeat(auto-fit, minmax(200px, 1fr))" 
+      gap="16px" 
+      alignItems="end"
+      bg="var(--surface-1)"
+      p="16px"
+      borderRadius="var(--radius-lg)"
+      border="1px solid var(--border)"
+      boxShadow="var(--shadow-sm)"
+    >
+      <Flex direction="column" gap="6px">
+        <Text as="label" htmlFor="chart-title" fontSize="0.85rem" fontWeight="600" color="var(--text-secondary)">Title</Text>
+        <Input 
           id="chart-title" 
           type="text" 
           placeholder="e.g. My Tour Bag" 
           maxLength={60} 
           value={settings.title}
           onChange={(e) => setSettings({ ...settings, title: e.target.value })}
+          bg="var(--surface-2)"
         />
-      </div>
+      </Flex>
 
-      <div className="control-group">
-        <span className="control-label">Chart</span>
-        <div className="segmented" role="tablist">
-          <button 
-            type="button" 
-            className={`segmented-btn ${settings.variant === 'ring' ? 'is-active' : ''}`}
+      <Flex direction="column" gap="6px">
+        <Text fontSize="0.85rem" fontWeight="600" color="var(--text-secondary)">Chart Type</Text>
+        <Flex role="tablist" bg="var(--border)" p="2px" borderRadius="var(--radius-sm)">
+          <Button 
+            flex="1"
+            size="sm"
+            variant="ghost"
             role="tab" 
             aria-selected={settings.variant === 'ring'}
             onClick={() => setSettings({ ...settings, variant: 'ring' })}
+            bg={settings.variant === 'ring' ? 'var(--surface-1)' : 'transparent'}
+            color={settings.variant === 'ring' ? 'var(--text-primary)' : 'var(--text-muted)'}
+            boxShadow={settings.variant === 'ring' ? 'var(--shadow-sm)' : 'none'}
+            _hover={{ bg: settings.variant === 'ring' ? 'var(--surface-1)' : 'var(--border-strong)' }}
           >
             Wind per Ring
-          </button>
-          <button 
-            type="button" 
-            className={`segmented-btn ${settings.variant === 'wind' ? 'is-active' : ''}`}
+          </Button>
+          <Button 
+            flex="1"
+            size="sm"
+            variant="ghost"
             role="tab" 
             aria-selected={settings.variant === 'wind'}
             onClick={() => setSettings({ ...settings, variant: 'wind' })}
+            bg={settings.variant === 'wind' ? 'var(--surface-1)' : 'transparent'}
+            color={settings.variant === 'wind' ? 'var(--text-primary)' : 'var(--text-muted)'}
+            boxShadow={settings.variant === 'wind' ? 'var(--shadow-sm)' : 'none'}
+            _hover={{ bg: settings.variant === 'wind' ? 'var(--surface-1)' : 'var(--border-strong)' }}
           >
             Rings per Wind
-          </button>
-        </div>
-      </div>
-
-
+          </Button>
+        </Flex>
+      </Flex>
 
       {settings.variant === 'wind' && (
-        <div className="control-group">
-          <label htmlFor="wind-step-select">Wind step</label>
-          <select 
-            id="wind-step-select"
-            value={settings.windStep}
-            onChange={(e) => setSettings({ ...settings, windStep: Number(e.target.value) })}
-          >
-            <option value={0.2}>0.2</option>
-            <option value={0.5}>0.5</option>
-            <option value={1}>1.0</option>
-          </select>
-        </div>
+        <Flex direction="column" gap="6px">
+          <Text as="label" htmlFor="wind-step-select" fontSize="0.85rem" fontWeight="600" color="var(--text-secondary)">Wind step</Text>
+          <NativeSelect.Root>
+            <NativeSelect.Field
+              id="wind-step-select"
+              value={settings.windStep}
+              onChange={(e) => setSettings({ ...settings, windStep: Number(e.target.value) })}
+              bg="var(--surface-2)"
+            >
+              <option value={0.2}>0.2</option>
+              <option value={0.5}>0.5</option>
+              <option value={1}>1.0</option>
+            </NativeSelect.Field>
+            <NativeSelect.Indicator />
+          </NativeSelect.Root>
+        </Flex>
       )}
 
-      <div className="control-group" style={{ gridColumn: '1 / -1' }}>
-        <label htmlFor="chart-notes">Hole Notes</label>
-        <textarea 
-          id="chart-notes" 
-          placeholder="e.g. Drive: +10% Max, Approach: +5% Mid"
-          value={settings.notes || ''}
-          onChange={(e) => setSettings({ ...settings, notes: e.target.value })}
-          rows={2}
-          style={{ 
-            width: '100%', 
-            resize: 'vertical', 
-            padding: '8px', 
-            borderRadius: '6px', 
-            border: '1px solid var(--border)',
-            background: 'var(--surface-1)',
-            color: 'var(--text)',
-            fontFamily: 'inherit',
-            fontSize: '0.9rem'
-          }}
-        />
-      </div>
+      <GridItem colSpan={{ base: 1, md: -1 }}>
+        <Flex direction="column" gap="6px">
+          <Text as="label" htmlFor="chart-notes" fontSize="0.85rem" fontWeight="600" color="var(--text-secondary)">Hole Notes</Text>
+          <Textarea 
+            id="chart-notes" 
+            placeholder="e.g. Drive: +10% Max, Approach: +5% Mid"
+            value={settings.notes || ''}
+            onChange={(e) => setSettings({ ...settings, notes: e.target.value })}
+            rows={2}
+            resize="vertical"
+            bg="var(--surface-2)"
+          />
+        </Flex>
+      </GridItem>
 
-      <button className="btn-ghost" type="button" onClick={openFullscreen}>
-        <Maximize size={15} />
-        Full-Screen View
-      </button>
+      <Flex gap="12px" gridColumn={{ base: "1", md: "1 / -1" }}>
+        <Button variant="outline" flex="1" onClick={openFullscreen} display="flex" gap="8px">
+          <Maximize size={15} />
+          Full-Screen View
+        </Button>
 
-      <button className="btn-primary" type="button" onClick={() => window.print()}>
-        <Wind size={16} />
-        Print / Save PDF
-      </button>
-    </section>
+        <Button colorScheme="blue" bg="var(--brand-primary)" color="white" flex="1" onClick={() => window.print()} display="flex" gap="8px">
+          <Wind size={16} />
+          Print / Save PDF
+        </Button>
+      </Flex>
+    </Grid>
   );
 }
