@@ -1020,13 +1020,7 @@ select {
   gap: 16px;
   box-shadow: var(--shadow-sm);
 }
-@media (min-width: 600px) {
-  .shot-calculator {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-}
+
 .calc-header {
   display: flex;
   flex-direction: column;
