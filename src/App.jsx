@@ -1,4 +1,4 @@
-import { Flag, Maximize, X } from "lucide-react";
+import { Maximize, X } from "lucide-react";
 import { useState } from "react";
 import BagPanel from "./components/BagPanel";
 import ChartControls from "./components/ChartControls";
@@ -38,13 +38,24 @@ export default function App() {
 
   return (
     <div className="app">
-      <header className={`app-header ${isWidgetMode ? "widget-mode-header" : ""}`}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <header
+        className={`app-header ${isWidgetMode ? "widget-mode-header" : ""}`}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <div className="brand">
             <img src="/pwa-192x192.png" alt="Logo" className="brand-icon-img" />
             <h1>The Caddie's Compass</h1>
           </div>
-          <div className="header-actions" style={{ display: "flex", gap: isWidgetMode ? "4px" : "8px" }}>
+          <div
+            className="header-actions"
+            style={{ display: "flex", gap: isWidgetMode ? "4px" : "8px" }}
+          >
             <button
               type="button"
               className={`btn-ghost header-btn ${isWidgetMode ? "is-active" : ""}`}
@@ -70,12 +81,47 @@ export default function App() {
           </div>
         </div>
         {!isWidgetMode && (
-          <div className="intro-blurb" style={{ marginTop: '12px', padding: '14px', background: 'var(--surface-2)', borderRadius: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-            <p style={{ margin: '0 0 10px 0', fontWeight: 'bold', color: 'var(--text-primary)' }}>How to use:</p>
-            <ul style={{ margin: 0, paddingLeft: '24px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <li><strong>Pick your clubs:</strong> Tap on the clubs to add them to your bag.</li>
-              <li><strong>Set the levels:</strong> Adjust the level sliders to match your clubs in-game.</li>
-              <li><strong>Read the chart:</strong> View the calculated wind adjustments below instantly!</li>
+          <div
+            className="intro-blurb"
+            style={{
+              marginTop: "12px",
+              padding: "14px",
+              background: "var(--surface-2)",
+              borderRadius: "8px",
+              fontSize: "0.9rem",
+              color: "var(--text-secondary)",
+            }}
+          >
+            <p
+              style={{
+                margin: "0 0 10px 0",
+                fontWeight: "bold",
+                color: "var(--text-primary)",
+              }}
+            >
+              How to use:
+            </p>
+            <ul
+              style={{
+                margin: 0,
+                paddingLeft: "24px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "6px",
+              }}
+            >
+              <li>
+                <strong>Pick your clubs:</strong> Tap on the clubs to add them
+                to your bag.
+              </li>
+              <li>
+                <strong>Set the levels:</strong> Adjust the level sliders to
+                match your clubs in-game.
+              </li>
+              <li>
+                <strong>Read the chart:</strong> View the calculated wind
+                adjustments below instantly!
+              </li>
             </ul>
           </div>
         )}
@@ -115,7 +161,12 @@ export default function App() {
           )}
 
           {bag.length > 0 && (
-            <ShotCalculator bag={bag} clubs={clubs} settings={settings} setSettings={setSettings} />
+            <ShotCalculator
+              bag={bag}
+              clubs={clubs}
+              settings={settings}
+              setSettings={setSettings}
+            />
           )}
 
           <ChartOutput bag={bag} clubs={clubs} settings={settings} />
@@ -131,9 +182,9 @@ export default function App() {
                 {" "}
                 golf-clash-notebook
               </a>
-              community project (MIT licensed). Golf Clash club stats change with
-              game updates &mdash; see <code>README.md</code> to refresh this app's
-              data. Not affiliated with Playdemic.
+              community project (MIT licensed). Golf Clash club stats change
+              with game updates &mdash; see <code>README.md</code> to refresh
+              this app's data. Not affiliated with Playdemic.
             </p>
           </footer>
         </>
@@ -142,11 +193,22 @@ export default function App() {
           <div className="widget-scroll-container">
             <div className="widget-screen">
               {bag.length > 0 && (
-                <ShotCalculator bag={bag} clubs={clubs} settings={settings} setSettings={setSettings} isWidgetMode={true} />
+                <ShotCalculator
+                  bag={bag}
+                  clubs={clubs}
+                  settings={settings}
+                  setSettings={setSettings}
+                  isWidgetMode={true}
+                />
               )}
             </div>
             <div className="widget-screen">
-              <ChartOutput bag={bag} clubs={clubs} settings={settings} isWidgetMode={true} />
+              <ChartOutput
+                bag={bag}
+                clubs={clubs}
+                settings={settings}
+                isWidgetMode={true}
+              />
             </div>
           </div>
         </div>

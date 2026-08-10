@@ -10,7 +10,13 @@ import {
 import { accentVar } from "../utils";
 import CategoryIcon from "./CategoryIcon";
 
-export default function ShotCalculator({ bag, clubs, settings, setSettings, isWidgetMode }) {
+export default function ShotCalculator({
+  bag,
+  clubs,
+  settings,
+  setSettings,
+  isWidgetMode,
+}) {
   const [selectedClubId, setSelectedClubId] = useState(bag[0]?.clubId || "");
   const [wind, setWind] = useState(5.0);
   const [windAngle, setWindAngle] = useState(0);
@@ -173,8 +179,8 @@ export default function ShotCalculator({ bag, clubs, settings, setSettings, isWi
         {!isWidgetMode && (
           <p className="calc-header-subtitle">
             <strong>How to use:</strong> Drag the wind compass to simultaneously
-            set angle & speed. Tweak distance/elevation below, and read your exact
-            ring adjustment and counter-drag vector on the right.
+            set angle & speed. Tweak distance/elevation below, and read your
+            exact ring adjustment and counter-drag vector on the right.
           </p>
         )}
       </div>
