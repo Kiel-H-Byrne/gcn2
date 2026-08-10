@@ -1,4 +1,5 @@
 import React from 'react';
+import { Box, Flex, Text, Heading, Image, Badge } from '@chakra-ui/react';
 import CategoryIcon from './CategoryIcon';
 import { accentVar, getClubImageUrl } from '../utils';
 import { WIND_MODES, buildWindPerRingTable, buildRingsPerWindTable } from '../lib/wind';
@@ -150,57 +151,89 @@ function PrintTable({ club, level, mode, settings, shorthandHeaders }) {
 export function ClubChartCard({ club, level, mode, settings, isFullscreen }) {
   const accuracy = club.accuracy[level - 1];
   const accColor = getAccuracyColor(accuracy);
+  const accentColor = accentVar(club.category);
   
   return (
-    <div className="club-chart-card" style={{ '--chart-accent': accentVar(club.category) }}>
-      <div className="club-chart-head">
-        <img 
+    <Box 
+      className="club-chart-card" 
+      style={{ '--chart-accent': accentColor }}
+      bg="var(--surface-1)"
+      border="1px solid var(--border)"
+      borderRadius="var(--radius-md)"
+      borderTop={`4px solid ${accentColor}`}
+      overflow="hidden"
+      boxShadow="var(--shadow-sm)"
+      mb="16px"
+      pageBreakInside="avoid"
+      breakInside="avoid"
+    >
+      <Flex className="club-chart-head" align="center" gap="12px" p="12px" bg="var(--surface-2)" borderBottom="1px solid var(--border)">
+        <Image 
           src={getClubImageUrl(club.name, '64x64')} 
           alt="" 
-          className="club-chart-img"
-          width="32" 
-          height="32"
+          w="32px" 
+          h="32px"
+          objectFit="contain"
           onError={(e) => {
             e.target.style.display = 'none';
             if (e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'block';
           }}
         />
-        <CategoryIcon category={club.category} size={32} className="club-chart-icon" style={{ display: 'none' }} />
-        <div className="club-chart-titles">
-          <div className="club-chart-name">{club.name}</div>
-          <div className="club-chart-sub">
-            Lv {level}
-            <span className="acc-badge" style={{ borderColor: accColor, background: `${accColor}15` }}>
-              <span style={{ color: 'var(--text-secondary)' }}>{isFullscreen ? 'Acc' : 'Accuracy'}</span> <strong style={{ color: accColor }}>{accuracy}</strong>
-            </span>
-          </div>
-        </div>
-      </div>
+        <Box display="none">
+          <CategoryIcon category={club.category} size={32} />
+        </Box>
+        <Flex direction="column" flex="1">
+          <Heading as="h4" m="0" fontSize="1.1rem" color="var(--text-primary)" lineHeight="1.2">{club.name}</Heading>
+          <Flex align="center" gap="8px" mt="2px">
+            <Text fontSize="0.85rem" fontWeight="600" color="var(--text-secondary)">Lv {level}</Text>
+            <Flex 
+              align="center" 
+              gap="4px" 
+              fontSize="0.75rem" 
+              fontWeight="bold"
+              px="6px" 
+              py="2px"
+              borderRadius="12px"
+              border="1px solid"
+              borderColor={accColor}
+              bg={`${accColor}15`}
+            >
+              <Text as="span" color="var(--text-secondary)" fontWeight="normal">{isFullscreen ? 'Acc' : 'Accuracy'}</Text> 
+              <Text as="strong" color={accColor}>{accuracy}</Text>
+            </Flex>
+          </Flex>
+        </Flex>
+      </Flex>
+      
       {!isFullscreen ? (
         <>
-          <div className="club-chart-table-wrap screen-only">
+          <Box className="club-chart-table-wrap screen-only" overflowX="auto" p="12px">
             {settings.variant === 'ring' ? (
               <WindTableRing club={club} level={level} mode={mode} elevation={settings.elevation} />
             ) : (
               <WindTableWind club={club} level={level} mode={mode} elevation={settings.elevation} windStep={settings.windStep} />
             )}
-          </div>
-          <div className="club-chart-table-wrap print-only">
+          </Box>
+          <Box className="club-chart-table-wrap print-only" p="12px">
             <PrintTable club={club} level={level} mode={mode} settings={settings} />
-          </div>
+          </Box>
         </>
       ) : (
-        <div className="club-chart-table-wrap">
+        <Box className="club-chart-table-wrap" p="12px">
           <PrintTable club={club} level={level} mode={mode} settings={settings} shorthandHeaders />
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }
 
 export default function ChartOutput({ bag, clubs, settings, isWidgetMode }) {
   if (bag.length === 0) {
-    return <div className="chart-empty">Add clubs to your bag to build a wind chart.</div>;
+    return (
+      <Flex className="chart-empty" justify="center" align="center" p="32px" border="2px dashed var(--border)" borderRadius="var(--radius-lg)" color="var(--text-muted)" fontStyle="italic" bg="var(--surface-1)">
+        Add clubs to your bag to build a wind chart.
+      </Flex>
+    );
   }
 
   const selectedBall = balls.find(b => b.name === settings.ballName) || balls[0];
@@ -208,31 +241,50 @@ export default function ChartOutput({ bag, clubs, settings, isWidgetMode }) {
 
   if (isWidgetMode) {
     return (
-      <div className="fullscreen-body" style={{ marginTop: '20px' }}>
-        {bag.map(entry => {
-          const club = clubs.find(c => c.id === entry.clubId);
-          if (!club) return null;
-          const level = Math.min(Math.max(entry.level, 1), club.maxLevel);
-          return <ClubChartCard key={club.id} club={club} level={level} mode={mode} settings={settings} isFullscreen />;
-        })}
-      </div>
+      <Box className="fullscreen-body" mt="20px">
+        <Box 
+          display="grid" 
+          gridTemplateColumns="repeat(auto-fit, minmax(300px, 1fr))" 
+          gap="16px" 
+          alignItems="start"
+        >
+          {bag.map(entry => {
+            const club = clubs.find(c => c.id === entry.clubId);
+            if (!club) return null;
+            const level = Math.min(Math.max(entry.level, 1), club.maxLevel);
+            return <ClubChartCard key={club.id} club={club} level={level} mode={mode} settings={settings} isFullscreen />;
+          })}
+        </Box>
+      </Box>
     );
   }
 
   return (
-    <section className="chart-output">
+    <Box as="section" className="chart-output" mt="24px">
       {settings.title.trim() && (
-        <div className="chart-title-banner">{settings.title.trim()}</div>
+        <Heading as="h2" className="chart-title-banner" textAlign="center" mb="12px" fontSize="1.5rem" color="var(--text-primary)">
+          {settings.title.trim()}
+        </Heading>
       )}
       {settings.notes?.trim() && (
-        <div className="chart-notes-banner">{settings.notes.trim()}</div>
+        <Box className="chart-notes-banner" bg="var(--surface-2)" p="12px" borderRadius="var(--radius-md)" border="1px solid var(--border-strong)" mb="24px" whiteSpace="pre-wrap" color="var(--text-secondary)">
+          {settings.notes.trim()}
+        </Box>
       )}
-      {bag.map(entry => {
-        const club = clubs.find(c => c.id === entry.clubId);
-        if (!club) return null;
-        const level = Math.min(Math.max(entry.level, 1), club.maxLevel);
-        return <ClubChartCard key={club.id} club={club} level={level} mode={mode} settings={settings} />;
-      })}
-    </section>
+      
+      <Box className="chart-cards-grid" sx={{
+        '@media (min-width: 800px)': {
+          columnCount: 2,
+          columnGap: '16px',
+        }
+      }}>
+        {bag.map(entry => {
+          const club = clubs.find(c => c.id === entry.clubId);
+          if (!club) return null;
+          const level = Math.min(Math.max(entry.level, 1), club.maxLevel);
+          return <ClubChartCard key={club.id} club={club} level={level} mode={mode} settings={settings} />;
+        })}
+      </Box>
+    </Box>
   );
 }
