@@ -198,13 +198,26 @@ export function ClubChartCard({ club, level, mode, settings, isFullscreen }) {
   );
 }
 
-export default function ChartOutput({ bag, clubs, settings }) {
+export default function ChartOutput({ bag, clubs, settings, isWidgetMode }) {
   if (bag.length === 0) {
     return <div className="chart-empty">Add clubs to your bag to build a wind chart.</div>;
   }
 
   const selectedBall = balls.find(b => b.name === settings.ballName) || balls[0];
   const mode = WIND_MODES[selectedBall.power] || WIND_MODES[0];
+
+  if (isWidgetMode) {
+    return (
+      <div className="fullscreen-body" style={{ marginTop: '20px' }}>
+        {bag.map(entry => {
+          const club = clubs.find(c => c.id === entry.clubId);
+          if (!club) return null;
+          const level = Math.min(Math.max(entry.level, 1), club.maxLevel);
+          return <ClubChartCard key={club.id} club={club} level={level} mode={mode} settings={settings} isFullscreen />;
+        })}
+      </div>
+    );
+  }
 
   return (
     <section className="chart-output">
