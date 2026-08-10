@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Box, Flex, Grid, GridItem, Text, Button, Image, Badge } from '@chakra-ui/react';
 import { Plus } from 'lucide-react';
 import CategoryIcon from './CategoryIcon';
 import { CATEGORY_ORDER, CATEGORY_LABELS, accentVar, getClubImageUrl } from '../utils';
@@ -24,77 +25,123 @@ export default function ClubGrid({ clubs, activeCategory, setActiveCategory, bag
   const hasAdminEdit = new URLSearchParams(window.location.search).get('adminEdit') === 'gcnAdmin123';
 
   return (
-    <section className="picker-panel" aria-label="Club picker">
-      <div className="picker-panel-header">
-        <div className="category-tabs" role="tablist" aria-label="Club categories">
-          {CATEGORY_ORDER.map(cat => (
-            <button
-              key={cat}
-              type="button"
-              className={`category-tab ${activeCategory === cat ? 'is-active' : ''}`}
-              style={{ '--tab-accent': accentVar(cat) }}
-              role="tab"
-              aria-selected={activeCategory === cat}
-              onClick={() => setActiveCategory(cat)}
+    <Box as="section" className="picker-panel" aria-label="Club picker">
+      <Flex direction="column" mb="16px">
+        <Flex gap="8px" overflowX="auto" pb="8px" role="tablist" aria-label="Club categories" css={{ '&::-webkit-scrollbar': { display: 'none' } }}>
+          {CATEGORY_ORDER.map(cat => {
+            const isActive = activeCategory === cat;
+            return (
+              <Button
+                key={cat}
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setActiveCategory(cat)}
+                bg={isActive ? accentVar(cat) : "var(--surface-2)"}
+                color={isActive ? "white" : "var(--text-secondary)"}
+                border="1px solid"
+                borderColor={isActive ? accentVar(cat) : "var(--border)"}
+                _hover={{ bg: isActive ? accentVar(cat) : "var(--surface-3)" }}
+                borderRadius="full"
+                px="16px"
+                size="sm"
+                display="flex"
+                alignItems="center"
+                gap="6px"
+              >
+                <CategoryIcon category={cat} size={15} />
+                <Text>{CATEGORY_LABELS[cat]}</Text>
+              </Button>
+            );
+          })}
+          {hasAdminEdit && (
+            <Button
+              size="sm"
+              borderRadius="full"
+              px="16px"
+              bg="var(--surface-2)"
+              border="1px solid var(--border)"
+              color="var(--text-secondary)"
+              onClick={openEditorModal}
+              display="flex"
+              alignItems="center"
+              gap="6px"
+              flexShrink={0}
             >
-              <CategoryIcon category={cat} size={15} />
-              <span>{CATEGORY_LABELS[cat]}</span>
-            </button>
-          ))}
-        </div>
-        {hasAdminEdit && (
-          <button className="category-tab add-club-tab" type="button" onClick={openEditorModal}>
-            <Plus size={15} />
-            <span>Manage Clubs</span>
-          </button>
-        )}
-      </div>
-      <div className="club-grid" role="list">
+              <Plus size={15} />
+              <Text>Manage Clubs</Text>
+            </Button>
+          )}
+        </Flex>
+      </Flex>
+      
+      <Grid templateColumns="repeat(auto-fill, minmax(150px, 1fr))" gap="10px" role="list">
         {!categoryClubs.length && (
-          <p className="bag-empty-hint">No clubs in this category yet -- use "Manage Clubs" to add one.</p>
+          <Text color="var(--text-muted)" fontStyle="italic" textAlign="center" mt="32px">
+            No clubs in this category yet -- use "Manage Clubs" to add one.
+          </Text>
         )}
         {categoryClubs.map(club => {
           const bagEntry = bag.find(b => b.clubId === club.id);
+          const isSelected = !!bagEntry;
+          const accentColor = accentVar(club.category);
+
           return (
-            <div
+            <Flex
               key={club.id}
-              className={`club-card ${bagEntry ? 'is-selected' : ''}`}
-              style={{ '--card-accent': accentVar(club.category) }}
               role="listitem"
+              direction="column"
+              gap="6px"
+              position="relative"
+              bg={isSelected ? "var(--surface-3)" : "var(--surface-2)"}
+              border="1px solid"
+              borderColor={isSelected ? accentColor : "var(--border)"}
+              borderLeft={`3px solid ${accentColor}`}
+              borderRadius="var(--radius-md)"
+              p="10px 10px 12px"
+              cursor="pointer"
+              transition="border-color 0.15s, transform 0.1s"
+              _hover={{ borderColor: "var(--border-strong)" }}
+              _active={{ transform: "scale(0.98)" }}
               onClick={(e) => {
                 if (e.target.closest('.level-picker')) return;
                 if (!bagEntry) handleAddToBag(club);
               }}
             >
-              <div className="club-card-top">
+              <Flex justify="space-between" align="flex-start" mb="4px">
                 {!imageError[club.id] ? (
-                  <img 
+                  <Image 
                     src={getClubImageUrl(club.name, '64x64')} 
                     alt="" 
-                    className="club-card-img"
-                    width="42" 
-                    height="42"
+                    w="42px" 
+                    h="42px"
+                    objectFit="contain"
                     onError={() => setImageError(prev => ({ ...prev, [club.id]: true }))}
                   />
                 ) : (
                   <CategoryIcon category={club.category} size={22} className="club-card-icon" />
                 )}
-                {bagEntry && (
-                  <span className="club-card-level-badge" data-role="level-text">Lv {bagEntry.level}</span>
+                {isSelected && (
+                  <Badge bg={accentColor} color="white" borderRadius="full" px="6px" py="2px" fontSize="0.75rem" fontWeight="bold">
+                    Lv {bagEntry.level}
+                  </Badge>
                 )}
-              </div>
-              <div className="club-card-name">{club.name}</div>
-              <div className="club-card-meta">
-                <span>{club.type || ''}</span>
-                <span>Tour {club.tour}</span>
-              </div>
-              {bagEntry && (
-                <LevelPicker club={club} level={bagEntry.level} onChange={(lvl) => handleSetLevel(club, lvl)} source="grid" />
+              </Flex>
+              <Text fontWeight="600" fontSize="0.95rem" color="var(--text-primary)" lineHeight="1.2">
+                {club.name}
+              </Text>
+              <Flex gap="6px" fontSize="0.75rem" color="var(--text-muted)" textTransform="uppercase" letterSpacing="0.05em">
+                <Text>{club.type || ''}</Text>
+                <Text>Tour {club.tour}</Text>
+              </Flex>
+              {isSelected && (
+                <Box mt="8px">
+                  <LevelPicker club={club} level={bagEntry.level} onChange={(lvl) => handleSetLevel(club, lvl)} source="grid" />
+                </Box>
               )}
-            </div>
+            </Flex>
           );
         })}
-      </div>
-    </section>
+      </Grid>
+    </Box>
   );
 }
