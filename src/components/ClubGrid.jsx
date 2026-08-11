@@ -27,7 +27,7 @@ export default function ClubGrid({ clubs, activeCategory, setActiveCategory, bag
   return (
     <Box as="section" className="picker-panel" aria-label="Club picker">
       <Flex direction="column" mb="16px">
-        <Flex gap="8px" overflowX="auto" pb="8px" role="tablist" aria-label="Club categories" css={{ '&::-webkit-scrollbar': { display: 'none' } }}>
+        <Flex gap="8px" wrap="wrap" pb="8px" role="tablist" aria-label="Club categories">
           {CATEGORY_ORDER.map(cat => {
             const isActive = activeCategory === cat;
             return (

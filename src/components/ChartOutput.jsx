@@ -163,16 +163,14 @@ export function ClubChartCard({ club, level, mode, settings, isFullscreen }) {
       borderTop={`4px solid ${accentColor}`}
       overflow="hidden"
       boxShadow="var(--shadow-sm)"
-      mb="16px"
       pageBreakInside="avoid"
       breakInside="avoid"
     >
-      <Flex className="club-chart-head" align="center" gap="12px" p="12px" bg="var(--surface-2)" borderBottom="1px solid var(--border)">
+      <Flex className="club-chart-head" align="center" gap="12px" bg="var(--surface-2)" borderBottom="1px solid var(--border)">
         <Image 
           src={getClubImageUrl(club.name, '64x64')} 
           alt="" 
-          w="32px" 
-          h="32px"
+          className="club-chart-img"
           objectFit="contain"
           onError={(e) => {
             e.target.style.display = 'none';
@@ -182,17 +180,14 @@ export function ClubChartCard({ club, level, mode, settings, isFullscreen }) {
         <Box display="none">
           <CategoryIcon category={club.category} size={32} />
         </Box>
-        <Flex direction="column" flex="1">
-          <Heading as="h4" m="0" fontSize="1.1rem" color="var(--text-primary)" lineHeight="1.2">{club.name}</Heading>
-          <Flex align="center" gap="8px" mt="2px">
-            <Text fontSize="0.85rem" fontWeight="600" color="var(--text-secondary)">Lv {level}</Text>
+        <Flex direction="column" flex="1" className="club-chart-titles">
+          <Heading as="h4" m="0" className="club-chart-name" color="var(--text-primary)" lineHeight="1.2">{club.name}</Heading>
+          <Flex align="center" gap="8px" mt="2px" className="club-chart-sub">
+            <Text color="var(--text-secondary)">Lv {level}</Text>
             <Flex 
               align="center" 
               gap="4px" 
-              fontSize="0.75rem" 
-              fontWeight="bold"
-              px="6px" 
-              py="2px"
+              className="acc-badge"
               borderRadius="12px"
               border="1px solid"
               borderColor={accColor}
@@ -207,19 +202,19 @@ export function ClubChartCard({ club, level, mode, settings, isFullscreen }) {
       
       {!isFullscreen ? (
         <>
-          <Box className="club-chart-table-wrap screen-only" overflowX="auto" p="12px">
+          <Box className="club-chart-table-wrap screen-only" overflowX="auto">
             {settings.variant === 'ring' ? (
               <WindTableRing club={club} level={level} mode={mode} elevation={settings.elevation} />
             ) : (
               <WindTableWind club={club} level={level} mode={mode} elevation={settings.elevation} windStep={settings.windStep} />
             )}
           </Box>
-          <Box className="club-chart-table-wrap print-only" p="12px">
+          <Box className="club-chart-table-wrap print-only">
             <PrintTable club={club} level={level} mode={mode} settings={settings} />
           </Box>
         </>
       ) : (
-        <Box className="club-chart-table-wrap" p="12px">
+        <Box className="club-chart-table-wrap">
           <PrintTable club={club} level={level} mode={mode} settings={settings} shorthandHeaders />
         </Box>
       )}
@@ -242,19 +237,12 @@ export default function ChartOutput({ bag, clubs, settings, isWidgetMode }) {
   if (isWidgetMode) {
     return (
       <Box className="fullscreen-body" mt="20px">
-        <Box 
-          display="grid" 
-          gridTemplateColumns="repeat(auto-fit, minmax(300px, 1fr))" 
-          gap="16px" 
-          alignItems="start"
-        >
-          {bag.map(entry => {
-            const club = clubs.find(c => c.id === entry.clubId);
-            if (!club) return null;
-            const level = Math.min(Math.max(entry.level, 1), club.maxLevel);
-            return <ClubChartCard key={club.id} club={club} level={level} mode={mode} settings={settings} isFullscreen />;
-          })}
-        </Box>
+        {bag.map(entry => {
+          const club = clubs.find(c => c.id === entry.clubId);
+          if (!club) return null;
+          const level = Math.min(Math.max(entry.level, 1), club.maxLevel);
+          return <ClubChartCard key={club.id} club={club} level={level} mode={mode} settings={settings} isFullscreen />;
+        })}
       </Box>
     );
   }
@@ -272,12 +260,13 @@ export default function ChartOutput({ bag, clubs, settings, isWidgetMode }) {
         </Box>
       )}
       
-      <Box className="chart-cards-grid" sx={{
-        '@media (min-width: 800px)': {
-          columnCount: 2,
-          columnGap: '16px',
-        }
-      }}>
+      <Box 
+        className="chart-cards-grid" 
+        display="grid" 
+        gridTemplateColumns="repeat(auto-fill, minmax(320px, 1fr))" 
+        gap="16px"
+        alignItems="start"
+      >
         {bag.map(entry => {
           const club = clubs.find(c => c.id === entry.clubId);
           if (!club) return null;
