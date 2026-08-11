@@ -1,4 +1,4 @@
-import { Flex, Grid } from "@chakra-ui/react";
+import { Grid } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import balls from "../data/balls";
 import {
