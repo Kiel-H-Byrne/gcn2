@@ -1,16 +1,20 @@
-import React from 'react';
-import { Box, Flex, Text, Heading, Image, Badge } from '@chakra-ui/react';
-import CategoryIcon from './CategoryIcon';
-import { accentVar, getClubImageUrl } from '../utils';
-import { WIND_MODES, buildWindPerRingTable, buildRingsPerWindTable } from '../lib/wind';
-import balls from '../data/balls';
+import { Box, Flex, Heading, Image, Text } from "@chakra-ui/react";
+import React from "react";
+import balls from "../data/balls";
+import {
+  WIND_MODES,
+  buildRingsPerWindTable,
+  buildWindPerRingTable,
+} from "../lib/wind";
+import { accentVar, getClubImageUrl } from "../utils";
+import CategoryIcon from "./CategoryIcon";
 
 function getAccuracyColor(acc) {
-  if (acc < 20) return '#dc2626'; // Dark Red
-  if (acc < 40) return '#ea580c'; // Orange
-  if (acc < 60) return '#eab308'; // Yellow
-  if (acc < 85) return '#3b82f6'; // Blue
-  return '#22c55e'; // Bright Green
+  if (acc < 20) return "#dc2626"; // Dark Red
+  if (acc < 40) return "#ea580c"; // Orange
+  if (acc < 60) return "#eab308"; // Yellow
+  if (acc < 85) return "#3b82f6"; // Blue
+  return "#22c55e"; // Bright Green
 }
 
 function ringShadeStyle(ringValue) {
@@ -23,10 +27,15 @@ function WindTableRing({ club, level, mode, elevation }) {
   return (
     <table className="wind-table">
       <thead>
-        <tr><th>Ring</th><th>Max</th><th>Mid</th><th>Min</th></tr>
+        <tr>
+          <th>Ring</th>
+          <th>Max</th>
+          <th>Mid</th>
+          <th>Min</th>
+        </tr>
       </thead>
       <tbody>
-        {rows.map(row => (
+        {rows.map((row) => (
           <tr key={row.ring}>
             <td>{row.ring}</td>
             <td style={ringShadeStyle(row.ring)}>{row.max.toFixed(1)}</td>
@@ -40,14 +49,23 @@ function WindTableRing({ club, level, mode, elevation }) {
 }
 
 function WindTableWind({ club, level, mode, elevation, windStep }) {
-  const rows = buildRingsPerWindTable(club, level, mode, elevation, { minWind: 1, maxWind: 16, step: windStep });
+  const rows = buildRingsPerWindTable(club, level, mode, elevation, {
+    minWind: 1,
+    maxWind: 16,
+    step: windStep,
+  });
   return (
     <table className="wind-table">
       <thead>
-        <tr><th>Wind</th><th>Max</th><th>Mid</th><th>Min</th></tr>
+        <tr>
+          <th>Wind</th>
+          <th>Max</th>
+          <th>Mid</th>
+          <th>Min</th>
+        </tr>
       </thead>
       <tbody>
-        {rows.map(row => (
+        {rows.map((row) => (
           <tr key={row.wind}>
             <td>{row.wind.toFixed(1)}</td>
             <td style={ringShadeStyle(row.max)}>{row.max.toFixed(1)}</td>
@@ -61,22 +79,34 @@ function WindTableWind({ club, level, mode, elevation, windStep }) {
 }
 
 function PrintTable({ club, level, mode, settings, shorthandHeaders }) {
-  const L_WIND = shorthandHeaders ? 'W' : 'Wind';
-  const L_RING = shorthandHeaders ? 'R' : 'Ring';
-  const L_MAX = shorthandHeaders ? 'Mx' : 'Max';
-  const L_MID = shorthandHeaders ? 'Md' : 'Mid';
-  const L_MIN = shorthandHeaders ? 'Mn' : 'Min';
+  const L_WIND = shorthandHeaders ? "W" : "Wind";
+  const L_RING = shorthandHeaders ? "R" : "Ring";
+  const L_MAX = shorthandHeaders ? "Mx" : "Max";
+  const L_MID = shorthandHeaders ? "Md" : "Mid";
+  const L_MIN = shorthandHeaders ? "Mn" : "Min";
 
-  if (settings.variant === 'ring') {
-    const rows = buildWindPerRingTable(club, level, mode, settings.elevation, 10);
+  if (settings.variant === "ring") {
+    const rows = buildWindPerRingTable(
+      club,
+      level,
+      mode,
+      settings.elevation,
+      10,
+    );
     const left = rows.slice(0, 5);
     const right = rows.slice(5, 10);
     return (
       <table className="wind-table wind-table-print">
         <thead>
           <tr>
-            <th>{L_RING}</th><th>{L_MAX}</th><th>{L_MID}</th><th>{L_MIN}</th>
-            <th className="print-split">{L_RING}</th><th>{L_MAX}</th><th>{L_MID}</th><th>{L_MIN}</th>
+            <th>{L_RING}</th>
+            <th>{L_MAX}</th>
+            <th>{L_MID}</th>
+            <th>{L_MIN}</th>
+            <th className="print-split">{L_RING}</th>
+            <th>{L_MAX}</th>
+            <th>{L_MID}</th>
+            <th>{L_MIN}</th>
           </tr>
         </thead>
         <tbody>
@@ -99,7 +129,11 @@ function PrintTable({ club, level, mode, settings, shorthandHeaders }) {
       </table>
     );
   } else {
-    const rows = buildRingsPerWindTable(club, level, mode, settings.elevation, { minWind: 1, maxWind: 16, step: settings.windStep });
+    const rows = buildRingsPerWindTable(club, level, mode, settings.elevation, {
+      minWind: 1,
+      maxWind: 16,
+      step: settings.windStep,
+    });
     const numCols = 4;
     const rowsPerCol = Math.ceil(rows.length / numCols);
     const cols = [];
@@ -112,8 +146,14 @@ function PrintTable({ club, level, mode, settings, shorthandHeaders }) {
           <tr>
             {cols.map((_, i) => (
               <React.Fragment key={`th-${i}`}>
-                {i > 0 ? <th className="print-split">{L_WIND}</th> : <th>{L_WIND}</th>}
-                <th>{L_MAX}</th><th>{L_MID}</th><th>{L_MIN}</th>
+                {i > 0 ? (
+                  <th className="print-split">{L_WIND}</th>
+                ) : (
+                  <th>{L_WIND}</th>
+                )}
+                <th>{L_MAX}</th>
+                <th>{L_MID}</th>
+                <th>{L_MIN}</th>
               </React.Fragment>
             ))}
           </tr>
@@ -127,16 +167,26 @@ function PrintTable({ club, level, mode, settings, shorthandHeaders }) {
                   return (
                     <React.Fragment key={`empty-${colIndex}`}>
                       <td className={colIndex > 0 ? "print-split" : ""}></td>
-                      <td></td><td></td><td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
                     </React.Fragment>
                   );
                 }
                 return (
                   <React.Fragment key={`cell-${colIndex}`}>
-                    <td className={colIndex > 0 ? "print-split" : ""}>{cell.wind.toFixed(1)}</td>
-                    <td style={ringShadeStyle(cell.max)}>{cell.max.toFixed(1)}</td>
-                    <td style={ringShadeStyle(cell.mid)}>{cell.mid.toFixed(1)}</td>
-                    <td style={ringShadeStyle(cell.min)}>{cell.min.toFixed(1)}</td>
+                    <td className={colIndex > 0 ? "print-split" : ""}>
+                      {cell.wind.toFixed(1)}
+                    </td>
+                    <td style={ringShadeStyle(cell.max)}>
+                      {cell.max.toFixed(1)}
+                    </td>
+                    <td style={ringShadeStyle(cell.mid)}>
+                      {cell.mid.toFixed(1)}
+                    </td>
+                    <td style={ringShadeStyle(cell.min)}>
+                      {cell.min.toFixed(1)}
+                    </td>
                   </React.Fragment>
                 );
               })}
@@ -152,75 +202,111 @@ export function ClubChartCard({ club, level, mode, settings, isFullscreen }) {
   const accuracy = club.accuracy[level - 1];
   const accColor = getAccuracyColor(accuracy);
   const accentColor = accentVar(club.category);
-  
+
   return (
-    <Box 
-      className="club-chart-card" 
-      style={{ '--chart-accent': accentColor }}
+    <Box
+      className="club-chart-card"
+      style={{ "--chart-accent": accentColor }}
       bg="var(--surface-1)"
       border="1px solid var(--border)"
       borderRadius="var(--radius-md)"
       borderTop={`4px solid ${accentColor}`}
       overflow="hidden"
       boxShadow="var(--shadow-sm)"
-      mb="16px"
       pageBreakInside="avoid"
       breakInside="avoid"
     >
-      <Flex className="club-chart-head" align="center" gap="12px" p="12px" bg="var(--surface-2)" borderBottom="1px solid var(--border)">
-        <Image 
-          src={getClubImageUrl(club.name, '64x64')} 
-          alt="" 
-          w="32px" 
-          h="32px"
+      <Flex
+        className="club-chart-head"
+        align="center"
+        gap="12px"
+        bg="var(--surface-2)"
+        borderBottom="1px solid var(--border)"
+      >
+        <Image
+          src={getClubImageUrl(club.name, "64x64")}
+          alt=""
+          className="club-chart-img"
           objectFit="contain"
           onError={(e) => {
-            e.target.style.display = 'none';
-            if (e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'block';
+            e.target.style.display = "none";
+            if (e.target.nextElementSibling)
+              e.target.nextElementSibling.style.display = "block";
           }}
         />
         <Box display="none">
           <CategoryIcon category={club.category} size={32} />
         </Box>
-        <Flex direction="column" flex="1">
-          <Heading as="h4" m="0" fontSize="1.1rem" color="var(--text-primary)" lineHeight="1.2">{club.name}</Heading>
-          <Flex align="center" gap="8px" mt="2px">
-            <Text fontSize="0.85rem" fontWeight="600" color="var(--text-secondary)">Lv {level}</Text>
-            <Flex 
-              align="center" 
-              gap="4px" 
-              fontSize="0.75rem" 
-              fontWeight="bold"
-              px="6px" 
-              py="2px"
+        <Flex direction="column" flex="1" className="club-chart-titles">
+          <Heading
+            as="h4"
+            m="0"
+            className="club-chart-name"
+            color="var(--text-primary)"
+            lineHeight="1.2"
+          >
+            {club.name}
+          </Heading>
+          <Flex align="center" gap="8px" mt="2px" className="club-chart-sub">
+            <Text color="var(--text-secondary)">Lv {level}</Text>
+            <Flex
+              align="center"
+              gap="4px"
+              className="acc-badge"
               borderRadius="12px"
               border="1px solid"
               borderColor={accColor}
               bg={`${accColor}15`}
             >
-              <Text as="span" color="var(--text-secondary)" fontWeight="normal">{isFullscreen ? 'Acc' : 'Accuracy'}</Text> 
-              <Text as="strong" color={accColor}>{accuracy}</Text>
+              <Text as="span" color="var(--text-secondary)" fontWeight="normal">
+                {isFullscreen ? "Acc" : "Accuracy"}
+              </Text>
+              <Text as="strong" color={accColor}>
+                {accuracy}
+              </Text>
             </Flex>
           </Flex>
         </Flex>
       </Flex>
-      
+
       {!isFullscreen ? (
         <>
-          <Box className="club-chart-table-wrap screen-only" overflowX="auto" p="12px">
-            {settings.variant === 'ring' ? (
-              <WindTableRing club={club} level={level} mode={mode} elevation={settings.elevation} />
+          <Box className="club-chart-table-wrap screen-only" overflowX="auto">
+            {settings.variant === "ring" ? (
+              <WindTableRing
+                club={club}
+                level={level}
+                mode={mode}
+                elevation={settings.elevation}
+              />
             ) : (
-              <WindTableWind club={club} level={level} mode={mode} elevation={settings.elevation} windStep={settings.windStep} />
+              <WindTableWind
+                club={club}
+                level={level}
+                mode={mode}
+                elevation={settings.elevation}
+                windStep={settings.windStep}
+              />
             )}
           </Box>
-          <Box className="club-chart-table-wrap print-only" p="12px">
-            <PrintTable club={club} level={level} mode={mode} settings={settings} />
+          <Box className="club-chart-table-wrap print-only">
+            <PrintTable
+              club={club}
+              level={level}
+              mode={mode}
+              settings={settings}
+            />
           </Box>
         </>
       ) : (
-        <Box className="club-chart-table-wrap" p="12px">
-          <PrintTable club={club} level={level} mode={mode} settings={settings} shorthandHeaders />
+        <Box className="club-chart-table-wrap">
+          <PrintTable
+            club={club}
+            level={level}
+            mode={mode}
+            settings={settings}
+            shorthandHeaders
+          />
         </Box>
       )}
     </Box>
@@ -230,31 +316,44 @@ export function ClubChartCard({ club, level, mode, settings, isFullscreen }) {
 export default function ChartOutput({ bag, clubs, settings, isWidgetMode }) {
   if (bag.length === 0) {
     return (
-      <Flex className="chart-empty" justify="center" align="center" p="32px" border="2px dashed var(--border)" borderRadius="var(--radius-lg)" color="var(--text-muted)" fontStyle="italic" bg="var(--surface-1)">
+      <Flex
+        className="chart-empty"
+        justify="center"
+        align="center"
+        p="32px"
+        border="2px dashed var(--border)"
+        borderRadius="var(--radius-lg)"
+        color="var(--text-muted)"
+        fontStyle="italic"
+        bg="var(--surface-1)"
+      >
         Add clubs to your bag to build a wind chart.
       </Flex>
     );
   }
 
-  const selectedBall = balls.find(b => b.name === settings.ballName) || balls[0];
+  const selectedBall =
+    balls.find((b) => b.name === settings.ballName) || balls[0];
   const mode = WIND_MODES[selectedBall.power] || WIND_MODES[0];
 
   if (isWidgetMode) {
     return (
       <Box className="fullscreen-body" mt="20px">
-        <Box 
-          display="grid" 
-          gridTemplateColumns="repeat(auto-fit, minmax(300px, 1fr))" 
-          gap="16px" 
-          alignItems="start"
-        >
-          {bag.map(entry => {
-            const club = clubs.find(c => c.id === entry.clubId);
-            if (!club) return null;
-            const level = Math.min(Math.max(entry.level, 1), club.maxLevel);
-            return <ClubChartCard key={club.id} club={club} level={level} mode={mode} settings={settings} isFullscreen />;
-          })}
-        </Box>
+        {bag.map((entry) => {
+          const club = clubs.find((c) => c.id === entry.clubId);
+          if (!club) return null;
+          const level = Math.min(Math.max(entry.level, 1), club.maxLevel);
+          return (
+            <ClubChartCard
+              key={club.id}
+              club={club}
+              level={level}
+              mode={mode}
+              settings={settings}
+              isFullscreen
+            />
+          );
+        })}
       </Box>
     );
   }
@@ -262,27 +361,52 @@ export default function ChartOutput({ bag, clubs, settings, isWidgetMode }) {
   return (
     <Box as="section" className="chart-output" mt="24px">
       {settings.title.trim() && (
-        <Heading as="h2" className="chart-title-banner" textAlign="center" mb="12px" fontSize="1.5rem" color="var(--text-primary)">
+        <Heading
+          as="h2"
+          className="chart-title-banner"
+          textAlign="center"
+          mb="12px"
+          fontSize="1.5rem"
+          color="var(--text-primary)"
+        >
           {settings.title.trim()}
         </Heading>
       )}
       {settings.notes?.trim() && (
-        <Box className="chart-notes-banner" bg="var(--surface-2)" p="12px" borderRadius="var(--radius-md)" border="1px solid var(--border-strong)" mb="24px" whiteSpace="pre-wrap" color="var(--text-secondary)">
+        <Box
+          className="chart-notes-banner"
+          bg="var(--surface-2)"
+          p="12px"
+          borderRadius="var(--radius-md)"
+          border="1px solid var(--border-strong)"
+          mb="24px"
+          whiteSpace="pre-wrap"
+          color="var(--text-secondary)"
+        >
           {settings.notes.trim()}
         </Box>
       )}
-      
-      <Box className="chart-cards-grid" sx={{
-        '@media (min-width: 800px)': {
-          columnCount: 2,
-          columnGap: '16px',
-        }
-      }}>
-        {bag.map(entry => {
-          const club = clubs.find(c => c.id === entry.clubId);
+
+      <Box
+        className="chart-cards-grid"
+        display="grid"
+        gridTemplateColumns="repeat(auto-fill, minmax(320px, 1fr))"
+        gap="16px"
+        alignItems="start"
+      >
+        {bag.map((entry) => {
+          const club = clubs.find((c) => c.id === entry.clubId);
           if (!club) return null;
           const level = Math.min(Math.max(entry.level, 1), club.maxLevel);
-          return <ClubChartCard key={club.id} club={club} level={level} mode={mode} settings={settings} />;
+          return (
+            <ClubChartCard
+              key={club.id}
+              club={club}
+              level={level}
+              mode={mode}
+              settings={settings}
+            />
+          );
         })}
       </Box>
     </Box>

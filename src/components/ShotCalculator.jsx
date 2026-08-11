@@ -1,4 +1,4 @@
-import { Flex } from "@chakra-ui/react";
+import { Grid } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import balls from "../data/balls";
 import {
@@ -335,22 +335,23 @@ export default function ShotCalculator({
               </svg>
             </div>
 
-            <Flex
+            <Grid
               className="hud-compass-inputs"
+              templateColumns="1fr 1fr"
               gap="16px"
-              justify="center"
-              align="center"
+              mt="16px"
             >
               <DialControl
                 label="Speed (mph)"
                 value={wind}
                 onChange={(val) => setWind(Number(val.toFixed(1)))}
                 min={0}
-                max={25}
+                max={30}
                 step={0.1}
                 unitsPerRotation={1}
                 formatValue={(v) => v.toFixed(1)}
               />
+
               <DialControl
                 label="Angle (&deg;)"
                 value={windAngle}
@@ -360,43 +361,35 @@ export default function ShotCalculator({
                   if (v < 0) v = (v % 360) + 360;
                   setWindAngle(Math.round(v));
                 }}
-                min={-Infinity} // allow infinite spinning to wrap
+                min={-Infinity}
                 max={Infinity}
                 step={1}
                 unitsPerRotation={360}
               />
-            </Flex>
+
+              <HalfDialControl
+                label="Distance"
+                value={distance}
+                onChange={setDistance}
+                min={0}
+                max={100}
+                step={1}
+                formatValue={(v) => `${v}%`}
+                tickLabels={["Min", "50%", "Max"]}
+              />
+
+              <HalfDialControl
+                label="Elevation"
+                value={elevation}
+                onChange={setElevation}
+                min={-50}
+                max={50}
+                step={10}
+                formatValue={(v) => `${v > 0 ? "+" : ""}${v}%`}
+                tickLabels={["-50%", "0", "+50%"]}
+              />
+            </Grid>
           </div>
-
-          <Flex
-            className="hud-sliders-row"
-            gap="24px"
-            justify="center"
-            align="center"
-            mt="16px"
-          >
-            <HalfDialControl
-              label="Distance"
-              value={distance}
-              onChange={setDistance}
-              min={0}
-              max={100}
-              step={1}
-              formatValue={(v) => `${v}%`}
-              tickLabels={["Min", "50%", "Max"]}
-            />
-
-            <HalfDialControl
-              label="Elevation"
-              value={elevation}
-              onChange={setElevation}
-              min={-50}
-              max={50}
-              step={10}
-              formatValue={(v) => `${v > 0 ? "+" : ""}${v}%`}
-              tickLabels={["-50%", "0", "+50%"]}
-            />
-          </Flex>
         </div>
 
         {/* Right Side: LED Screen & Target Vis */}
