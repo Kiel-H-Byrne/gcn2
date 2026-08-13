@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://gcn.kielbyrne.com/sitemap.xml

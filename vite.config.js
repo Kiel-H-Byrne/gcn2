@@ -21,12 +21,15 @@ export default defineConfig({
         enabled: true
       },
       manifest: {
-        name: 'The Caddie\'s Compass',
-        short_name: 'Compass',
-        description: 'A fast, tap-first tool for building a Golf Clash wind adjustment chart.',
+        name: 'The Caddie\'s Compass – Golf Clash Wind Chart Calculator',
+        short_name: 'GC Wind Chart',
+        description: 'Free Golf Clash wind chart calculator and ring adjustment tool. Build your bag, set club levels, and get instant wind adjustments for every club.',
         theme_color: '#0f172a',
         background_color: '#ffffff',
         display: 'standalone',
+        start_url: '/',
+        scope: '/',
+        categories: ['games', 'utilities'],
         icons: [
           {
             src: 'pwa-192x192.png',
@@ -37,6 +40,12 @@ export default defineConfig({
             src: 'pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png'
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
           }
         ]
       }
