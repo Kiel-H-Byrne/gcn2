@@ -210,31 +210,31 @@ export default function ShotCalculator({
 
   return (
     <section
-      className="shot-calculator hud-widget"
+      className={`shot-calculator hud-widget ${isWidgetMode ? "is-widget-mode" : ""}`}
       style={{ "--calc-accent": accentVar(club.category) }}
     >
-      <div className="calc-header">
-        <div className="calc-header-title">
-          <CategoryIcon
-            category={club.category}
-            size={20}
-            style={{ color: "var(--calc-accent)" }}
-          />
-          <h3>HUD: Quick Calculator</h3>
-        </div>
-        {!isWidgetMode && (
+      {!isWidgetMode && (
+        <div className="calc-header">
+          <div className="calc-header-title">
+            <CategoryIcon
+              category={club.category}
+              size={20}
+              style={{ color: "var(--calc-accent)" }}
+            />
+            <h3>HUD: Quick Calculator</h3>
+          </div>
           <p className="calc-header-subtitle">
             <strong>How to use:</strong> Drag the wind compass to simultaneously
             set angle & speed. Tweak distance/elevation below, and read your
             exact ring adjustment and counter-drag vector on the right.
           </p>
-        )}
-      </div>
+        </div>
+      )}
 
-      <div className="hud-grid">
-        {/* Left Side: Vector Compass & Sliders */}
-        <div className="hud-controls">
-          <div className="hud-club-bar">
+      {isWidgetMode ? (
+        <div className="hud-widget-compact">
+          {/* Row 1: Club and Ball Selection */}
+          <div className="hud-club-bar" style={{ paddingBottom: '4px', borderBottom: '1px solid var(--border)', marginBottom: '8px' }}>
             <div className="hud-club-buttons">
               {bag.map((b) => {
                 const c = clubs.find((cl) => cl.id === b.clubId);
@@ -251,9 +251,11 @@ export default function ShotCalculator({
                         : "var(--surface-2)",
                       color: isActive ? "#fff" : "var(--text-primary)",
                       border: `1px solid ${isActive ? "transparent" : "var(--border-strong)"}`,
+                      padding: "4px",
+                      minHeight: "36px"
                     }}
                   >
-                    <CategoryIcon category={c.category} size={16} />
+                    <CategoryIcon category={c.category} size={14} />
                     <span>{getClubAbbr(c.name)}</span>
                   </button>
                 );
@@ -266,6 +268,7 @@ export default function ShotCalculator({
                 setSettings({ ...settings, ballName: e.target.value })
               }
               className="hud-club-select"
+              style={{ padding: '4px 8px', fontSize: '0.8rem', height: '36px' }}
             >
               {balls.map((b) => (
                 <option key={b.name} value={b.name}>
@@ -275,9 +278,11 @@ export default function ShotCalculator({
             </select>
           </div>
 
-          <div className="hud-compass-row">
+          {/* Row 2: Compass SVG (Large, interactive, centered) */}
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '8px', width: '100%' }}>
             <div
               className="hud-compass-wrap"
+              style={{ width: '170px', height: '170px' }}
               title="Drag arrow to set Wind Angle & Speed"
             >
               <svg
@@ -286,6 +291,7 @@ export default function ShotCalculator({
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 className="hud-compass-svg"
+                style={{ width: '100%', height: '100%' }}
               >
                 <circle
                   cx="100"
@@ -334,41 +340,103 @@ export default function ShotCalculator({
                 <circle cx="100" cy="100" r="100" fill="transparent" />
               </svg>
             </div>
+          </div>
 
-            <Grid
-              className="hud-compass-inputs"
-              templateColumns="1fr 1fr"
-              gap="16px"
-              mt="16px"
-            >
-              <DialControl
-                label="Speed (mph)"
-                value={wind}
-                onChange={(val) => setWind(Number(val.toFixed(1)))}
-                min={0}
-                max={30}
-                step={0.1}
-                unitsPerRotation={1}
-                formatValue={(v) => v.toFixed(1)}
-              />
+          {/* Row 3: LED Ring Output on its own row (Large Target Rings SVG) */}
+          <div className="hud-results" style={{ width: '100%', marginBottom: '8px' }}>
+            <div className="calc-result hud-screen" style={{ padding: '8px 16px', borderRadius: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', gap: '16px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                  <div className="result-label" style={{ fontSize: '0.75rem', marginBottom: '4px', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Adjust Rings</div>
+                  <div className="result-value" style={{ fontSize: '2.5rem', fontWeight: 'bold', fontFamily: 'monospace', lineHeight: '1' }}>{displayRings}</div>
+                  {wind > 0 && (
+                    <div style={{ fontSize: "0.65rem", opacity: 0.8, textAlign: "center", marginTop: "8px", lineHeight: "1.2" }}>
+                      {sweCross > 0 && <div>SWE: {sweCross} sq {cwComponent > 0 ? "Left" : "Right"}</div>}
+                      {sweHead > 0 && <div>SWE: {sweHead} sq {isHeadwind ? "Push Up" : "Pull Back"}</div>}
+                    </div>
+                  )}
+                </div>
 
-              <DialControl
-                label="Angle (&deg;)"
-                value={windAngle}
-                onChange={(val) => {
-                  let v = val;
-                  if (v >= 360) v = v % 360;
-                  if (v < 0) v = (v % 360) + 360;
-                  setWindAngle(Math.round(v));
-                }}
-                min={-Infinity}
-                max={Infinity}
-                step={1}
-                unitsPerRotation={360}
-              />
+                <div className="hud-target-vis" style={{ padding: '0', width: '170px', height: '170px', flex: '0 0 170px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <svg viewBox={`0 0 ${svgSize} ${svgSize}`} style={{ width: '100%', height: '100%' }}>
+                    <defs>
+                      <clipPath id="rc">
+                        <circle cx={center} cy={center} r={center} />
+                      </clipPath>
+                    </defs>
+                    <g clipPath="url(#rc)">
+                      {renderedRings}
+                      <line
+                        x1="0"
+                        y1={center}
+                        x2={svgSize}
+                        y2={center}
+                        stroke="rgba(255,255,255,0.3)"
+                        strokeWidth={1 * scale}
+                      />
+                      <line
+                        x1={center}
+                        y1="0"
+                        x2={center}
+                        y2={svgSize}
+                        stroke="rgba(255,255,255,0.3)"
+                        strokeWidth={1 * scale}
+                      />
+                      <circle
+                        cx={targetX}
+                        cy={targetY}
+                        r={8 * scale}
+                        fill="var(--danger)"
+                        stroke="var(--surface-1)"
+                        strokeWidth={2 * scale}
+                      />
+                      <line
+                        x1={center}
+                        y1={center}
+                        x2={targetX}
+                        y2={targetY}
+                        stroke="var(--danger)"
+                        strokeWidth={2 * scale}
+                        strokeDasharray={`${4 * scale},${4 * scale}`}
+                      />
+                    </g>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
 
+          {/* Row 3: Dials in one row with Distance and Elevation form a split-circle */}
+          <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', gap: '8px', padding: '4px 0 8px' }}>
+            <DialControl
+              label="Speed"
+              value={wind}
+              onChange={(val) => setWind(Number(val.toFixed(1)))}
+              min={0}
+              max={30}
+              step={0.1}
+              unitsPerRotation={1}
+              formatValue={(v) => v.toFixed(1)}
+            />
+
+            <DialControl
+              label="Angle"
+              value={windAngle}
+              onChange={(val) => {
+                let v = val;
+                if (v >= 360) v = v % 360;
+                if (v < 0) v = (v % 360) + 360;
+                setWindAngle(Math.round(v));
+              }}
+              min={-Infinity}
+              max={Infinity}
+              step={1}
+              unitsPerRotation={360}
+            />
+
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
               <HalfDialControl
-                label="Distance"
+                label="Dist"
                 value={distance}
                 onChange={setDistance}
                 min={0}
@@ -376,10 +444,11 @@ export default function ShotCalculator({
                 step={1}
                 formatValue={(v) => `${v}%`}
                 tickLabels={["Min", "50%", "Max"]}
+                orientation="up"
+                hideTickLabels={true}
               />
-
               <HalfDialControl
-                label="Elevation"
+                label="Elev"
                 value={elevation}
                 onChange={setElevation}
                 min={-50}
@@ -387,84 +456,248 @@ export default function ShotCalculator({
                 step={10}
                 formatValue={(v) => `${v > 0 ? "+" : ""}${v}%`}
                 tickLabels={["-50%", "0", "+50%"]}
+                orientation="down"
+                hideTickLabels={true}
               />
-            </Grid>
-          </div>
-        </div>
-
-        {/* Right Side: LED Screen & Target Vis */}
-        <div className="hud-results">
-          <div className="calc-result hud-screen ">
-            <div className="result-label">Adjust Rings</div>
-            <div className="result-value">{displayRings}</div>
-            {wind > 0 && (
-              <div
-                style={{
-                  marginTop: "8px",
-                  fontSize: "0.75rem",
-                  opacity: 0.8,
-                  textAlign: "center",
-                }}
-              >
-                <div>
-                  {sweCross > 0 &&
-                    `SWE: ${sweCross} sq ${cwComponent > 0 ? "Left" : "Right"}`}
-                  <br />
-                </div>
-                <div>
-                  {sweHead > 0 &&
-                    `SWE: ${sweHead} sq ${isHeadwind ? "Push Up" : "Pull Back"}`}
-                </div>
-              </div>
-            )}
-            <div className="hud-target-vis">
-              <svg viewBox={`0 0 ${svgSize} ${svgSize}`}>
-                <defs>
-                  <clipPath id="rc">
-                    <circle cx={center} cy={center} r={center} />
-                  </clipPath>
-                </defs>
-                <g clipPath="url(#rc)">
-                  {renderedRings}
-                  <line
-                    x1="0"
-                    y1={center}
-                    x2={svgSize}
-                    y2={center}
-                    stroke="rgba(255,255,255,0.3)"
-                    strokeWidth={1 * scale}
-                  />
-                  <line
-                    x1={center}
-                    y1="0"
-                    x2={center}
-                    y2={svgSize}
-                    stroke="rgba(255,255,255,0.3)"
-                    strokeWidth={1 * scale}
-                  />
-                  <circle
-                    cx={targetX}
-                    cy={targetY}
-                    r={8 * scale}
-                    fill="var(--danger)"
-                    stroke="var(--surface-1)"
-                    strokeWidth={2 * scale}
-                  />
-                  <line
-                    x1={center}
-                    y1={center}
-                    x2={targetX}
-                    y2={targetY}
-                    stroke="var(--danger)"
-                    strokeWidth={2 * scale}
-                    strokeDasharray={`${4 * scale},${4 * scale}`}
-                  />
-                </g>
-              </svg>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="hud-grid">
+          {/* Left Side: Vector Compass & Sliders */}
+          <div className="hud-controls">
+            <div className="hud-club-bar">
+              <div className="hud-club-buttons">
+                {bag.map((b) => {
+                  const c = clubs.find((cl) => cl.id === b.clubId);
+                  if (!c) return null;
+                  const isActive = currentClubId === c.id;
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => setSelectedClubId(c.id)}
+                      style={{
+                        background: isActive
+                          ? accentVar(c.category)
+                          : "var(--surface-2)",
+                        color: isActive ? "#fff" : "var(--text-primary)",
+                        border: `1px solid ${isActive ? "transparent" : "var(--border-strong)"}`,
+                      }}
+                    >
+                      <CategoryIcon category={c.category} size={16} />
+                      <span>{getClubAbbr(c.name)}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <select
+                value={settings.ballName}
+                onChange={(e) =>
+                  setSettings({ ...settings, ballName: e.target.value })
+                }
+                className="hud-club-select"
+              >
+                {balls.map((b) => (
+                  <option key={b.name} value={b.name}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="hud-compass-row">
+              <div
+                className="hud-compass-wrap"
+                title="Drag arrow to set Wind Angle & Speed"
+              >
+                <svg
+                  viewBox="0 0 200 200"
+                  ref={compassRef}
+                  onPointerDown={handlePointerDown}
+                  onPointerMove={handlePointerMove}
+                  className="hud-compass-svg"
+                >
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="95"
+                    fill="none"
+                    stroke="var(--border-strong)"
+                    strokeWidth="2"
+                    strokeDasharray="4,4"
+                  />
+                  {compassRings}
+                  <line
+                    x1="100"
+                    y1="0"
+                    x2="100"
+                    y2="200"
+                    stroke="var(--gridline)"
+                    strokeWidth="2"
+                  />
+                  <line
+                    x1="0"
+                    y1="100"
+                    x2="200"
+                    y2="100"
+                    stroke="var(--gridline)"
+                    strokeWidth="2"
+                  />
+
+                  {/* Wind Vector Arrow */}
+                  <g transform={`rotate(${windAngle}, 100, 100)`}>
+                    <line
+                      x1="100"
+                      y1="100"
+                      x2="100"
+                      y2={100 - arrowLength + 10}
+                      stroke="var(--series-1)"
+                      strokeWidth="8"
+                      strokeLinecap="round"
+                    />
+                    <polygon
+                      points={`85,${100 - arrowLength + 15} 100,${100 - arrowLength - 5} 115,${100 - arrowLength + 15}`}
+                      fill="var(--series-1)"
+                    />
+                  </g>
+                  <circle cx="100" cy="100" r="6" fill="var(--text-primary)" />
+                  <circle cx="100" cy="100" r="100" fill="transparent" />
+                </svg>
+              </div>
+
+              <Grid
+                className="hud-compass-inputs"
+                templateColumns="1fr 1fr"
+                gap="16px"
+                mt="16px"
+              >
+                <DialControl
+                  label="Speed (mph)"
+                  value={wind}
+                  onChange={(val) => setWind(Number(val.toFixed(1)))}
+                  min={0}
+                  max={30}
+                  step={0.1}
+                  unitsPerRotation={1}
+                  formatValue={(v) => v.toFixed(1)}
+                />
+
+                <DialControl
+                  label="Angle (&deg;)"
+                  value={windAngle}
+                  onChange={(val) => {
+                    let v = val;
+                    if (v >= 360) v = v % 360;
+                    if (v < 0) v = (v % 360) + 360;
+                    setWindAngle(Math.round(v));
+                  }}
+                  min={-Infinity}
+                  max={Infinity}
+                  step={1}
+                  unitsPerRotation={360}
+                />
+
+                <HalfDialControl
+                  label="Distance"
+                  value={distance}
+                  onChange={setDistance}
+                  min={0}
+                  max={100}
+                  step={1}
+                  formatValue={(v) => `${v}%`}
+                  tickLabels={["Min", "50%", "Max"]}
+                />
+
+                <HalfDialControl
+                  label="Elevation"
+                  value={elevation}
+                  onChange={setElevation}
+                  min={-50}
+                  max={50}
+                  step={10}
+                  formatValue={(v) => `${v > 0 ? "+" : ""}${v}%`}
+                  tickLabels={["-50%", "0", "+50%"]}
+                />
+              </Grid>
+            </div>
+          </div>
+
+          {/* Right Side: LED Screen & Target Vis */}
+          <div className="hud-results">
+            <div className="calc-result hud-screen ">
+              <div className="result-label">Adjust Rings</div>
+              <div className="result-value">{displayRings}</div>
+              {wind > 0 && (
+                <div
+                  style={{
+                    marginTop: "8px",
+                    fontSize: "0.75rem",
+                    opacity: 0.8,
+                    textAlign: "center",
+                  }}
+                >
+                  <div>
+                    {sweCross > 0 &&
+                      `SWE: ${sweCross} sq ${cwComponent > 0 ? "Left" : "Right"}`}
+                    <br />
+                  </div>
+                  <div>
+                    {sweHead > 0 &&
+                      `SWE: ${sweHead} sq ${isHeadwind ? "Push Up" : "Pull Back"}`}
+                  </div>
+                </div>
+              )}
+              <div className="hud-target-vis">
+                <svg viewBox={`0 0 ${svgSize} ${svgSize}`}>
+                  <defs>
+                    <clipPath id="rc">
+                      <circle cx={center} cy={center} r={center} />
+                    </clipPath>
+                  </defs>
+                  <g clipPath="url(#rc)">
+                    {renderedRings}
+                    <line
+                      x1="0"
+                      y1={center}
+                      x2={svgSize}
+                      y2={center}
+                      stroke="rgba(255,255,255,0.3)"
+                      strokeWidth={1 * scale}
+                    />
+                    <line
+                      x1={center}
+                      y1="0"
+                      x2={center}
+                      y2={svgSize}
+                      stroke="rgba(255,255,255,0.3)"
+                      strokeWidth={1 * scale}
+                    />
+                    <circle
+                      cx={targetX}
+                      cy={targetY}
+                      r={8 * scale}
+                      fill="var(--danger)"
+                      stroke="var(--surface-1)"
+                      strokeWidth={2 * scale}
+                    />
+                    <line
+                      x1={center}
+                      y1={center}
+                      x2={targetX}
+                      y2={targetY}
+                      stroke="var(--danger)"
+                      strokeWidth={2 * scale}
+                      strokeDasharray={`${4 * scale},${4 * scale}`}
+                    />
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

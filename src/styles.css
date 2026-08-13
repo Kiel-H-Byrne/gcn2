@@ -2229,3 +2229,124 @@ table.wind-table-print td.print-split {
   padding: 0 4px;
   box-sizing: border-box;
 }
+
+/* ---------- Widget Tab Bar ---------- */
+.widget-tabs {
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  border: 1px solid var(--border);
+}
+
+.widget-tab {
+  flex: 1;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-radius: calc(var(--radius-sm) - 2px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.widget-tab:hover {
+  color: var(--text-secondary);
+}
+
+.widget-tab.is-active {
+  background: var(--surface-1);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.widget-tab-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  flex-shrink: 0;
+}
+
+.widget-tab-arrow:hover {
+  opacity: 1 !important;
+  color: var(--text-secondary);
+}
+
+/* ---------- Widget Dot Indicators ---------- */
+.widget-dots {
+  padding: 4px 0 2px;
+}
+
+.widget-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: var(--border);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.widget-dot.is-active {
+  width: 20px;
+  border-radius: 4px;
+  background: var(--accent, #3b82f6);
+}
+
+.widget-swipe-hint {
+  opacity: 0.6;
+  animation: widget-hint-fade 4s ease-out forwards;
+}
+
+@keyframes widget-hint-fade {
+  0%, 60% { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+/* ---------- Compact Widget Mode overrides ---------- */
+.shot-calculator.hud-widget.is-widget-mode {
+  padding: 4px 6px;
+  margin-top: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.hud-widget-compact {
+  padding: 2px;
+}
+
+.hud-widget-compact .hud-club-bar {
+  flex-wrap: nowrap !important;
+  justify-content: space-between !important;
+  overflow-x: auto;
+  gap: 4px !important;
+}
+
+.hud-widget-compact .hud-club-buttons {
+  gap: 3px !important;
+}
+
+.hud-widget-compact .hud-club-buttons button {
+  flex: 1 1 auto !important;
+  min-width: 40px !important;
+  padding: 3px 2px !important;
+}
+
+.hud-widget-compact .hud-club-select {
+  flex: 0 1 90px !important;
+  min-width: 75px !important;
+  font-size: 0.75rem !important;
+  padding: 4px 6px !important;
+}
+
+

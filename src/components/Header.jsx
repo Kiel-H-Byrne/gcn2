@@ -3,40 +3,45 @@ import { Maximize, X } from "lucide-react";
 
 export default function Header({ isWidgetMode, setIsWidgetMode, theme, setTheme }) {
   return (
-    <Box as="header" mb={isWidgetMode ? "8px" : "20px"}>
+    <Box as="header" mb={isWidgetMode ? "4px" : "20px"}>
       <Flex justify="space-between" align="center">
-        <Flex align="center" gap="10px">
-          <img src="/pwa-192x192.png" alt="The Caddie's Compass – Golf Clash Wind Chart Calculator" style={{ width: isWidgetMode ? "20px" : "32px", height: isWidgetMode ? "20px" : "32px", borderRadius: "50%" }} />
-          <Heading as="h1" fontSize={isWidgetMode ? "1.1rem" : "1.8rem"} fontFamily="'Playfair Display', serif" fontWeight="700" letterSpacing="-0.01em">
+        <Flex align="center" gap="8px">
+          <img src="/pwa-192x192.png" alt="The Caddie's Compass – Golf Clash Wind Chart Calculator" style={{ width: isWidgetMode ? "18px" : "32px", height: isWidgetMode ? "18px" : "32px", borderRadius: "50%" }} />
+          <Heading as="h1" fontSize={isWidgetMode ? "0.95rem" : "1.8rem"} fontFamily="'Playfair Display', serif" fontWeight="700" letterSpacing="-0.01em">
             <span aria-hidden="true">The Caddie's Compass</span>
             <span style={{ position: "absolute", width: "1px", height: "1px", padding: 0, margin: "-1px", overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap", border: 0 }}>
               Golf Clash Ring System Calculator – Wind Chart &amp; Ring Adjustments
             </span>
           </Heading>
         </Flex>
-        <Flex gap={isWidgetMode ? "4px" : "8px"} align="center">
+        <Flex gap="4px" align="center">
           <button
             type="button"
             className={`btn-ghost header-btn ${isWidgetMode ? "is-active" : ""}`}
             onClick={() => setIsWidgetMode(!isWidgetMode)}
-            title="Toggle Widget Mode (compact view for split-screen)"
+            title={isWidgetMode ? "Exit Widget Mode" : "Toggle Widget Mode (compact view for split-screen)"}
+            style={isWidgetMode ? { padding: "4px", borderRadius: "50%", minWidth: "28px", height: "28px", display: "flex", alignItems: "center", justifyContent: "center" } : undefined}
           >
             {isWidgetMode ? (
-              <X size={10} style={{ marginRight: "2px" }} />
+              <X size={16} />
             ) : (
-              <Maximize size={14} style={{ marginRight: "4px" }} />
+              <>
+                <Maximize size={14} style={{ marginRight: "4px" }} />
+                Widget
+              </>
             )}
-            {isWidgetMode ? "Exit Widget" : "Widget"}
           </button>
-          <select
-            value={theme}
-            onChange={(e) => setTheme(e.target.value)}
-            className="header-select"
-          >
-            <option value="system">Auto</option>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
+          {!isWidgetMode && (
+            <select
+              value={theme}
+              onChange={(e) => setTheme(e.target.value)}
+              className="header-select"
+            >
+              <option value="system">Auto</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          )}
         </Flex>
       </Flex>
       
