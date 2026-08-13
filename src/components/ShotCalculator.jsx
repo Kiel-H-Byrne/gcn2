@@ -337,12 +337,103 @@ export default function ShotCalculator({
                   />
                 </g>
                 <circle cx="100" cy="100" r="6" fill="var(--text-primary)" />
+
+                {/* Wind Value Badge */}
+                {wind > 0 && (() => {
+                  const rad = (windAngle * Math.PI) / 180;
+                  const radSide = rad + 0.6; // offset angle slightly to the side (approx 34 degrees)
+                  const bRadius = Math.max(30, Math.min(82, arrowLength + 15));
+                  const bX = 100 + bRadius * Math.sin(radSide);
+                  const bY = 100 - bRadius * Math.cos(radSide);
+                  return (
+                    <g transform={`translate(${bX}, ${bY})`} pointerEvents="none" style={{ filter: 'drop-shadow(0px 2px 3px rgba(0,0,0,0.4))' }}>
+                      <rect
+                        x="-20"
+                        y="-10"
+                        width="40"
+                        height="20"
+                        rx="5"
+                        fill="var(--surface-1)"
+                        stroke="var(--calc-accent, var(--accent, #3b82f6))"
+                        strokeWidth="1.5"
+                      />
+                      <text
+                        x="0"
+                        y="4.5"
+                        textAnchor="middle"
+                        fill="var(--text-primary)"
+                        fontSize="10"
+                        fontWeight="800"
+                        fontFamily="monospace"
+                      >
+                        {wind}
+                      </text>
+                    </g>
+                  );
+                })()}
+
                 <circle cx="100" cy="100" r="100" fill="transparent" />
               </svg>
             </div>
           </div>
 
-          {/* Row 3: LED Ring Output on its own row (Large Target Rings SVG) */}
+          {/* Row 3: Dials in one row with Distance and Elevation form a split-circle */}
+          <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', gap: '8px', padding: '4px 0 8px' }}>
+            <DialControl
+              label="Speed"
+              value={wind}
+              onChange={(val) => setWind(Number(val.toFixed(1)))}
+              min={0}
+              max={30}
+              step={0.1}
+              unitsPerRotation={1}
+              formatValue={(v) => v.toFixed(1)}
+            />
+
+            <DialControl
+              label="Angle"
+              value={windAngle}
+              onChange={(val) => {
+                let v = val;
+                if (v >= 360) v = v % 360;
+                if (v < 0) v = (v % 360) + 360;
+                setWindAngle(Math.round(v));
+              }}
+              min={-Infinity}
+              max={Infinity}
+              step={1}
+              unitsPerRotation={360}
+            />
+
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+              <HalfDialControl
+                label="Dist"
+                value={distance}
+                onChange={setDistance}
+                min={0}
+                max={100}
+                step={1}
+                formatValue={(v) => `${v}%`}
+                tickLabels={["Min", "50%", "Max"]}
+                orientation="up"
+                hideTickLabels={true}
+              />
+              <HalfDialControl
+                label="Elev"
+                value={elevation}
+                onChange={setElevation}
+                min={-50}
+                max={50}
+                step={10}
+                formatValue={(v) => `${v > 0 ? "+" : ""}${v}%`}
+                tickLabels={["-50%", "0", "+50%"]}
+                orientation="down"
+                hideTickLabels={true}
+              />
+            </div>
+          </div>
+
+          {/* Row 4: LED Ring Output on its own row (Large Target Rings SVG) */}
           <div className="hud-results" style={{ width: '100%', marginBottom: '8px' }}>
             <div className="calc-result hud-screen" style={{ padding: '8px 16px', borderRadius: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', gap: '16px' }}>
@@ -403,62 +494,6 @@ export default function ShotCalculator({
                   </svg>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Row 3: Dials in one row with Distance and Elevation form a split-circle */}
-          <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', gap: '8px', padding: '4px 0 8px' }}>
-            <DialControl
-              label="Speed"
-              value={wind}
-              onChange={(val) => setWind(Number(val.toFixed(1)))}
-              min={0}
-              max={30}
-              step={0.1}
-              unitsPerRotation={1}
-              formatValue={(v) => v.toFixed(1)}
-            />
-
-            <DialControl
-              label="Angle"
-              value={windAngle}
-              onChange={(val) => {
-                let v = val;
-                if (v >= 360) v = v % 360;
-                if (v < 0) v = (v % 360) + 360;
-                setWindAngle(Math.round(v));
-              }}
-              min={-Infinity}
-              max={Infinity}
-              step={1}
-              unitsPerRotation={360}
-            />
-
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-              <HalfDialControl
-                label="Dist"
-                value={distance}
-                onChange={setDistance}
-                min={0}
-                max={100}
-                step={1}
-                formatValue={(v) => `${v}%`}
-                tickLabels={["Min", "50%", "Max"]}
-                orientation="up"
-                hideTickLabels={true}
-              />
-              <HalfDialControl
-                label="Elev"
-                value={elevation}
-                onChange={setElevation}
-                min={-50}
-                max={50}
-                step={10}
-                formatValue={(v) => `${v > 0 ? "+" : ""}${v}%`}
-                tickLabels={["-50%", "0", "+50%"]}
-                orientation="down"
-                hideTickLabels={true}
-              />
             </div>
           </div>
         </div>
@@ -563,6 +598,41 @@ export default function ShotCalculator({
                     />
                   </g>
                   <circle cx="100" cy="100" r="6" fill="var(--text-primary)" />
+
+                  {/* Wind Value Badge */}
+                  {wind > 0 && (() => {
+                    const rad = (windAngle * Math.PI) / 180;
+                    const radSide = rad + 0.6; // offset angle slightly to the side (approx 34 degrees)
+                    const bRadius = Math.max(30, Math.min(82, arrowLength + 15));
+                    const bX = 100 + bRadius * Math.sin(radSide);
+                    const bY = 100 - bRadius * Math.cos(radSide);
+                    return (
+                      <g transform={`translate(${bX}, ${bY})`} pointerEvents="none" style={{ filter: 'drop-shadow(0px 2px 3px rgba(0,0,0,0.4))' }}>
+                        <rect
+                          x="-20"
+                          y="-10"
+                          width="40"
+                          height="20"
+                          rx="5"
+                          fill="var(--surface-1)"
+                          stroke="var(--calc-accent, var(--accent, #3b82f6))"
+                          strokeWidth="1.5"
+                        />
+                        <text
+                          x="0"
+                          y="4.5"
+                          textAnchor="middle"
+                          fill="var(--text-primary)"
+                          fontSize="10"
+                          fontWeight="800"
+                          fontFamily="monospace"
+                        >
+                          {wind}
+                        </text>
+                      </g>
+                    );
+                  })()}
+
                   <circle cx="100" cy="100" r="100" fill="transparent" />
                 </svg>
               </div>
