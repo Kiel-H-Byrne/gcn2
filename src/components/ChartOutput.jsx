@@ -295,6 +295,7 @@ export function ClubChartCard({ club, level, mode, settings, isFullscreen }) {
               level={level}
               mode={mode}
               settings={settings}
+              shorthandHeaders={true}
             />
           </Box>
         </>

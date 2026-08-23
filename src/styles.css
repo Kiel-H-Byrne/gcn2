@@ -1157,9 +1157,6 @@ select {
 /* ---------- Chart output ---------- */
 .chart-output {
   margin-top: 18px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 14px;
 }
 
 .chart-empty {
@@ -1780,15 +1777,57 @@ table.wind-table-print td.print-split {
     background: #fff;
   }
 
-  .app-header,
   .picker-panel,
   .bag-panel,
   .chart-controls,
   .hud-widget,
   .app-footer,
   .modal-overlay,
-  .fullscreen-overlay {
+  .bag-editor-overlay,
+  .no-print {
     display: none !important;
+  }
+
+  /* Fullscreen Overlay Print Flow */
+  body:has(.fullscreen-overlay) .app-header,
+  body:has(.fullscreen-overlay) .chart-title-banner,
+  body:has(.fullscreen-overlay) .chart-output {
+    display: none !important;
+  }
+
+  .fullscreen-overlay {
+    display: block !important;
+    position: static !important;
+    padding: 0 !important;
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .fullscreen-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    margin-bottom: 12px !important;
+  }
+
+  .fullscreen-close {
+    display: none !important;
+  }
+
+  .fullscreen-body {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px 14px !important;
+  }
+
+  .app-header h1 {
+    font-size: 1.25rem !important;
+    margin: 0 !important;
+  }
+
+  .app-header img {
+    width: 24px !important;
+    height: 24px !important;
   }
 
   .app {
@@ -1802,8 +1841,9 @@ table.wind-table-print td.print-split {
   }
 
   .chart-output {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 6px 14px;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px 14px !important;
   }
 
   .club-chart-card {
@@ -1811,18 +1851,18 @@ table.wind-table-print td.print-split {
     border: none;
     border-bottom: 1px solid #ccc;
     border-radius: 0;
-    padding: 4px 0;
+    padding: 2px 0;
   }
 
   .club-chart-head {
-    gap: 6px;
+    gap: 4px;
     margin-bottom: 2px;
   }
 
   .club-chart-icon,
   .club-chart-img {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
   }
 
   .club-chart-name {
@@ -1848,12 +1888,13 @@ table.wind-table-print td.print-split {
   }
 
   table.wind-table-print {
-    font-size: 0.62rem;
+    font-size: 0.58rem;
+    line-height: 1.15;
   }
 
   table.wind-table-print th,
   table.wind-table-print td {
-    padding: 1px 3px;
+    padding: 1px 2px;
   }
 
   table.wind-table-print thead th {
@@ -2347,6 +2388,63 @@ table.wind-table-print td.print-split {
   min-width: 75px !important;
   font-size: 0.75rem !important;
   padding: 4px 6px !important;
+}
+
+/* ---------- Bag Editor Modal ---------- */
+.bag-editor-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 20px;
+}
+
+.bag-editor-content {
+  background-color: var(--surface-1);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  max-width: 1100px;
+  width: 100%;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-3);
+  overflow: hidden;
+  animation: modalEnter 0.2s ease-out;
+}
+
+.bag-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.bag-editor-header h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.bag-editor-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.bag-editor-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-strong);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background-color: var(--surface-2);
 }
 
 

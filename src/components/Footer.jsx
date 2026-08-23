@@ -2,7 +2,7 @@ import { Box, Text, VStack } from "@chakra-ui/react";
 
 export default function Footer() {
   return (
-    <Box as="footer" mt="28px" color="var(--text-muted)" fontSize="0.76rem" lineHeight="1.5" textAlign="center">
+    <Box as="footer" className="app-footer" mt="28px" color="var(--text-muted)" fontSize="0.76rem" lineHeight="1.5" textAlign="center">
       <Text>
         Club power/accuracy data from the
         <a
