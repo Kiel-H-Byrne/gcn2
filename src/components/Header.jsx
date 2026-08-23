@@ -1,9 +1,18 @@
 import { Box, Flex, Heading, Text, VStack } from "@chakra-ui/react";
-import { Maximize, X } from "lucide-react";
+import { Maximize, TrendingUp, X } from "lucide-react";
 
-export default function Header({ isWidgetMode, setIsWidgetMode, theme, setTheme }) {
+export default function Header({
+  isWidgetMode,
+  setIsWidgetMode,
+  isBagEditingOpen,
+  setIsBagEditingOpen,
+  isReferenceOpen,
+  setIsReferenceOpen,
+  theme,
+  setTheme,
+}) {
   return (
-    <Box as="header" mb={isWidgetMode ? "4px" : "20px"}>
+    <Box as="header" className="app-header" mb={isWidgetMode ? "4px" : "20px"}>
       <Flex justify="space-between" align="center">
         <Flex align="center" gap="8px">
           <img src="/pwa-192x192.png" alt="The Caddie's Compass – Golf Clash Wind Chart Calculator" style={{ width: isWidgetMode ? "18px" : "32px", height: isWidgetMode ? "18px" : "32px", borderRadius: "50%" }} />
@@ -14,7 +23,28 @@ export default function Header({ isWidgetMode, setIsWidgetMode, theme, setTheme 
             </span>
           </Heading>
         </Flex>
-        <Flex gap="4px" align="center">
+        <Flex gap="4px" align="center" className="no-print">
+          {!isWidgetMode && (
+            <>
+              <button
+                type="button"
+                className={`btn-ghost header-btn ${isReferenceOpen ? "is-active" : ""}`}
+                onClick={() => setIsReferenceOpen(!isReferenceOpen)}
+                title="Toggle Ring Formula & Interactive Graph"
+              >
+                <TrendingUp size={14} style={{ marginRight: "4px" }} />
+                {isReferenceOpen ? "Hide Graph" : "Formula & Graph"}
+              </button>
+              <button
+                type="button"
+                className={`btn-ghost header-btn ${isBagEditingOpen ? "is-active" : ""}`}
+                onClick={() => setIsBagEditingOpen(!isBagEditingOpen)}
+                title="Toggle Club Picker & Bag Editor"
+              >
+                {isBagEditingOpen ? "Close Editor" : "Edit Bag"}
+              </button>
+            </>
+          )}
           <button
             type="button"
             className={`btn-ghost header-btn ${isWidgetMode ? "is-active" : ""}`}
@@ -46,7 +76,7 @@ export default function Header({ isWidgetMode, setIsWidgetMode, theme, setTheme 
       </Flex>
       
       {!isWidgetMode && (
-        <Box mt="12px" p="14px" bg="var(--surface-2)" borderRadius="8px" fontSize="0.9rem" color="var(--text-secondary)">
+        <Box mt="12px" p="14px" bg="var(--surface-2)" borderRadius="8px" fontSize="0.9rem" color="var(--text-secondary)" className="no-print">
           <Text mb="10px" fontWeight="bold" color="var(--text-primary)">
             How to use the ring system:
           </Text>
