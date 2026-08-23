@@ -9,6 +9,7 @@ import ClubGrid from "./components/ClubGrid";
 import Footer from "./components/Footer";
 import FullscreenOverlay from "./components/FullscreenOverlay";
 import Header from "./components/Header";
+import ReferenceGraph from "./components/ReferenceGraph";
 import ShotCalculator from "./components/ShotCalculator";
 import WidgetView from "./components/WidgetView";
 import { useApp } from "./hooks/useApp";
@@ -40,20 +41,38 @@ export default function App() {
   const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
   const [isWidgetMode, setIsWidgetMode] = useState(false);
   const [isBagEditingOpen, setIsBagEditingOpen] = useState(bag.length === 0);
+  const [isReferenceOpen, setIsReferenceOpen] = useState(false);
 
   return (
-    <Box maxW="1180px" mx="auto" p="20px 16px 48px" className="app">
+    <Box
+      maxW={isWidgetMode ? "100vw" : "1180px"}
+      mx="auto"
+      p={isWidgetMode ? "4px 6px" : "20px 16px 48px"}
+      className={`app ${isWidgetMode ? "is-widget-mode" : ""}`}
+    >
       <Header
         isWidgetMode={isWidgetMode}
         setIsWidgetMode={setIsWidgetMode}
         isBagEditingOpen={isBagEditingOpen}
         setIsBagEditingOpen={setIsBagEditingOpen}
+        isReferenceOpen={isReferenceOpen}
+        setIsReferenceOpen={setIsReferenceOpen}
         theme={theme}
         setTheme={setTheme}
       />
 
       {!isWidgetMode ? (
         <>
+          {isReferenceOpen && (
+            <Box mb="24px" className="no-print">
+              <ReferenceGraph
+                bag={bag}
+                clubs={clubs}
+                settings={settings}
+                savedProfiles={savedProfiles}
+              />
+            </Box>
+          )}
           {isBagEditingOpen && (
             <div className="bag-editor-overlay" role="dialog" aria-modal="true" aria-label="Edit Bag Clubs & Levels">
               <div className="bag-editor-content">
@@ -135,9 +154,12 @@ export default function App() {
       ) : (
         <WidgetView
           bag={bag}
+          setBag={setBag}
           clubs={clubs}
           settings={settings}
           setSettings={setSettings}
+          savedProfiles={savedProfiles}
+          setSavedProfiles={setSavedProfiles}
         />
       )}
 

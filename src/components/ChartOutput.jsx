@@ -339,7 +339,7 @@ export default function ChartOutput({ bag, clubs, settings, isWidgetMode }) {
 
   if (isWidgetMode) {
     return (
-      <Box className="fullscreen-body" mt="20px">
+      <Box className="fullscreen-body" mt="6px">
         {bag.map((entry) => {
           const club = clubs.find((c) => c.id === entry.clubId);
           if (!club) return null;

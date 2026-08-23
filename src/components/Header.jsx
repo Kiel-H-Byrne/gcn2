@@ -1,7 +1,16 @@
 import { Box, Flex, Heading, Text, VStack } from "@chakra-ui/react";
-import { Maximize, X } from "lucide-react";
+import { Maximize, TrendingUp, X } from "lucide-react";
 
-export default function Header({ isWidgetMode, setIsWidgetMode, isBagEditingOpen, setIsBagEditingOpen, theme, setTheme }) {
+export default function Header({
+  isWidgetMode,
+  setIsWidgetMode,
+  isBagEditingOpen,
+  setIsBagEditingOpen,
+  isReferenceOpen,
+  setIsReferenceOpen,
+  theme,
+  setTheme,
+}) {
   return (
     <Box as="header" className="app-header" mb={isWidgetMode ? "4px" : "20px"}>
       <Flex justify="space-between" align="center">
@@ -16,14 +25,25 @@ export default function Header({ isWidgetMode, setIsWidgetMode, isBagEditingOpen
         </Flex>
         <Flex gap="4px" align="center" className="no-print">
           {!isWidgetMode && (
-            <button
-              type="button"
-              className={`btn-ghost header-btn ${isBagEditingOpen ? "is-active" : ""}`}
-              onClick={() => setIsBagEditingOpen(!isBagEditingOpen)}
-              title="Toggle Club Picker & Bag Editor"
-            >
-              {isBagEditingOpen ? "Close Editor" : "Edit Bag"}
-            </button>
+            <>
+              <button
+                type="button"
+                className={`btn-ghost header-btn ${isReferenceOpen ? "is-active" : ""}`}
+                onClick={() => setIsReferenceOpen(!isReferenceOpen)}
+                title="Toggle Ring Formula & Interactive Graph"
+              >
+                <TrendingUp size={14} style={{ marginRight: "4px" }} />
+                {isReferenceOpen ? "Hide Graph" : "Formula & Graph"}
+              </button>
+              <button
+                type="button"
+                className={`btn-ghost header-btn ${isBagEditingOpen ? "is-active" : ""}`}
+                onClick={() => setIsBagEditingOpen(!isBagEditingOpen)}
+                title="Toggle Club Picker & Bag Editor"
+              >
+                {isBagEditingOpen ? "Close Editor" : "Edit Bag"}
+              </button>
+            </>
           )}
           <button
             type="button"

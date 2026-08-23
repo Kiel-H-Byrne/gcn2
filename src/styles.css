@@ -2242,19 +2242,53 @@ table.wind-table-print td.print-split {
   max-width: 180px;
 }
 
-/* ---------- Widget Swiper ---------- */
+/* ---------- Widget Viewport Constraints & Swiper ---------- */
+.app.is-widget-mode {
+  max-width: 100vw !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden !important;
+  padding: 4px 6px 2px !important;
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-sizing: border-box !important;
+}
+
+body:has(.is-widget-mode),
+html:has(.is-widget-mode) {
+  overflow: hidden !important;
+  height: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 .widget-view {
   width: 100%;
-  margin-top: 10px;
+  max-width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-top: 2px;
 }
 
 .widget-scroll-container {
   display: flex;
+  flex: 1;
+  min-height: 0;
   overflow-x: auto;
+  overflow-y: hidden;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   width: 100%;
+  max-width: 100%;
   scrollbar-width: none;
 }
 
@@ -2264,24 +2298,47 @@ table.wind-table-print td.print-split {
 
 .widget-screen {
   min-width: 100%;
+  max-width: 100%;
   width: 100%;
+  height: 100%;
   scroll-snap-align: center;
   flex: 0 0 100%;
   padding: 0 4px;
   box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }
 
 /* ---------- Widget Tab Bar ---------- */
 .widget-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   background: var(--surface-2);
   border-radius: var(--radius-sm);
   padding: 3px;
   border: 1px solid var(--border);
+  margin-bottom: 6px;
+}
+
+.widget-tabs-scroll {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.widget-tabs-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 .widget-tab {
-  flex: 1;
-  padding: 6px 12px;
+  flex: 0 0 auto;
+  padding: 5px 10px;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-muted);
@@ -2307,8 +2364,8 @@ table.wind-table-print td.print-split {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   padding: 0;
   background: none;
   border: none;
@@ -2316,11 +2373,42 @@ table.wind-table-print td.print-split {
   cursor: pointer;
   transition: opacity 0.2s ease;
   flex-shrink: 0;
+  border-radius: 4px;
 }
 
-.widget-tab-arrow:hover {
-  opacity: 1 !important;
-  color: var(--text-secondary);
+.widget-tab-arrow:disabled {
+  opacity: 0.25 !important;
+  cursor: not-allowed;
+}
+
+.widget-tab-arrow:not(:disabled):hover {
+  color: var(--text-primary);
+  background: var(--surface-1);
+}
+
+/* ---------- Widget Bag Screen ---------- */
+.widget-bag-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.widget-bag-load-btn {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  background: var(--surface-1);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.widget-bag-load-btn:hover {
+  background: var(--brand-primary);
+  color: white;
+  border-color: var(--brand-primary);
 }
 
 /* ---------- Widget Dot Indicators ---------- */
