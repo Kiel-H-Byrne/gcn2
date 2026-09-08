@@ -101,12 +101,12 @@ export default function WidgetView({
       });
     }
 
-    // Always include the Formula & Reference Graph quick-reference tab
+    // Always include the Reference Graph tab
     list.push({
       id: "quick-ref",
       type: "reference",
-      label: "Quick Ref",
-      title: "Ring Formula & Graph",
+      label: "Graph",
+      title: "Interactive Reference Graph",
     });
 
     return list;

@@ -1,4 +1,4 @@
-import { Grid } from "@chakra-ui/react";
+import { Box, Flex, Grid, Heading, Text } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import balls from "../data/balls";
 import {
@@ -214,21 +214,47 @@ export default function ShotCalculator({
       style={{ "--calc-accent": accentVar(club.category) }}
     >
       {!isWidgetMode && (
-        <div className="calc-header">
-          <div className="calc-header-title">
+        <Flex
+          justify="space-between"
+          align="center"
+          flexWrap="wrap"
+          gap="8px"
+          mb="10px"
+          pb="8px"
+          borderBottom="1px solid var(--border)"
+        >
+          <Flex align="center" gap="10px">
             <CategoryIcon
               category={club.category}
               size={20}
               style={{ color: "var(--calc-accent)" }}
             />
-            <h3>HUD: Quick Calculator</h3>
-          </div>
-          <p className="calc-header-subtitle">
-            <strong>How to use:</strong> Drag the wind compass to simultaneously
-            set angle & speed. Tweak distance/elevation below, and read your
-            exact ring adjustment and counter-drag vector on the right.
-          </p>
-        </div>
+            <Heading
+              as="h3"
+              fontSize="1.05rem"
+              fontWeight="700"
+              m="0"
+              color="var(--text-primary)"
+            >
+              Live Shot Calculator
+            </Heading>
+            <Box
+              bg="var(--surface-2)"
+              border="1px solid var(--border)"
+              px="8px"
+              py="2px"
+              borderRadius="10px"
+              fontSize="0.75rem"
+              color="var(--text-secondary)"
+              fontWeight="600"
+            >
+              {club.name} · Lv {level}
+            </Box>
+          </Flex>
+          <Text fontSize="0.75rem" color="var(--text-muted)" m="0">
+            🧭 Drag compass arrow to set wind angle &amp; speed
+          </Text>
+        </Flex>
       )}
 
       {isWidgetMode ? (

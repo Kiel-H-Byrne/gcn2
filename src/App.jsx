@@ -1,6 +1,6 @@
 import { Box, Grid } from "@chakra-ui/react";
-import { useState } from "react";
 import { X } from "lucide-react";
+import { useState } from "react";
 import BagPanel from "./components/BagPanel";
 import ChartControls from "./components/ChartControls";
 import ChartOutput from "./components/ChartOutput";
@@ -9,6 +9,7 @@ import ClubGrid from "./components/ClubGrid";
 import Footer from "./components/Footer";
 import FullscreenOverlay from "./components/FullscreenOverlay";
 import Header from "./components/Header";
+import PrintSheet from "./components/PrintSheet";
 import ReferenceGraph from "./components/ReferenceGraph";
 import ShotCalculator from "./components/ShotCalculator";
 import WidgetView from "./components/WidgetView";
@@ -59,6 +60,11 @@ export default function App() {
         setIsReferenceOpen={setIsReferenceOpen}
         theme={theme}
         setTheme={setTheme}
+        bag={bag}
+        setBag={setBag}
+        settings={settings}
+        setSettings={setSettings}
+        savedProfiles={savedProfiles}
       />
 
       {!isWidgetMode ? (
@@ -74,7 +80,12 @@ export default function App() {
             </Box>
           )}
           {isBagEditingOpen && (
-            <div className="bag-editor-overlay" role="dialog" aria-modal="true" aria-label="Edit Bag Clubs & Levels">
+            <div
+              className="bag-editor-overlay"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Edit Bag Clubs & Levels"
+            >
               <div className="bag-editor-content">
                 <div className="bag-editor-header">
                   <h2>Manage Bag Clubs &amp; Levels</h2>
@@ -83,7 +94,12 @@ export default function App() {
                     type="button"
                     aria-label="Close Bag Editor"
                     onClick={() => setIsBagEditingOpen(false)}
-                    style={{ border: "none", background: "transparent", cursor: "pointer", color: "var(--text-primary)" }}
+                    style={{
+                      border: "none",
+                      background: "transparent",
+                      cursor: "pointer",
+                      color: "var(--text-primary)",
+                    }}
                   >
                     <X size={20} />
                   </button>
@@ -121,7 +137,11 @@ export default function App() {
                     className="btn-primary"
                     type="button"
                     onClick={() => setIsBagEditingOpen(false)}
-                    style={{ padding: "8px 24px", borderRadius: "6px", fontWeight: "bold" }}
+                    style={{
+                      padding: "8px 24px",
+                      borderRadius: "6px",
+                      fontWeight: "bold",
+                    }}
                   >
                     Done
                   </button>
@@ -132,8 +152,12 @@ export default function App() {
 
           {bag.length > 0 && (
             <ChartControls
+              bag={bag}
+              setBag={setBag}
               settings={settings}
               setSettings={setSettings}
+              savedProfiles={savedProfiles}
+              setSavedProfiles={setSavedProfiles}
               openFullscreen={() => setIsFullscreenOpen(true)}
             />
           )}
@@ -187,6 +211,9 @@ export default function App() {
           onClose={() => setIsFullscreenOpen(false)}
         />
       )}
+
+      {/* Dedicated single-page, one-sided Print & PDF sheet */}
+      <PrintSheet bag={bag} clubs={clubs} settings={settings} />
     </Box>
   );
 }
