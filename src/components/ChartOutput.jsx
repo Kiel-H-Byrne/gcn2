@@ -361,32 +361,67 @@ export default function ChartOutput({ bag, clubs, settings, isWidgetMode }) {
 
   return (
     <Box as="section" className="chart-output" mt="24px">
-      {settings.title.trim() && (
-        <Heading
-          as="h2"
-          className="chart-title-banner"
-          textAlign="center"
-          mb="12px"
-          fontSize="1.5rem"
-          color="var(--text-primary)"
-        >
-          {settings.title.trim()}
-        </Heading>
-      )}
-      {settings.notes?.trim() && (
-        <Box
-          className="chart-notes-banner"
-          bg="var(--surface-2)"
-          p="12px"
-          borderRadius="var(--radius-md)"
-          border="1px solid var(--border-strong)"
-          mb="24px"
-          whiteSpace="pre-wrap"
-          color="var(--text-secondary)"
-        >
-          {settings.notes.trim()}
+      <Flex
+        justify="space-between"
+        align={{ base: "flex-start", sm: "center" }}
+        direction={{ base: "column", sm: "row" }}
+        gap="8px"
+        mb="16px"
+        pb="10px"
+        borderBottom="1px solid var(--border)"
+      >
+        <Box>
+          <Heading
+            as="h2"
+            fontSize="1.15rem"
+            fontWeight="700"
+            m="0"
+            color="var(--text-primary)"
+            display="flex"
+            alignItems="center"
+            gap="8px"
+          >
+            Wind Adjustment Charts
+            <Box
+              as="span"
+              bg="var(--surface-2)"
+              border="1px solid var(--border)"
+              px="8px"
+              py="2px"
+              borderRadius="12px"
+              fontSize="0.75rem"
+              color="var(--text-secondary)"
+              fontWeight="600"
+            >
+              {bag.length} clubs
+            </Box>
+          </Heading>
+          <Text fontSize="0.78rem" color="var(--text-muted)" m="2px 0 0">
+            {selectedBall.name} Ball (P{selectedBall.power}) ·{" "}
+            {settings.variant === "ring" ? "Wind per Ring" : "Rings per Wind"}
+            {Number(settings.elevation) !== 0
+              ? ` · ${Number(settings.elevation) > 0 ? "+" : ""}${settings.elevation}% Elev`
+              : ""}
+          </Text>
         </Box>
-      )}
+
+        {settings.notes?.trim() && (
+          <Box
+            bg="var(--surface-2)"
+            px="12px"
+            py="6px"
+            borderRadius="var(--radius-sm)"
+            border="1px solid var(--border)"
+            fontSize="0.78rem"
+            color="var(--text-secondary)"
+            maxW={{ base: "100%", sm: "420px" }}
+            whiteSpace="pre-wrap"
+            lineHeight="1.3"
+          >
+            <strong>Notes:</strong> {settings.notes.trim()}
+          </Box>
+        )}
+      </Flex>
 
       <Box
         className="chart-cards-grid"

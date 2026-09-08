@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
+import { Printer, X } from 'lucide-react';
 import { WIND_MODES } from '../lib/wind';
 import balls from '../data/balls';
 import { ClubChartCard } from './ChartOutput';
@@ -49,9 +49,20 @@ export default function FullscreenOverlay({ bag, clubs, settings, onClose }) {
             </p>
           )}
         </div>
-        <button className="icon-btn fullscreen-close" type="button" aria-label="Close full-screen view" onClick={onClose}>
-          <X size={26} />
-        </button>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <button
+            className="icon-btn"
+            type="button"
+            aria-label="Print / Save PDF"
+            onClick={() => window.print()}
+            title="Print / Save PDF"
+          >
+            <Printer size={22} />
+          </button>
+          <button className="icon-btn fullscreen-close" type="button" aria-label="Close full-screen view" onClick={onClose}>
+            <X size={26} />
+          </button>
+        </div>
       </div>
       <div className="fullscreen-body">
         {bag.map(entry => {

@@ -12,6 +12,7 @@ import Header from "./components/Header";
 import ReferenceGraph from "./components/ReferenceGraph";
 import ShotCalculator from "./components/ShotCalculator";
 import WidgetView from "./components/WidgetView";
+import PrintSheet from "./components/PrintSheet";
 import { useApp } from "./hooks/useApp";
 
 export default function App() {
@@ -59,6 +60,11 @@ export default function App() {
         setIsReferenceOpen={setIsReferenceOpen}
         theme={theme}
         setTheme={setTheme}
+        bag={bag}
+        setBag={setBag}
+        settings={settings}
+        setSettings={setSettings}
+        savedProfiles={savedProfiles}
       />
 
       {!isWidgetMode ? (
@@ -132,8 +138,12 @@ export default function App() {
 
           {bag.length > 0 && (
             <ChartControls
+              bag={bag}
+              setBag={setBag}
               settings={settings}
               setSettings={setSettings}
+              savedProfiles={savedProfiles}
+              setSavedProfiles={setSavedProfiles}
               openFullscreen={() => setIsFullscreenOpen(true)}
             />
           )}
@@ -187,6 +197,9 @@ export default function App() {
           onClose={() => setIsFullscreenOpen(false)}
         />
       )}
+
+      {/* Dedicated single-page, one-sided Print & PDF sheet */}
+      <PrintSheet bag={bag} clubs={clubs} settings={settings} />
     </Box>
   );
 }

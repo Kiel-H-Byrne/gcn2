@@ -67,6 +67,26 @@ export function useApp() {
   useEffect(() => writeJSON(STORAGE_KEYS.lastLevel, lastLevel), [lastLevel]);
   useEffect(() => writeJSON('gcwind.profiles', savedProfiles), [savedProfiles]);
 
+  // Auto-save: whenever bag or settings change, if active title matches a saved profile, auto-update it
+  useEffect(() => {
+    const profileName = settings.title?.trim();
+    if (!profileName) return;
+    setSavedProfiles((prev) => {
+      if (!prev || !prev[profileName]) return prev;
+      const current = prev[profileName];
+      const isBagSame = JSON.stringify(current.bag) === JSON.stringify(bag);
+      const isSettingsSame = JSON.stringify(current.settings) === JSON.stringify(settings);
+      if (isBagSame && isSettingsSame) return prev;
+      return {
+        ...prev,
+        [profileName]: {
+          bag,
+          settings: { ...settings, title: profileName },
+        },
+      };
+    });
+  }, [bag, settings]);
+
   // Theme hook
   useEffect(() => {
     localStorage.setItem('gcwind.theme', theme);
