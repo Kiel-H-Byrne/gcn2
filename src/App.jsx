@@ -1,6 +1,6 @@
 import { Box, Grid } from "@chakra-ui/react";
 import { X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import BagPanel from "./components/BagPanel";
 import ChartControls from "./components/ChartControls";
 import ChartOutput from "./components/ChartOutput";
@@ -47,6 +47,7 @@ export default function App() {
 
   useEffect(() => {
     initGA();
+    trackPageView();
   }, []);
 
   return (
