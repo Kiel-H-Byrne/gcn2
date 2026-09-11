@@ -13,49 +13,35 @@ let isInitialized = false;
 
 /**
  * Initialize Google Analytics 4
- * Injects the gtag.js script and sets up dataLayer if a measurement ID is available.
+ * Verifies or initializes the global gtag instance.
  */
 export function initGA(customMeasurementId) {
   if (typeof window === 'undefined') return;
 
-  const id = customMeasurementId || MEASUREMENT_ID;
+  const id = customMeasurementId || MEASUREMENT_ID || 'G-QH0JZRG9PR';
 
   if (isDev) {
     console.info(
-      `%c[GA4]%c Analytics initialized in dev mode. Measurement ID: ${id || '(None - logging only)'}`,
+      `%c[GA4]%c Analytics initialized. Tag ID: ${id}`,
       'background: #2563eb; color: #fff; font-weight: bold; padding: 2px 6px; border-radius: 4px;',
       'color: inherit;'
     );
   }
 
-  if (!id) {
-    // If no ID is provided, we can still record/log events gracefully
-    return;
-  }
-
   if (isInitialized) return;
 
   try {
-    // Initialize dataLayer and gtag wrapper
+    // Ensure dataLayer and gtag exist
     window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      window.dataLayer.push(arguments);
+    if (typeof window.gtag !== 'function') {
+      window.gtag = function () {
+        window.dataLayer.push(arguments);
+      };
     }
-    window.gtag = window.gtag || gtag;
 
-    gtag('js', new Date());
-
-    // Configure GA4 stream
-    gtag('config', id, {
-      send_page_view: false, // We curate manual virtual page views
-      debug_mode: isDev,
-      anonymize_ip: true,
-      cookie_flags: 'SameSite=None;Secure',
-    });
-
-    // Check if script tag is already in DOM
+    // Check if script tag is in DOM; if not (e.g. standalone test), inject standard tag
     const existingScript = document.querySelector(`script[src*="googletagmanager.com/gtag/js"]`);
-    if (!existingScript) {
+    if (!existingScript && id) {
       const script = document.createElement('script');
       script.async = true;
       script.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
@@ -65,6 +51,9 @@ export function initGA(customMeasurementId) {
         }
       };
       document.head.appendChild(script);
+
+      window.gtag('js', new Date());
+      window.gtag('config', id);
     }
 
     isInitialized = true;
