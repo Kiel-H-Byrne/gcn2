@@ -9,6 +9,7 @@ import {
 } from "../utils";
 import CategoryIcon from "./CategoryIcon";
 import LevelPicker from "./LevelPicker";
+import { trackClubSelect, trackClubLevelChange } from "../lib/analytics";
 
 export default function ClubGrid({
   clubs,
@@ -29,11 +30,23 @@ export default function ClubGrid({
       : club.maxLevel;
     setBag([...bag, { clubId: club.id, level: suggested }]);
     setLastLevel(suggested);
+    trackClubSelect({
+      category: club.category,
+      clubId: club.id,
+      clubName: club.name,
+      level: suggested,
+    });
   };
 
   const handleSetLevel = (club, level) => {
     setBag(bag.map((b) => (b.clubId === club.id ? { ...b, level } : b)));
     setLastLevel(level);
+    trackClubLevelChange({
+      category: club.category,
+      clubId: club.id,
+      clubName: club.name,
+      level,
+    });
   };
 
   const categoryClubs = clubs.filter((c) => c.category === activeCategory);

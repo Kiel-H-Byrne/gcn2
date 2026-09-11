@@ -12,6 +12,12 @@ import {
 import { Briefcase, Check, Edit2, Maximize, Wind } from "lucide-react";
 import { useState } from "react";
 import balls from "../data/balls";
+import {
+  trackChartVariantChange,
+  trackPrintSheet,
+  trackProfileLoad,
+  trackProfileSave,
+} from "../lib/analytics";
 
 export default function ChartControls({
   bag = [],
@@ -47,6 +53,7 @@ export default function ChartControls({
     }
     setIsRenaming(false);
     setIsCreatingNew(false);
+    trackProfileLoad(name);
   };
 
   const handleCreateProfile = (name) => {
@@ -62,6 +69,7 @@ export default function ChartControls({
     if (setSettings) setSettings(newSettings);
     setNewProfileName("");
     setIsCreatingNew(false);
+    trackProfileSave(trimmed, bag.length);
   };
 
   const handleRenameActiveProfile = (newName) => {
@@ -159,7 +167,14 @@ export default function ChartControls({
           </Button>
           <Button
             size="sm"
-            onClick={() => window.print()}
+            onClick={() => {
+              trackPrintSheet({
+                bagSize: bag.length,
+                ballName: settings.ballName,
+                variant: settings.variant,
+              });
+              window.print();
+            }}
             display="flex"
             alignItems="center"
             gap="6px"
@@ -412,7 +427,10 @@ export default function ChartControls({
               variant="ghost"
               role="tab"
               aria-selected={settings.variant === "ring"}
-              onClick={() => setSettings({ ...settings, variant: "ring" })}
+              onClick={() => {
+                setSettings({ ...settings, variant: "ring" });
+                trackChartVariantChange("ring");
+              }}
               bg={
                 settings.variant === "ring" ? "var(--surface-1)" : "transparent"
               }
@@ -441,7 +459,10 @@ export default function ChartControls({
               variant="ghost"
               role="tab"
               aria-selected={settings.variant === "wind"}
-              onClick={() => setSettings({ ...settings, variant: "wind" })}
+              onClick={() => {
+                setSettings({ ...settings, variant: "wind" });
+                trackChartVariantChange("wind");
+              }}
               bg={
                 settings.variant === "wind" ? "var(--surface-1)" : "transparent"
               }

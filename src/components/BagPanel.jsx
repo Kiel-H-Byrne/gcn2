@@ -4,6 +4,15 @@ import { Check, Edit2, Plus, Trash2, X } from 'lucide-react';
 import CategoryIcon from './CategoryIcon';
 import { accentVar, slugifyClubName } from '../utils';
 import LevelPicker from './LevelPicker';
+import {
+  trackClubRemove,
+  trackBagClear,
+  trackBagShare,
+  trackClubLevelChange,
+  trackProfileSave,
+  trackProfileLoad,
+  trackProfileDelete,
+} from '../lib/analytics';
 
 export default function BagPanel({
   bag,
@@ -24,33 +33,52 @@ export default function BagPanel({
   const [newProfileName, setNewProfileName] = useState('');
 
   const handleRemove = (clubId) => {
-    setBag(bag.filter(b => b.clubId !== clubId));
+    const club = clubs.find((c) => c.id === clubId);
+    setBag(bag.filter((b) => b.clubId !== clubId));
+    trackClubRemove({
+      category: club?.category,
+      clubId,
+      clubName: club?.name,
+    });
   };
 
   const handleClear = () => {
     if (bag.length && window.confirm('Clear all clubs from your bag?')) {
+      const prevCount = bag.length;
       setBag([]);
+      trackBagClear(prevCount);
     }
   };
 
   const [copied, setCopied] = useState(false);
   const handleShare = () => {
     if (!bag.length) return;
-    const readable = bag.map(b => {
-      const c = clubs.find(cl => cl.id === b.clubId);
-      return c ? `${slugifyClubName(c.name)}${b.level}` : '';
-    }).filter(Boolean).join('-');
+    const readable = bag
+      .map((b) => {
+        const c = clubs.find((cl) => cl.id === b.clubId);
+        return c ? `${slugifyClubName(c.name)}${b.level}` : '';
+      })
+      .filter(Boolean)
+      .join('-');
     const url = new URL(window.location.href);
     url.searchParams.set('bag', readable);
     navigator.clipboard.writeText(url.toString()).then(() => {
       setCopied(true);
+      trackBagShare('clipboard', bag.length);
       setTimeout(() => setCopied(false), 2000);
     });
   };
 
   const handleSetLevel = (clubId, level) => {
-    setBag(bag.map(b => b.clubId === clubId ? { ...b, level } : b));
+    const club = clubs.find((c) => c.id === clubId);
+    setBag(bag.map((b) => (b.clubId === clubId ? { ...b, level } : b)));
     setLastLevel(level);
+    trackClubLevelChange({
+      category: club?.category,
+      clubId,
+      clubName: club?.name,
+      level,
+    });
   };
 
   const handleSelectProfile = (name) => {
@@ -59,6 +87,7 @@ export default function BagPanel({
       setSettings(savedProfiles[name].settings || { ...settings, title: name });
       setIsRenaming(false);
       setIsCreatingNew(false);
+      trackProfileLoad(name);
     }
   };
 
@@ -66,13 +95,14 @@ export default function BagPanel({
     const trimmed = name.trim();
     if (!trimmed || bag.length === 0) return;
     const newSettings = { ...settings, title: trimmed };
-    setSavedProfiles(prev => ({
+    setSavedProfiles((prev) => ({
       ...prev,
-      [trimmed]: { bag, settings: newSettings }
+      [trimmed]: { bag, settings: newSettings },
     }));
     setSettings(newSettings);
     setNewProfileName('');
     setIsCreatingNew(false);
+    trackProfileSave(trimmed, bag.length);
   };
 
   const handleRenameActiveProfile = (newName) => {
@@ -81,7 +111,7 @@ export default function BagPanel({
       setIsRenaming(false);
       return;
     }
-    setSavedProfiles(prev => {
+    setSavedProfiles((prev) => {
       const next = { ...prev };
       if (activeProfileName && next[activeProfileName]) {
         delete next[activeProfileName];
@@ -89,17 +119,18 @@ export default function BagPanel({
       next[trimmed] = { bag, settings: { ...settings, title: trimmed } };
       return next;
     });
-    setSettings(prev => ({ ...prev, title: trimmed }));
+    setSettings((prev) => ({ ...prev, title: trimmed }));
     setIsRenaming(false);
   };
 
   const handleDeleteProfile = (name) => {
     if (!window.confirm(`Delete profile "${name}"?`)) return;
-    setSavedProfiles(prev => {
+    setSavedProfiles((prev) => {
       const next = { ...prev };
       delete next[name];
       return next;
     });
+    trackProfileDelete(name);
     if (activeProfileName === name) {
       const remaining = Object.keys(savedProfiles).filter(k => k !== name);
       if (remaining.length > 0) {

@@ -12,6 +12,7 @@ import { accentVar } from "../utils";
 import CategoryIcon from "./CategoryIcon";
 import DialControl from "./DialControl";
 import HalfDialControl from "./HalfDialControl";
+import { trackShotCalculate } from "../lib/analytics";
 
 export default function ShotCalculator({
   bag,
@@ -82,6 +83,20 @@ export default function ShotCalculator({
 
   const rings = effectiveWind / wpr;
   const displayRings = wind && !isNaN(rings) ? rings.toFixed(2) : "0.00";
+
+  useEffect(() => {
+    if (!club || !wind || isNaN(rings) || rings <= 0) return;
+    const timer = setTimeout(() => {
+      trackShotCalculate({
+        clubName: club.name,
+        windSpeed: Number(wind),
+        elevation,
+        ballPower: selectedBall.power,
+        ringsResult: Number(displayRings),
+      });
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, [club?.name, wind, elevation, selectedBall?.power, displayRings]);
 
   const angleRad = (windAngle * Math.PI) / 180;
   const cwComponent = effectiveWind * Math.sin(angleRad);

@@ -1,6 +1,12 @@
 import { Box, Flex, Heading, Text, Grid } from "@chakra-ui/react";
 import { Briefcase, Info, Maximize, TrendingUp, X } from "lucide-react";
 import React, { useState } from "react";
+import {
+  trackGuideToggle,
+  trackReferenceToggle,
+  trackViewModeChange,
+  trackThemeChange,
+} from "../lib/analytics";
 
 export default function Header({
   isWidgetMode,
@@ -28,6 +34,7 @@ export default function Header({
   const handleToggleGuide = () => {
     setIsGuideOpen((prev) => {
       const next = !prev;
+      trackGuideToggle(next);
       try {
         if (!next) {
           localStorage.setItem("gcwind.guideDismissed", "true");
@@ -98,7 +105,11 @@ export default function Header({
               <button
                 type="button"
                 className={`btn-ghost header-btn ${isReferenceOpen ? "is-active" : ""}`}
-                onClick={() => setIsReferenceOpen(!isReferenceOpen)}
+                onClick={() => {
+                  const next = !isReferenceOpen;
+                  setIsReferenceOpen(next);
+                  trackReferenceToggle(next);
+                }}
                 title={isReferenceOpen ? "Hide Graph" : "Interactive Reference Graph"}
                 aria-label={isReferenceOpen ? "Hide Graph" : "Graph"}
               >
@@ -126,7 +137,11 @@ export default function Header({
           <button
             type="button"
             className={`btn-ghost header-btn ${isWidgetMode ? "is-active" : ""}`}
-            onClick={() => setIsWidgetMode(!isWidgetMode)}
+            onClick={() => {
+              const next = !isWidgetMode;
+              setIsWidgetMode(next);
+              trackViewModeChange(next ? "widget" : "standard");
+            }}
             title={isWidgetMode ? "Exit Widget Mode" : "Toggle Widget Mode (compact view)"}
             aria-label={isWidgetMode ? "Exit Widget Mode" : "Widget Mode"}
             style={
@@ -156,7 +171,10 @@ export default function Header({
           {!isWidgetMode && (
             <select
               value={theme}
-              onChange={(e) => setTheme(e.target.value)}
+              onChange={(e) => {
+                setTheme(e.target.value);
+                trackThemeChange(e.target.value);
+              }}
               className="header-select"
               title="Theme Selection"
               aria-label="Theme Selection"
