@@ -1,6 +1,6 @@
 import { Box, Grid } from "@chakra-ui/react";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BagPanel from "./components/BagPanel";
 import ChartControls from "./components/ChartControls";
 import ChartOutput from "./components/ChartOutput";
@@ -14,6 +14,7 @@ import ReferenceGraph from "./components/ReferenceGraph";
 import ShotCalculator from "./components/ShotCalculator";
 import WidgetView from "./components/WidgetView";
 import { useApp } from "./hooks/useApp";
+import { initGA, trackPageView, trackViewModeChange } from "./lib/analytics";
 
 export default function App() {
   const {
@@ -43,6 +44,11 @@ export default function App() {
   const [isWidgetMode, setIsWidgetMode] = useState(false);
   const [isBagEditingOpen, setIsBagEditingOpen] = useState(bag.length === 0);
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
+
+  useEffect(() => {
+    initGA();
+    trackPageView();
+  }, []);
 
   return (
     <Box
@@ -158,7 +164,10 @@ export default function App() {
               setSettings={setSettings}
               savedProfiles={savedProfiles}
               setSavedProfiles={setSavedProfiles}
-              openFullscreen={() => setIsFullscreenOpen(true)}
+              openFullscreen={() => {
+                setIsFullscreenOpen(true);
+                trackViewModeChange("fullscreen");
+              }}
             />
           )}
 
@@ -208,7 +217,10 @@ export default function App() {
           bag={bag}
           clubs={clubs}
           settings={settings}
-          onClose={() => setIsFullscreenOpen(false)}
+          onClose={() => {
+            setIsFullscreenOpen(false);
+            trackViewModeChange(isWidgetMode ? "widget" : "standard");
+          }}
         />
       )}
 
