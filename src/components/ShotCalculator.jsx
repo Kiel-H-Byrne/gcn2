@@ -84,6 +84,71 @@ export default function ShotCalculator({
   const rings = effectiveWind / wpr;
   const displayRings = wind && !isNaN(rings) ? rings.toFixed(2) : "0.00";
 
+  const handleClubSelect = (c) => {
+    setSelectedClubId(c.id);
+    trackCalculatorUsed({
+      interactionType: "club_switch",
+      clubName: c.name,
+      windSpeed: wind,
+      elevation,
+    });
+  };
+
+  const handleBallSelect = (ballName) => {
+    setSettings({ ...settings, ballName });
+    trackCalculatorUsed({
+      interactionType: "ball_change",
+      clubName: club?.name,
+      windSpeed: wind,
+      elevation,
+    });
+  };
+
+  const handleSpeedDialChange = (val) => {
+    const rounded = Number(val.toFixed(1));
+    setWind(rounded);
+    trackCalculatorUsed({
+      interactionType: "dial_speed",
+      clubName: club?.name,
+      windSpeed: rounded,
+      elevation,
+    });
+  };
+
+  const handleAngleDialChange = (val) => {
+    let v = val;
+    if (v >= 360) v = v % 360;
+    if (v < 0) v = (v % 360) + 360;
+    const roundedAngle = Math.round(v);
+    setWindAngle(roundedAngle);
+    trackCalculatorUsed({
+      interactionType: "dial_angle",
+      clubName: club?.name,
+      windSpeed: wind,
+      elevation,
+    });
+  };
+
+  const handleDistanceDialChange = (val) => {
+    setDistance(val);
+    trackCalculatorUsed({
+      interactionType: "dial_distance",
+      clubName: club?.name,
+      windSpeed: wind,
+      elevation,
+    });
+  };
+
+  const handleElevationDialChange = (val) => {
+    setElevation(val);
+    trackCalculatorUsed({
+      interactionType: "dial_elevation",
+      clubName: club?.name,
+      windSpeed: wind,
+      elevation: val,
+    });
+  };
+
   useEffect(() => {
     if (!club || !wind || isNaN(rings) || rings <= 0) return;
     const timer = setTimeout(() => {
@@ -295,7 +360,7 @@ export default function ShotCalculator({
                   <button
                     key={c.id}
                     type="button"
-                    onClick={() => setSelectedClubId(c.id)}
+                    onClick={() => handleClubSelect(c)}
                     style={{
                       background: isActive
                         ? accentVar(c.category)
@@ -303,7 +368,7 @@ export default function ShotCalculator({
                       color: isActive ? "#fff" : "var(--text-primary)",
                       border: `1px solid ${isActive ? "transparent" : "var(--border-strong)"}`,
                       padding: "4px",
-                      minHeight: "36px"
+                      minHeight: "36px",
                     }}
                   >
                     <CategoryIcon category={c.category} size={14} />
@@ -315,11 +380,9 @@ export default function ShotCalculator({
 
             <select
               value={settings.ballName}
-              onChange={(e) =>
-                setSettings({ ...settings, ballName: e.target.value })
-              }
+              onChange={(e) => handleBallSelect(e.target.value)}
               className="hud-club-select"
-              style={{ padding: '4px 8px', fontSize: '0.8rem', height: '36px' }}
+              style={{ padding: "4px 8px", fontSize: "0.8rem", height: "36px" }}
             >
               {balls.map((b) => (
                 <option key={b.name} value={b.name}>
@@ -433,7 +496,7 @@ export default function ShotCalculator({
             <DialControl
               label="Speed"
               value={wind}
-              onChange={(val) => setWind(Number(val.toFixed(1)))}
+              onChange={handleSpeedDialChange}
               min={0}
               max={30}
               step={0.1}
@@ -444,12 +507,7 @@ export default function ShotCalculator({
             <DialControl
               label="Angle"
               value={windAngle}
-              onChange={(val) => {
-                let v = val;
-                if (v >= 360) v = v % 360;
-                if (v < 0) v = (v % 360) + 360;
-                setWindAngle(Math.round(v));
-              }}
+              onChange={handleAngleDialChange}
               min={-Infinity}
               max={Infinity}
               step={1}
@@ -460,7 +518,7 @@ export default function ShotCalculator({
               <HalfDialControl
                 label="Dist"
                 value={distance}
-                onChange={setDistance}
+                onChange={handleDistanceDialChange}
                 min={0}
                 max={100}
                 step={1}
@@ -472,7 +530,7 @@ export default function ShotCalculator({
               <HalfDialControl
                 label="Elev"
                 value={elevation}
-                onChange={setElevation}
+                onChange={handleElevationDialChange}
                 min={-50}
                 max={50}
                 step={10}
@@ -562,7 +620,7 @@ export default function ShotCalculator({
                     <button
                       key={c.id}
                       type="button"
-                      onClick={() => setSelectedClubId(c.id)}
+                      onClick={() => handleClubSelect(c)}
                       style={{
                         background: isActive
                           ? accentVar(c.category)
@@ -580,9 +638,7 @@ export default function ShotCalculator({
 
               <select
                 value={settings.ballName}
-                onChange={(e) =>
-                  setSettings({ ...settings, ballName: e.target.value })
-                }
+                onChange={(e) => handleBallSelect(e.target.value)}
                 className="hud-club-select"
               >
                 {balls.map((b) => (
@@ -697,7 +753,7 @@ export default function ShotCalculator({
                 <DialControl
                   label="Speed (mph)"
                   value={wind}
-                  onChange={(val) => setWind(Number(val.toFixed(1)))}
+                  onChange={handleSpeedDialChange}
                   min={0}
                   max={30}
                   step={0.1}
@@ -708,12 +764,7 @@ export default function ShotCalculator({
                 <DialControl
                   label="Angle (&deg;)"
                   value={windAngle}
-                  onChange={(val) => {
-                    let v = val;
-                    if (v >= 360) v = v % 360;
-                    if (v < 0) v = (v % 360) + 360;
-                    setWindAngle(Math.round(v));
-                  }}
+                  onChange={handleAngleDialChange}
                   min={-Infinity}
                   max={Infinity}
                   step={1}
@@ -723,7 +774,7 @@ export default function ShotCalculator({
                 <HalfDialControl
                   label="Distance"
                   value={distance}
-                  onChange={setDistance}
+                  onChange={handleDistanceDialChange}
                   min={0}
                   max={100}
                   step={1}
@@ -734,7 +785,7 @@ export default function ShotCalculator({
                 <HalfDialControl
                   label="Elevation"
                   value={elevation}
-                  onChange={setElevation}
+                  onChange={handleElevationDialChange}
                   min={-50}
                   max={50}
                   step={10}
