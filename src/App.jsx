@@ -13,7 +13,9 @@ import PrintSheet from "./components/PrintSheet";
 import ReferenceGraph from "./components/ReferenceGraph";
 import ShotCalculator from "./components/ShotCalculator";
 import WidgetView from "./components/WidgetView";
+import LandingPage from "./components/landing/LandingPage";
 import { useApp } from "./hooks/useApp";
+import { useRoute } from "./hooks/useRoute";
 import {
   initGA,
   trackPageView,
@@ -55,17 +57,21 @@ export default function App() {
   const [isBagEditingOpen, setIsBagEditingOpen] = useState(bag.length === 0);
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
 
+  const { currentPath, navigate, landingConfig, isLandingPage } = useRoute();
+
   useEffect(() => {
     initGA();
     trackLandingView();
     checkAndTrackReturnVisit();
     setupPWAInstallTracking();
-    trackPageView();
 
-    if (bag.length === 0) {
-      trackBagStarted({ source: "initial_modal" });
+    if (!isLandingPage) {
+      trackPageView();
+      if (bag.length === 0) {
+        trackBagStarted({ source: "initial_modal" });
+      }
     }
-  }, []);
+  }, [isLandingPage]);
 
   const handleCloseBagEditor = () => {
     setIsBagEditingOpen(false);
@@ -82,6 +88,20 @@ export default function App() {
       });
     }
   };
+
+  if (isLandingPage && landingConfig) {
+    return (
+      <LandingPage
+        config={landingConfig}
+        navigate={navigate}
+        bag={bag}
+        setBag={setBag}
+        clubs={clubs}
+        settings={settings}
+        setSettings={setSettings}
+      />
+    );
+  }
 
   return (
     <Box
@@ -219,7 +239,7 @@ export default function App() {
 
           <ChartOutput bag={bag} clubs={clubs} settings={settings} />
 
-          <Footer />
+          <Footer onNavigate={navigate} />
         </>
       ) : (
         <WidgetView

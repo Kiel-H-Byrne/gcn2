@@ -13,6 +13,21 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        windCalculator: path.resolve(__dirname, 'golf-clash-wind-calculator.html'),
+        ringSystem: path.resolve(__dirname, 'golf-clash-ring-system.html'),
+        apocChart: path.resolve(__dirname, 'golf-clash-apocalypse-wind-chart.html'),
+        sniperChart: path.resolve(__dirname, 'golf-clash-sniper-wind-chart.html'),
+        thorsHammerChart: path.resolve(__dirname, 'golf-clash-thors-hammer-wind-chart.html'),
+        grizzlyChart: path.resolve(__dirname, 'golf-clash-grizzly-wind-chart.html'),
+        windChart: path.resolve(__dirname, 'golf-clash-wind-chart.html'),
+        elevationCalc: path.resolve(__dirname, 'golf-clash-elevation-calculator.html'),
+      },
+    },
+  },
   plugins: [
     react(),
     VitePWA({
