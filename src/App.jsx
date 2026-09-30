@@ -13,8 +13,20 @@ import PrintSheet from "./components/PrintSheet";
 import ReferenceGraph from "./components/ReferenceGraph";
 import ShotCalculator from "./components/ShotCalculator";
 import WidgetView from "./components/WidgetView";
+import LandingPage from "./components/landing/LandingPage";
 import { useApp } from "./hooks/useApp";
-import { initGA, trackPageView, trackViewModeChange } from "./lib/analytics";
+import { useRoute } from "./hooks/useRoute";
+import {
+  initGA,
+  trackPageView,
+  trackLandingView,
+  checkAndTrackReturnVisit,
+  setupPWAInstallTracking,
+  trackBagStarted,
+  trackBagCompleted,
+  trackFullscreenOpened,
+  trackViewModeChange,
+} from "./lib/analytics";
 
 export default function App() {
   const {
@@ -45,10 +57,51 @@ export default function App() {
   const [isBagEditingOpen, setIsBagEditingOpen] = useState(bag.length === 0);
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
 
+  const { currentPath, navigate, landingConfig, isLandingPage } = useRoute();
+
   useEffect(() => {
     initGA();
-    trackPageView();
-  }, []);
+    trackLandingView();
+    checkAndTrackReturnVisit();
+    setupPWAInstallTracking();
+
+    if (!isLandingPage) {
+      trackPageView();
+      if (bag.length === 0) {
+        trackBagStarted({ source: "initial_modal" });
+      }
+    }
+  }, [isLandingPage]);
+
+  const handleCloseBagEditor = () => {
+    setIsBagEditingOpen(false);
+    if (bag.length > 0) {
+      const categoriesFilled = new Set(
+        bag
+          .map((b) => clubs.find((c) => c.id === b.clubId)?.category)
+          .filter(Boolean),
+      ).size;
+      trackBagCompleted({
+        clubCount: bag.length,
+        categoriesFilled,
+        source: "editor_done",
+      });
+    }
+  };
+
+  if (isLandingPage && landingConfig) {
+    return (
+      <LandingPage
+        config={landingConfig}
+        navigate={navigate}
+        bag={bag}
+        setBag={setBag}
+        clubs={clubs}
+        settings={settings}
+        setSettings={setSettings}
+      />
+    );
+  }
 
   return (
     <Box
@@ -99,7 +152,7 @@ export default function App() {
                     className="icon-btn"
                     type="button"
                     aria-label="Close Bag Editor"
-                    onClick={() => setIsBagEditingOpen(false)}
+                    onClick={handleCloseBagEditor}
                     style={{
                       border: "none",
                       background: "transparent",
@@ -142,7 +195,7 @@ export default function App() {
                   <button
                     className="btn-primary"
                     type="button"
-                    onClick={() => setIsBagEditingOpen(false)}
+                    onClick={handleCloseBagEditor}
                     style={{
                       padding: "8px 24px",
                       borderRadius: "6px",
@@ -166,6 +219,10 @@ export default function App() {
               setSavedProfiles={setSavedProfiles}
               openFullscreen={() => {
                 setIsFullscreenOpen(true);
+                trackFullscreenOpened({
+                  bagSize: bag.length,
+                  source: "chart_controls",
+                });
                 trackViewModeChange("fullscreen");
               }}
             />
@@ -182,7 +239,7 @@ export default function App() {
 
           <ChartOutput bag={bag} clubs={clubs} settings={settings} />
 
-          <Footer />
+          <Footer onNavigate={navigate} />
         </>
       ) : (
         <WidgetView

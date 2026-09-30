@@ -3,6 +3,7 @@ import { Printer, X } from 'lucide-react';
 import { WIND_MODES } from '../lib/wind';
 import balls from '../data/balls';
 import { ClubChartCard } from './ChartOutput';
+import { trackPrintChart } from '../lib/analytics';
 
 export default function FullscreenOverlay({ bag, clubs, settings, onClose }) {
   const overlayRef = useRef(null);
@@ -54,7 +55,15 @@ export default function FullscreenOverlay({ bag, clubs, settings, onClose }) {
             className="icon-btn"
             type="button"
             aria-label="Print / Save PDF"
-            onClick={() => window.print()}
+            onClick={() => {
+              trackPrintChart({
+                bagSize: bag.length,
+                ballName: settings.ballName,
+                variant: settings.variant,
+                source: "fullscreen_overlay",
+              });
+              window.print();
+            }}
             title="Print / Save PDF"
           >
             <Printer size={22} />

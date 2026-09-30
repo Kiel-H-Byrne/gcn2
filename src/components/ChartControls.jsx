@@ -14,7 +14,7 @@ import { useState } from "react";
 import balls from "../data/balls";
 import {
   trackChartVariantChange,
-  trackPrintSheet,
+  trackPrintChart,
   trackProfileLoad,
   trackProfileSave,
 } from "../lib/analytics";
@@ -168,10 +168,11 @@ export default function ChartControls({
           <Button
             size="sm"
             onClick={() => {
-              trackPrintSheet({
+              trackPrintChart({
                 bagSize: bag.length,
                 ballName: settings.ballName,
                 variant: settings.variant,
+                source: "chart_controls",
               });
               window.print();
             }}

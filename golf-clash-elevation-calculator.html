@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QH0JZRG9PR"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-QH0JZRG9PR');
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+    <!-- Primary SEO Meta Tags -->
+    <title>Golf Clash Elevation Calculator – Downhill & Uphill Wind Adjustments</title>
+    <meta name="description" content="Accurate Golf Clash elevation calculator. Master downhill (+10%, +20%, +30%) and uphill (-10%) wind adjustments. Learn the elevation formula and tournament rules of thumb." />
+    <meta name="keywords" content="Golf Clash elevation calculator, Golf Clash elevation chart, how to calculate elevation Golf Clash, Golf Clash downhill wind, Golf Clash slider calculator, Golf Clash elevation formula" />
+    <meta name="author" content="The Caddie's Compass" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://gcn.kielbyrne.com/golf-clash-elevation-calculator" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://gcn.kielbyrne.com/golf-clash-elevation-calculator" />
+    <meta property="og:title" content="Golf Clash Elevation Calculator – Downhill & Uphill Adjustments" />
+    <meta property="og:description" content="Accurate Golf Clash elevation calculator. Master downhill and uphill wind adjustments with precision percentage multipliers." />
+    <meta property="og:image" content="https://gcn.kielbyrne.com/pwa-512x512.png" />
+    <meta property="og:site_name" content="The Caddie's Compass" />
+
+    <!-- Favicon and PWA Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/pwa-512x512.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/pwa-192x192.png" />
+
+    <!-- FAQ Schema for AI Overviews and Featured Snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How does elevation work in Golf Clash?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Elevation accounts for vertical elevation changes between your tee/lie and the landing target. Downhill shots give the wind more hangtime to blow the ball, requiring extra ring adjustment (+10% to +35%). Uphill shots hit the ground sooner, requiring fewer rings (-10% to -20%)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is 10% elevation in Golf Clash?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "+10% elevation means you add 10% to the wind speed before calculating rings. If the wind is 8.0 mph, you calculate for 8.8 mph (8.0 × 1.10 = 8.8 mph)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do you know the elevation of a hole?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Tournament text guides and hole walkthroughs document verified elevation baselines. As a rule of thumb, level shots are 0%, gentle drops are +10%, steep fairway drops are +20%, and cliff/island drops are +25% to +35%."
+          }
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <div style="max-width:800px;margin:40px auto;padding:20px;font-family:sans-serif">
+        <h1>Golf Clash Elevation Calculator &amp; Adjustment Guide</h1>
+        <p>Elevation is the hidden multiplier that turns good Golf Clash shots into perfect drops. Because ball flight duration increases on downhill drops and decreases on uphill rises, wind has more or less time to push your ball.</p>
+        <h2>The Elevation Formula</h2>
+        <p><strong>Effective Wind = Raw Wind × (1 + Elevation % / 100)</strong></p>
+        <h2>Common Elevation Baselines</h2>
+        <ul>
+          <li><strong>Tee Shots:</strong> +10% standard downhill baseline</li>
+          <li><strong>Island Drops / Cliffs:</strong> +20% to +35% downhill</li>
+          <li><strong>Uphill Approaches:</strong> -10% uphill adjustment</li>
+        </ul>
+        <p>Please enable JavaScript to use the interactive elevation calculator.</p>
+      </div>
+    </noscript>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

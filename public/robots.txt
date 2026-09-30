@@ -1,4 +1,21 @@
+# robots.txt for The Caddie's Compass (https://gcn.kielbyrne.com/)
 User-agent: *
 Allow: /
 
+# Dedicated Golf Clash SEO Landing Pages & Calculators
+Allow: /golf-clash-wind-calculator
+Allow: /golf-clash-ring-system
+Allow: /golf-clash-apocalypse-wind-chart
+Allow: /golf-clash-sniper-wind-chart
+Allow: /golf-clash-thors-hammer-wind-chart
+Allow: /golf-clash-grizzly-wind-chart
+Allow: /golf-clash-wind-chart
+Allow: /golf-clash-elevation-calculator
+
+# Disallow development artifacts
+Disallow: /dev-dist/
+Disallow: /node_modules/
+
+# Sitemaps
 Sitemap: https://gcn.kielbyrne.com/sitemap.xml
+Host: https://gcn.kielbyrne.com

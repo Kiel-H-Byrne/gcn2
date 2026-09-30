@@ -2686,4 +2686,33 @@ html:has(.is-widget-mode) {
   background-color: var(--surface-2);
 }
 
+/* ---------- Landing Page SEO Enhancements ---------- */
+.landing-jump-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.landing-jump-link:hover {
+  background: var(--surface-3);
+  color: var(--text-primary);
+  border-color: var(--brand-primary);
+  transform: translateY(-1px);
+}
+
+.footer-nav-link:hover {
+  text-decoration: underline !important;
+  color: var(--brand-primary-hover, #2563eb) !important;
+}
+
+
 

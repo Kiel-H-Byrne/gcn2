@@ -6,6 +6,8 @@ import {
   trackReferenceToggle,
   trackViewModeChange,
   trackThemeChange,
+  trackWidgetOpened,
+  trackBagStarted,
 } from "../lib/analytics";
 
 export default function Header({
@@ -122,7 +124,12 @@ export default function Header({
               <button
                 type="button"
                 className={`btn-ghost header-btn ${isBagEditingOpen ? "is-active" : ""}`}
-                onClick={() => setIsBagEditingOpen(!isBagEditingOpen)}
+                onClick={() => {
+                  if (!isBagEditingOpen && bag.length === 0) {
+                    trackBagStarted({ source: "header_edit_bag" });
+                  }
+                  setIsBagEditingOpen(!isBagEditingOpen);
+                }}
                 title={isBagEditingOpen ? "Close Bag Editor" : "Edit Bag Clubs & Levels"}
                 aria-label={isBagEditingOpen ? "Close Bag Editor" : "Edit Bag"}
               >
@@ -140,6 +147,9 @@ export default function Header({
             onClick={() => {
               const next = !isWidgetMode;
               setIsWidgetMode(next);
+              if (next) {
+                trackWidgetOpened({ bagSize: bag.length, source: "header" });
+              }
               trackViewModeChange(next ? "widget" : "standard");
             }}
             title={isWidgetMode ? "Exit Widget Mode" : "Toggle Widget Mode (compact view)"}
