@@ -62,11 +62,31 @@ export default function BagPanel({
       .join('-');
     const url = new URL(window.location.href);
     url.searchParams.set('bag', readable);
-    navigator.clipboard.writeText(url.toString()).then(() => {
-      setCopied(true);
-      trackBagShare('clipboard', bag.length);
-      setTimeout(() => setCopied(false), 2000);
-    });
+
+    if (navigator.share && window.matchMedia('(max-width: 768px)').matches) {
+      navigator
+        .share({
+          title: activeProfileName || "Golf Clash Bag",
+          text: "Check out my Golf Clash wind chart bag!",
+          url: url.toString(),
+        })
+        .then(() => {
+          trackBagShare('native_share', bag.length, activeProfileName);
+        })
+        .catch(() => {
+          navigator.clipboard.writeText(url.toString()).then(() => {
+            setCopied(true);
+            trackBagShare('clipboard', bag.length, activeProfileName);
+            setTimeout(() => setCopied(false), 2000);
+          });
+        });
+    } else {
+      navigator.clipboard.writeText(url.toString()).then(() => {
+        setCopied(true);
+        trackBagShare('clipboard', bag.length, activeProfileName);
+        setTimeout(() => setCopied(false), 2000);
+      });
+    }
   };
 
   const handleSetLevel = (clubId, level) => {

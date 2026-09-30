@@ -9,7 +9,13 @@ import {
 } from "../utils";
 import CategoryIcon from "./CategoryIcon";
 import LevelPicker from "./LevelPicker";
-import { trackClubSelect, trackClubLevelChange } from "../lib/analytics";
+import {
+  trackClubAdded,
+  trackClubSelect,
+  trackClubLevelChange,
+  trackBagStarted,
+  trackBagCompleted,
+} from "../lib/analytics";
 
 export default function ClubGrid({
   clubs,
@@ -25,17 +31,44 @@ export default function ClubGrid({
 
   const handleAddToBag = (club) => {
     if (bag.some((b) => b.clubId === club.id)) return;
+
+    if (bag.length === 0) {
+      trackBagStarted({
+        source: "club_added",
+        category: club.category,
+        clubId: club.id,
+      });
+    }
+
     const suggested = lastLevel
       ? Math.min(Math.max(lastLevel, 1), club.maxLevel)
       : club.maxLevel;
-    setBag([...bag, { clubId: club.id, level: suggested }]);
+    const newBag = [...bag, { clubId: club.id, level: suggested }];
+    setBag(newBag);
     setLastLevel(suggested);
-    trackClubSelect({
+
+    const categoriesFilled = new Set(
+      newBag
+        .map((b) => clubs.find((c) => c.id === b.clubId)?.category)
+        .filter(Boolean),
+    ).size;
+
+    trackClubAdded({
       category: club.category,
       clubId: club.id,
       clubName: club.name,
       level: suggested,
+      bagCount: newBag.length,
+      categoriesFilled,
     });
+
+    if (newBag.length >= 7) {
+      trackBagCompleted({
+        clubCount: newBag.length,
+        categoriesFilled,
+        source: "full_bag_reached",
+      });
+    }
   };
 
   const handleSetLevel = (club, level) => {

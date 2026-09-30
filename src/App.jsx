@@ -14,7 +14,17 @@ import ReferenceGraph from "./components/ReferenceGraph";
 import ShotCalculator from "./components/ShotCalculator";
 import WidgetView from "./components/WidgetView";
 import { useApp } from "./hooks/useApp";
-import { initGA, trackPageView, trackViewModeChange } from "./lib/analytics";
+import {
+  initGA,
+  trackPageView,
+  trackLandingView,
+  checkAndTrackReturnVisit,
+  setupPWAInstallTracking,
+  trackBagStarted,
+  trackBagCompleted,
+  trackFullscreenOpened,
+  trackViewModeChange,
+} from "./lib/analytics";
 
 export default function App() {
   const {
@@ -47,8 +57,31 @@ export default function App() {
 
   useEffect(() => {
     initGA();
+    trackLandingView();
+    checkAndTrackReturnVisit();
+    setupPWAInstallTracking();
     trackPageView();
+
+    if (bag.length === 0) {
+      trackBagStarted({ source: "initial_modal" });
+    }
   }, []);
+
+  const handleCloseBagEditor = () => {
+    setIsBagEditingOpen(false);
+    if (bag.length > 0) {
+      const categoriesFilled = new Set(
+        bag
+          .map((b) => clubs.find((c) => c.id === b.clubId)?.category)
+          .filter(Boolean),
+      ).size;
+      trackBagCompleted({
+        clubCount: bag.length,
+        categoriesFilled,
+        source: "editor_done",
+      });
+    }
+  };
 
   return (
     <Box
@@ -99,7 +132,7 @@ export default function App() {
                     className="icon-btn"
                     type="button"
                     aria-label="Close Bag Editor"
-                    onClick={() => setIsBagEditingOpen(false)}
+                    onClick={handleCloseBagEditor}
                     style={{
                       border: "none",
                       background: "transparent",
@@ -142,7 +175,7 @@ export default function App() {
                   <button
                     className="btn-primary"
                     type="button"
-                    onClick={() => setIsBagEditingOpen(false)}
+                    onClick={handleCloseBagEditor}
                     style={{
                       padding: "8px 24px",
                       borderRadius: "6px",
@@ -166,6 +199,10 @@ export default function App() {
               setSavedProfiles={setSavedProfiles}
               openFullscreen={() => {
                 setIsFullscreenOpen(true);
+                trackFullscreenOpened({
+                  bagSize: bag.length,
+                  source: "chart_controls",
+                });
                 trackViewModeChange("fullscreen");
               }}
             />

@@ -12,7 +12,7 @@ import { accentVar } from "../utils";
 import CategoryIcon from "./CategoryIcon";
 import DialControl from "./DialControl";
 import HalfDialControl from "./HalfDialControl";
-import { trackShotCalculate } from "../lib/analytics";
+import { trackShotCalculate, trackCalculatorUsed } from "../lib/analytics";
 
 export default function ShotCalculator({
   bag,
@@ -93,10 +93,12 @@ export default function ShotCalculator({
         elevation,
         ballPower: selectedBall.power,
         ringsResult: Number(displayRings),
+        bagConfigured: bag.length > 0,
+        clubCount: bag.length,
       });
     }, 1200);
     return () => clearTimeout(timer);
-  }, [club?.name, wind, elevation, selectedBall?.power, displayRings]);
+  }, [club?.name, wind, elevation, selectedBall?.power, displayRings, bag?.length]);
 
   const angleRad = (windAngle * Math.PI) / 180;
   const cwComponent = effectiveWind * Math.sin(angleRad);
@@ -138,7 +140,15 @@ export default function ShotCalculator({
     }
 
     if (speed > 25) speed = 25;
-    setWind(Number(speed.toFixed(1)));
+    const roundedSpeed = Number(speed.toFixed(1));
+    setWind(roundedSpeed);
+
+    trackCalculatorUsed({
+      interactionType: "compass_drag",
+      clubName: club?.name,
+      windSpeed: roundedSpeed,
+      elevation,
+    });
   };
 
   const handlePointerDown = (e) => {
