@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ChartOutput from "./ChartOutput";
 import ReferenceGraph from "./ReferenceGraph";
 import ShotCalculator from "./ShotCalculator";
+import UniversalChart from "./UniversalChart";
 import { sortBagClubs } from "../utils";
 
 function isSameBag(bagA, bagB) {
@@ -23,6 +24,7 @@ export default function WidgetView({
   setSettings,
   savedProfiles = {},
   setSavedProfiles,
+  navigate,
 }) {
   const scrollRef = useRef(null);
   const tabStripRef = useRef(null);
@@ -101,6 +103,14 @@ export default function WidgetView({
         settings: settings,
       });
     }
+
+    // Always include the Universal / Golden / CPC Reference Chart tab
+    list.push({
+      id: "universal-chart",
+      type: "universal",
+      label: "Universal",
+      title: "Universal & Checkpoint Chart",
+    });
 
     // Always include the Reference Graph tab
     list.push({
@@ -271,6 +281,20 @@ export default function WidgetView({
                   </Text>
                 </Box>
               )
+            ) : page.type === "universal" ? (
+              <UniversalChart
+                clubs={clubs}
+                settings={settings}
+                setSettings={setSettings}
+                setBag={setBag}
+                onLoadToSimulator={(loadedBag, loadedSettings) => {
+                  if (setBag) setBag(loadedBag);
+                  if (setSettings && loadedSettings) setSettings(loadedSettings);
+                  scrollToPage(0);
+                }}
+                isWidgetMode={true}
+                navigate={navigate}
+              />
             ) : page.type === "reference" ? (
               <ReferenceGraph
                 bag={bag}

@@ -1,5 +1,14 @@
 import { Box, Flex, Heading, Text, Grid } from "@chakra-ui/react";
-import { Briefcase, Info, Maximize, TrendingUp, X } from "lucide-react";
+import {
+  BookOpen,
+  Briefcase,
+  Info,
+  Lightbulb,
+  Maximize,
+  TrendingUp,
+  Trophy,
+  X,
+} from "lucide-react";
 import React, { useState } from "react";
 import {
   trackGuideToggle,
@@ -17,6 +26,9 @@ export default function Header({
   setIsBagEditingOpen,
   isReferenceOpen,
   setIsReferenceOpen,
+  isUniversalOpen,
+  setIsUniversalOpen,
+  navigate,
   theme,
   setTheme,
   bag = [],
@@ -137,6 +149,39 @@ export default function Header({
                 <span className="header-btn-text">
                   {isBagEditingOpen ? "Close" : `Edit Bag (${bag.length})`}
                 </span>
+              </button>
+
+              <button
+                type="button"
+                className={`btn-ghost header-btn ${isUniversalOpen ? "is-active" : ""}`}
+                onClick={() => setIsUniversalOpen(!isUniversalOpen)}
+                title={isUniversalOpen ? "Close Universal Chart" : "Universal Chart (Golden Shot & Checkpoints)"}
+                aria-label={isUniversalOpen ? "Close Universal Chart" : "Universal Chart"}
+              >
+                <Trophy size={14} style={{ color: "#eab308" }} />
+                <span className="header-btn-text">Universal</span>
+              </button>
+
+              <button
+                type="button"
+                className="btn-ghost header-btn"
+                onClick={() => navigate?.("/tips")}
+                title="Vetted Pro Tips & Game Mechanics"
+                aria-label="Vetted Pro Tips"
+              >
+                <Lightbulb size={14} style={{ color: "#3b82f6" }} />
+                <span className="header-btn-text">Tips</span>
+              </button>
+
+              <button
+                type="button"
+                className="btn-ghost header-btn"
+                onClick={() => navigate?.("/resources")}
+                title="Curated Golf Clash Community Resources"
+                aria-label="Community Resources"
+              >
+                <BookOpen size={14} style={{ color: "#10b981" }} />
+                <span className="header-btn-text">Resources</span>
               </button>
             </>
           )}

@@ -12,6 +12,9 @@ import Header from "./components/Header";
 import PrintSheet from "./components/PrintSheet";
 import ReferenceGraph from "./components/ReferenceGraph";
 import ShotCalculator from "./components/ShotCalculator";
+import TipsPage from "./components/TipsPage";
+import ResourcesPage from "./components/ResourcesPage";
+import UniversalChart from "./components/UniversalChart";
 import WidgetView from "./components/WidgetView";
 import LandingPage from "./components/landing/LandingPage";
 import { useApp } from "./hooks/useApp";
@@ -56,8 +59,16 @@ export default function App() {
   const [isWidgetMode, setIsWidgetMode] = useState(false);
   const [isBagEditingOpen, setIsBagEditingOpen] = useState(bag.length === 0);
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
+  const [isUniversalOpen, setIsUniversalOpen] = useState(false);
 
-  const { currentPath, navigate, landingConfig, isLandingPage } = useRoute();
+  const {
+    currentPath,
+    navigate,
+    landingConfig,
+    isLandingPage,
+    isTipsPage,
+    isResourcesPage,
+  } = useRoute();
 
   useEffect(() => {
     initGA();
@@ -65,13 +76,13 @@ export default function App() {
     checkAndTrackReturnVisit();
     setupPWAInstallTracking();
 
-    if (!isLandingPage) {
+    if (!isLandingPage && !isTipsPage && !isResourcesPage) {
       trackPageView();
       if (bag.length === 0) {
         trackBagStarted({ source: "initial_modal" });
       }
     }
-  }, [isLandingPage]);
+  }, [isLandingPage, isTipsPage, isResourcesPage]);
 
   const handleCloseBagEditor = () => {
     setIsBagEditingOpen(false);
@@ -88,6 +99,14 @@ export default function App() {
       });
     }
   };
+
+  if (isTipsPage) {
+    return <TipsPage navigate={navigate} onBack={() => navigate("/")} />;
+  }
+
+  if (isResourcesPage) {
+    return <ResourcesPage navigate={navigate} onBack={() => navigate("/")} />;
+  }
 
   if (isLandingPage && landingConfig) {
     return (
@@ -117,6 +136,9 @@ export default function App() {
         setIsBagEditingOpen={setIsBagEditingOpen}
         isReferenceOpen={isReferenceOpen}
         setIsReferenceOpen={setIsReferenceOpen}
+        isUniversalOpen={isUniversalOpen}
+        setIsUniversalOpen={setIsUniversalOpen}
+        navigate={navigate}
         theme={theme}
         setTheme={setTheme}
         bag={bag}
@@ -225,6 +247,7 @@ export default function App() {
                 });
                 trackViewModeChange("fullscreen");
               }}
+              openUniversalChart={() => setIsUniversalOpen(true)}
             />
           )}
 
@@ -250,6 +273,7 @@ export default function App() {
           setSettings={setSettings}
           savedProfiles={savedProfiles}
           setSavedProfiles={setSavedProfiles}
+          navigate={navigate}
         />
       )}
 
@@ -280,6 +304,57 @@ export default function App() {
             trackViewModeChange(isWidgetMode ? "widget" : "standard");
           }}
         />
+      )}
+
+      {isUniversalOpen && (
+        <div
+          className="bag-editor-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Universal Reference Chart"
+          onClick={(e) => {
+            if (e.target.classList.contains("bag-editor-overlay")) {
+              setIsUniversalOpen(false);
+            }
+          }}
+        >
+          <div className="bag-editor-content" style={{ maxWidth: "1080px" }}>
+            <div className="bag-editor-header">
+              <h2 style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                Universal Reference Chart
+              </h2>
+              <button
+                className="icon-btn"
+                type="button"
+                aria-label="Close Universal Chart"
+                onClick={() => setIsUniversalOpen(false)}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  cursor: "pointer",
+                  color: "var(--text-primary)",
+                }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="bag-editor-body" style={{ padding: "14px" }}>
+              <UniversalChart
+                clubs={clubs}
+                settings={settings}
+                setSettings={setSettings}
+                setBag={setBag}
+                onLoadToSimulator={(loadedBag, loadedSettings) => {
+                  if (setBag) setBag(loadedBag);
+                  if (setSettings && loadedSettings) setSettings(loadedSettings);
+                  setIsUniversalOpen(false);
+                }}
+                onClose={() => setIsUniversalOpen(false)}
+                navigate={navigate}
+              />
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Dedicated single-page, one-sided Print & PDF sheet */}

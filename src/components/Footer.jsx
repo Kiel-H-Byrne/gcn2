@@ -20,6 +20,53 @@ export default function Footer({ onNavigate }) {
       fontSize="0.76rem"
       lineHeight="1.5"
     >
+      {/* Knowledge Hub: Vetted Tips & Curated Resources */}
+      <Flex
+        justify="center"
+        align="center"
+        gap="16px"
+        mb="20px"
+        p="10px"
+        bg="var(--surface-1)"
+        borderRadius="var(--radius-sm)"
+        border="1px solid var(--border)"
+        maxW="620px"
+        mx="auto"
+        flexWrap="wrap"
+      >
+        <a
+          href="/tips"
+          onClick={(e) => handleLinkClick(e, "/tips")}
+          className="footer-nav-link"
+          style={{
+            fontWeight: "700",
+            color: "var(--brand-primary, #3b82f6)",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "5px",
+            textDecoration: "none",
+          }}
+        >
+          💡 Vetted Pro Tips &amp; Game Mechanics
+        </a>
+        <span style={{ color: "var(--border-strong)" }}>|</span>
+        <a
+          href="/resources"
+          onClick={(e) => handleLinkClick(e, "/resources")}
+          className="footer-nav-link"
+          style={{
+            fontWeight: "700",
+            color: "#10b981",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "5px",
+            textDecoration: "none",
+          }}
+        >
+          📖 Curated Community Resources
+        </a>
+      </Flex>
+
       {/* Search Engine Crawlable Guide & Calculator Links */}
       <Box mb="20px">
         <Text

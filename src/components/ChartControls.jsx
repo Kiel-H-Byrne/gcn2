@@ -9,7 +9,7 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
-import { Briefcase, Check, Edit2, Maximize, Wind } from "lucide-react";
+import { Briefcase, Check, Edit2, Maximize, Trophy, Wind } from "lucide-react";
 import { useState } from "react";
 import balls from "../data/balls";
 import {
@@ -33,6 +33,7 @@ export default function ChartControls({
   savedProfiles = {},
   setSavedProfiles,
   openFullscreen,
+  openUniversalChart,
 }) {
   const [isRenaming, setIsRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState("");
@@ -145,6 +146,35 @@ export default function ChartControls({
         </Flex>
 
         <Flex gap="8px" align="center" className="no-print">
+          {openUniversalChart && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={openUniversalChart}
+              display="flex"
+              alignItems="center"
+              gap="6px"
+              h="34px"
+              px="12px"
+              fontSize="0.82rem"
+              fontWeight="600"
+              borderRadius="var(--radius-sm)"
+              border="1px solid var(--border-strong)"
+              bg="var(--surface-1)"
+              color="var(--text-primary)"
+              boxShadow="var(--shadow-1, 0 1px 2px rgba(0,0,0,0.06))"
+              _hover={{
+                bg: "var(--surface-2)",
+                borderColor: "#eab308",
+                transform: "translateY(-1px)",
+              }}
+              transition="all 0.15s ease"
+              title="Universal Accuracy Chart, Golden Shot & Checkpoint Challenge"
+            >
+              <Trophy size={14} style={{ color: "#eab308" }} />
+              <span>Universal / CPC</span>
+            </Button>
+          )}
           <Button
             variant="outline"
             size="sm"
