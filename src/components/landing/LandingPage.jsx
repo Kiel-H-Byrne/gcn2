@@ -16,7 +16,7 @@ import {
 import balls from "../../data/balls";
 import seedClubs from "../../data/clubs";
 import { WIND_MODES, windPerRingByPower } from "../../lib/wind";
-import { accentVar, CATEGORY_ORDER } from "../../utils";
+import { accentVar, CATEGORY_ORDER, sortBagClubs } from "../../utils";
 import CategoryIcon from "../CategoryIcon";
 import { ClubChartCard } from "../ChartOutput";
 import ShotCalculator from "../ShotCalculator";
@@ -84,10 +84,10 @@ export default function LandingPage({
       (b) =>
         clubs.find((c) => c.id === b.clubId)?.category !== currentClub.category,
     );
-    const newBag = [
+    const newBag = sortBagClubs([
       ...filtered,
       { clubId: currentClub.id, level: selectedLevel },
-    ];
+    ], clubs);
     setBag(newBag);
     navigate("/");
   };

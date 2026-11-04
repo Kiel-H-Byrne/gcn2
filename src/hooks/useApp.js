@@ -47,7 +47,7 @@ export function useApp() {
     const params = new URLSearchParams(window.location.search);
     const shared = params.get('bag');
     const base = {
-      title: '', notes: '', variant: 'ring', ballName: 'Basic', elevation: 0, windStep: 0.5,
+      title: '', notes: '', variant: 'ring', ballName: 'Basic', elevation: 0, windStep: 0.5, slider: 50,
       ...readJSON(STORAGE_KEYS.settings, {})
     };
     if (shared) base.title = 'Shared Bag';

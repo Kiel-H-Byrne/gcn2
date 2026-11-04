@@ -1,12 +1,29 @@
 import React, { useEffect, useRef } from 'react';
-import { Printer, X } from 'lucide-react';
+import { ArrowUpDown, Printer, X } from 'lucide-react';
 import { WIND_MODES } from '../lib/wind';
 import balls from '../data/balls';
 import { ClubChartCard } from './ChartOutput';
+import { sortBagClubs } from '../utils';
 import { trackPrintChart } from '../lib/analytics';
 
-export default function FullscreenOverlay({ bag, clubs, settings, onClose }) {
+export default function FullscreenOverlay({ bag, setBag, clubs, settings, onClose }) {
   const overlayRef = useRef(null);
+
+  const handleMove = (index, delta) => {
+    if (!setBag) return;
+    const target = index + delta;
+    if (target < 0 || target >= bag.length) return;
+    const newBag = [...bag];
+    const [item] = newBag.splice(index, 1);
+    newBag.splice(target, 0, item);
+    setBag(newBag);
+  };
+
+  const handleSortStandard = () => {
+    if (setBag) {
+      setBag(sortBagClubs(bag, clubs));
+    }
+  };
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -51,6 +68,30 @@ export default function FullscreenOverlay({ bag, clubs, settings, onClose }) {
           )}
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          {bag.length > 1 && setBag && (
+            <button
+              className="icon-btn"
+              type="button"
+              onClick={handleSortStandard}
+              title="Sort clubs in standard in-game order (Drivers -> Sand Wedges)"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "4px",
+                fontSize: "0.8rem",
+                padding: "6px 10px",
+                borderRadius: "6px",
+                background: "var(--surface-2)",
+                border: "1px solid var(--border)",
+                color: "var(--text-primary)",
+                cursor: "pointer",
+                fontWeight: "600",
+              }}
+            >
+              <ArrowUpDown size={14} />
+              <span>Game Order</span>
+            </button>
+          )}
           <button
             className="icon-btn"
             type="button"
@@ -74,11 +115,24 @@ export default function FullscreenOverlay({ bag, clubs, settings, onClose }) {
         </div>
       </div>
       <div className="fullscreen-body">
-        {bag.map(entry => {
+        {bag.map((entry, idx) => {
           const club = clubs.find(c => c.id === entry.clubId);
           if (!club) return null;
           const level = Math.min(Math.max(entry.level, 1), club.maxLevel);
-          return <ClubChartCard key={club.id} club={club} level={level} mode={mode} settings={settings} isFullscreen />;
+          return (
+            <ClubChartCard
+              key={club.id}
+              club={club}
+              level={level}
+              mode={mode}
+              settings={settings}
+              isFullscreen
+              canMoveUp={Boolean(setBag) && idx > 0}
+              canMoveDown={Boolean(setBag) && idx < bag.length - 1}
+              onMoveUp={() => handleMove(idx, -1)}
+              onMoveDown={() => handleMove(idx, 1)}
+            />
+          );
         })}
       </div>
     </div>

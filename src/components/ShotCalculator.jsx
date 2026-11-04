@@ -1,4 +1,4 @@
-import { Box, Flex, Grid, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Grid, Heading, Text } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import balls from "../data/balls";
 import {
@@ -12,6 +12,7 @@ import { accentVar } from "../utils";
 import CategoryIcon from "./CategoryIcon";
 import DialControl from "./DialControl";
 import HalfDialControl from "./HalfDialControl";
+import DistanceSlider from "./DistanceSlider";
 import { trackShotCalculate, trackCalculatorUsed } from "../lib/analytics";
 
 export default function ShotCalculator({
@@ -24,7 +25,7 @@ export default function ShotCalculator({
   const [selectedClubId, setSelectedClubId] = useState(bag[0]?.clubId || "");
   const [wind, setWind] = useState(5.0);
   const [windAngle, setWindAngle] = useState(0);
-  const [distance, setDistance] = useState(50);
+  const [distance, setDistance] = useState(settings?.slider ?? 50);
 
   const elevation = Number(settings.elevation) || 0;
   const setElevation = (val) => setSettings({ ...settings, elevation: val });
@@ -129,10 +130,14 @@ export default function ShotCalculator({
     });
   };
 
-  const handleDistanceDialChange = (val) => {
-    setDistance(val);
+  const handleDistanceChange = (val) => {
+    const clamped = Math.max(0, Math.min(100, Math.round(Number(val) || 0)));
+    setDistance(clamped);
+    if (setSettings) {
+      setSettings((prev) => ({ ...prev, slider: clamped }));
+    }
     trackCalculatorUsed({
-      interactionType: "dial_distance",
+      interactionType: "slider_distance",
       clubName: club?.name,
       windSpeed: wind,
       elevation,
@@ -140,12 +145,25 @@ export default function ShotCalculator({
   };
 
   const handleElevationDialChange = (val) => {
-    setElevation(val);
+    const rounded = Math.round(Number(val) / 5) * 5;
+    const clamped = Math.max(-50, Math.min(50, rounded));
+    setElevation(clamped);
     trackCalculatorUsed({
       interactionType: "dial_elevation",
       clubName: club?.name,
       windSpeed: wind,
-      elevation: val,
+      elevation: clamped,
+    });
+  };
+
+  const handleElevationNudge = (delta) => {
+    const next = Math.max(-50, Math.min(50, elevation + delta));
+    setElevation(next);
+    trackCalculatorUsed({
+      interactionType: "nudge_elevation",
+      clubName: club?.name,
+      windSpeed: wind,
+      elevation: next,
     });
   };
 
@@ -491,7 +509,7 @@ export default function ShotCalculator({
             </div>
           </div>
 
-          {/* Row 3: Dials in one row with Distance and Elevation form a split-circle */}
+          {/* Row 3: Dials in one row with Speed, Angle, and Elevation (step 5) */}
           <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', gap: '8px', padding: '4px 0 8px' }}>
             <DialControl
               label="Speed"
@@ -514,32 +532,59 @@ export default function ShotCalculator({
               unitsPerRotation={360}
             />
 
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-              <HalfDialControl
-                label="Dist"
-                value={distance}
-                onChange={handleDistanceDialChange}
-                min={0}
-                max={100}
-                step={1}
-                formatValue={(v) => `${v}%`}
-                tickLabels={["Min", "50%", "Max"]}
-                orientation="up"
-                hideTickLabels={true}
-              />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
               <HalfDialControl
                 label="Elev"
                 value={elevation}
                 onChange={handleElevationDialChange}
                 min={-50}
                 max={50}
-                step={10}
+                step={5}
                 formatValue={(v) => `${v > 0 ? "+" : ""}${v}%`}
                 tickLabels={["-50%", "0", "+50%"]}
-                orientation="down"
+                orientation="up"
                 hideTickLabels={true}
               />
+              <Flex gap="4px" mt="2px">
+                <Button
+                  size="xs"
+                  variant="outline"
+                  h="20px"
+                  px="6px"
+                  fontSize="0.65rem"
+                  onClick={() => handleElevationNudge(-5)}
+                  disabled={elevation <= -50}
+                  title="Decrease elevation by 5%"
+                >
+                  -5%
+                </Button>
+                <Button
+                  size="xs"
+                  variant="outline"
+                  h="20px"
+                  px="6px"
+                  fontSize="0.65rem"
+                  onClick={() => handleElevationNudge(5)}
+                  disabled={elevation >= 50}
+                  title="Increase elevation by 5%"
+                >
+                  +5%
+                </Button>
+              </Flex>
             </div>
+          </div>
+
+          {/* Row 3.5: Full-Width 0-100% Distance Slider in 1% Increments */}
+          <div style={{ width: '100%', marginBottom: '8px' }}>
+            <DistanceSlider
+              value={distance}
+              onChange={handleDistanceChange}
+              club={club}
+              currentPower={currentPower}
+              wpr={wpr}
+              accentColor={accentVar(club.category)}
+              isCompact={true}
+            />
           </div>
 
           {/* Row 4: LED Ring Output on its own row (Large Target Rings SVG) */}
@@ -746,9 +791,9 @@ export default function ShotCalculator({
 
               <Grid
                 className="hud-compass-inputs"
-                templateColumns="1fr 1fr"
-                gap="16px"
-                mt="16px"
+                templateColumns={{ base: "1fr", sm: "repeat(3, 1fr)" }}
+                gap="14px"
+                alignItems="start"
               >
                 <DialControl
                   label="Speed (mph)"
@@ -771,29 +816,79 @@ export default function ShotCalculator({
                   unitsPerRotation={360}
                 />
 
-                <HalfDialControl
-                  label="Distance"
-                  value={distance}
-                  onChange={handleDistanceDialChange}
-                  min={0}
-                  max={100}
-                  step={1}
-                  formatValue={(v) => `${v}%`}
-                  tickLabels={["Min", "50%", "Max"]}
-                />
-
-                <HalfDialControl
-                  label="Elevation"
-                  value={elevation}
-                  onChange={handleElevationDialChange}
-                  min={-50}
-                  max={50}
-                  step={10}
-                  formatValue={(v) => `${v > 0 ? "+" : ""}${v}%`}
-                  tickLabels={["-50%", "0", "+50%"]}
-                />
+                <Flex direction="column" align="center" gap="4px">
+                  <HalfDialControl
+                    label="Elevation"
+                    value={elevation}
+                    onChange={handleElevationDialChange}
+                    min={-50}
+                    max={50}
+                    step={5}
+                    formatValue={(v) => `${v > 0 ? "+" : ""}${v}%`}
+                    tickLabels={["-50%", "0", "+50%"]}
+                    orientation="up"
+                  />
+                  <Flex justify="center" gap="4px" mt="2px">
+                    <Button
+                      size="xs"
+                      variant="outline"
+                      h="22px"
+                      px="8px"
+                      fontSize="0.7rem"
+                      onClick={() => handleElevationNudge(-5)}
+                      disabled={elevation <= -50}
+                      title="Decrease elevation by 5%"
+                    >
+                      -5%
+                    </Button>
+                    <Button
+                      size="xs"
+                      variant="outline"
+                      h="22px"
+                      px="8px"
+                      fontSize="0.7rem"
+                      onClick={() => handleElevationNudge(5)}
+                      disabled={elevation >= 50}
+                      title="Increase elevation by 5%"
+                    >
+                      +5%
+                    </Button>
+                  </Flex>
+                  <Flex justify="center" gap="2px" wrap="wrap" maxW="120px" mt="4px">
+                    {[-10, -5, 0, 5, 10, 15, 20, 25, 30].map((presetVal) => {
+                      const isActive = elevation === presetVal;
+                      return (
+                        <Button
+                          key={presetVal}
+                          size="xs"
+                          variant={isActive ? "solid" : "ghost"}
+                          bg={isActive ? "var(--brand-primary, #2563eb)" : "transparent"}
+                          color={isActive ? "#fff" : "var(--text-secondary)"}
+                          h="18px"
+                          px="4px"
+                          fontSize="0.62rem"
+                          fontWeight={isActive ? "700" : "500"}
+                          onClick={() => handleElevationDialChange(presetVal)}
+                        >
+                          {presetVal > 0 ? `+${presetVal}%` : `${presetVal}%`}
+                        </Button>
+                      );
+                    })}
+                  </Flex>
+                </Flex>
               </Grid>
             </div>
+
+            {/* Dedicated Club Slider (0 min to 100 max in 1% increments) */}
+            <DistanceSlider
+              value={distance}
+              onChange={handleDistanceChange}
+              club={club}
+              currentPower={currentPower}
+              wpr={wpr}
+              accentColor={accentVar(club.category)}
+              isCompact={false}
+            />
           </div>
 
           {/* Right Side: LED Screen & Target Vis */}

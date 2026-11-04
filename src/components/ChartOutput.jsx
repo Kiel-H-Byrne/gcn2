@@ -1,12 +1,13 @@
-import { Box, Flex, Heading, Image, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Image, Text } from "@chakra-ui/react";
 import React from "react";
+import { ArrowUpDown, ChevronDown, ChevronUp } from "lucide-react";
 import balls from "../data/balls";
 import {
   WIND_MODES,
   buildRingsPerWindTable,
   buildWindPerRingTable,
 } from "../lib/wind";
-import { accentVar, getClubImageUrl } from "../utils";
+import { accentVar, getClubImageUrl, sortBagClubs } from "../utils";
 import CategoryIcon from "./CategoryIcon";
 
 function getAccuracyColor(acc) {
@@ -198,7 +199,20 @@ function PrintTable({ club, level, mode, settings, shorthandHeaders }) {
   }
 }
 
-export function ClubChartCard({ club, level, mode, settings, isFullscreen }) {
+export function ClubChartCard({
+  club,
+  level,
+  mode,
+  settings,
+  isFullscreen,
+  canMoveUp = false,
+  canMoveDown = false,
+  onMoveUp,
+  onMoveDown,
+  onDragStart,
+  onDragOver,
+  onDrop,
+}) {
   const accuracy = club.accuracy[level - 1];
   const accColor = getAccuracyColor(accuracy);
   const accentColor = accentVar(club.category);
@@ -215,11 +229,15 @@ export function ClubChartCard({ club, level, mode, settings, isFullscreen }) {
       boxShadow="var(--shadow-sm)"
       pageBreakInside="avoid"
       breakInside="avoid"
+      draggable={Boolean(onDragStart)}
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
     >
       <Flex
         className="club-chart-head"
         align="center"
-        gap="12px"
+        gap="10px"
         bg="var(--surface-2)"
         borderBottom="1px solid var(--border)"
       >
@@ -265,6 +283,58 @@ export function ClubChartCard({ club, level, mode, settings, isFullscreen }) {
                 {accuracy}
               </Text>
             </Flex>
+          </Flex>
+        </Flex>
+
+        {/* Move / Reposition Controls & Stat */}
+        <Flex align="center" gap="8px">
+          {(canMoveUp || canMoveDown) && (
+            <Flex
+              className="club-chart-move-controls no-print"
+              align="center"
+              gap="2px"
+            >
+              <button
+                type="button"
+                className="club-reorder-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMoveUp?.();
+                }}
+                disabled={!canMoveUp}
+                title={`Move ${club.name} earlier/up in bag`}
+                aria-label={`Move ${club.name} earlier`}
+              >
+                <ChevronUp size={14} />
+              </button>
+              <button
+                type="button"
+                className="club-reorder-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMoveDown?.();
+                }}
+                disabled={!canMoveDown}
+                title={`Move ${club.name} later/down in bag`}
+                aria-label={`Move ${club.name} later`}
+              >
+                <ChevronDown size={14} />
+              </button>
+            </Flex>
+          )}
+
+          <Flex
+            direction="column"
+            align="flex-end"
+            fontSize="0.75rem"
+            className="club-chart-stat"
+          >
+            <Text as="span" color="var(--text-secondary)" fontWeight="normal">
+              {isFullscreen ? "Acc" : "Accuracy"}
+            </Text>
+            <Text as="strong" color={accColor}>
+              {accuracy}
+            </Text>
           </Flex>
         </Flex>
       </Flex>
@@ -314,7 +384,14 @@ export function ClubChartCard({ club, level, mode, settings, isFullscreen }) {
   );
 }
 
-export default function ChartOutput({ bag, clubs, settings, isWidgetMode }) {
+export default function ChartOutput({
+  bag,
+  setBag,
+  clubs,
+  settings,
+  isWidgetMode,
+  onReorderClub,
+}) {
   if (bag.length === 0) {
     return (
       <Flex
@@ -337,10 +414,48 @@ export default function ChartOutput({ bag, clubs, settings, isWidgetMode }) {
     balls.find((b) => b.name === settings.ballName) || balls[0];
   const mode = WIND_MODES[selectedBall.power] || WIND_MODES[0];
 
+  const handleMove = (index, delta) => {
+    const target = index + delta;
+    if (target < 0 || target >= bag.length) return;
+    if (onReorderClub) {
+      onReorderClub(index, target);
+      return;
+    }
+    if (setBag) {
+      const newBag = [...bag];
+      const [item] = newBag.splice(index, 1);
+      newBag.splice(target, 0, item);
+      setBag(newBag);
+    }
+  };
+
+  const handleDragDrop = (fromIndex, toIndex) => {
+    if (fromIndex === toIndex || toIndex < 0 || toIndex >= bag.length) return;
+    if (onReorderClub) {
+      onReorderClub(fromIndex, toIndex);
+      return;
+    }
+    if (setBag) {
+      const newBag = [...bag];
+      const [item] = newBag.splice(fromIndex, 1);
+      newBag.splice(toIndex, 0, item);
+      setBag(newBag);
+    }
+  };
+
+  const handleSortStandard = () => {
+    const sorted = sortBagClubs(bag, clubs);
+    if (setBag) {
+      setBag(sorted);
+    }
+  };
+
+  const canReorder = Boolean(setBag || onReorderClub);
+
   if (isWidgetMode) {
     return (
       <Box className="fullscreen-body" mt="6px">
-        {bag.map((entry) => {
+        {bag.map((entry, idx) => {
           const club = clubs.find((c) => c.id === entry.clubId);
           if (!club) return null;
           const level = Math.min(Math.max(entry.level, 1), club.maxLevel);
@@ -352,6 +467,16 @@ export default function ChartOutput({ bag, clubs, settings, isWidgetMode }) {
               mode={mode}
               settings={settings}
               isFullscreen
+              canMoveUp={canReorder && idx > 0}
+              canMoveDown={canReorder && idx < bag.length - 1}
+              onMoveUp={() => handleMove(idx, -1)}
+              onMoveDown={() => handleMove(idx, 1)}
+              onDragStart={(e) => e.dataTransfer?.setData("text/plain", String(idx))}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                const from = parseInt(e.dataTransfer?.getData("text/plain"), 10);
+                if (!isNaN(from)) handleDragDrop(from, idx);
+              }}
             />
           );
         })}
@@ -380,8 +505,9 @@ export default function ChartOutput({ bag, clubs, settings, isWidgetMode }) {
             display="flex"
             alignItems="center"
             gap="8px"
+            flexWrap="wrap"
           >
-            Wind Adjustment Charts
+            <span>Wind Adjustment Charts</span>
             <Box
               as="span"
               bg="var(--surface-2)"
@@ -395,6 +521,20 @@ export default function ChartOutput({ bag, clubs, settings, isWidgetMode }) {
             >
               {bag.length} clubs
             </Box>
+            {bag.length > 1 && canReorder && (
+              <Button
+                size="xs"
+                variant="outline"
+                onClick={handleSortStandard}
+                fontSize="0.72rem"
+                h="24px"
+                px="8px"
+                title="Sort clubs in standard in-game order (Drivers -> Sand Wedges)"
+              >
+                <ArrowUpDown size={12} style={{ marginRight: "4px" }} />
+                Game Order
+              </Button>
+            )}
           </Heading>
           <Text fontSize="0.78rem" color="var(--text-muted)" m="2px 0 0">
             {selectedBall.name} Ball (P{selectedBall.power}) ·{" "}
@@ -402,6 +542,7 @@ export default function ChartOutput({ bag, clubs, settings, isWidgetMode }) {
             {Number(settings.elevation) !== 0
               ? ` · ${Number(settings.elevation) > 0 ? "+" : ""}${settings.elevation}% Elev`
               : ""}
+            {bag.length > 1 && canReorder && " · Use ▲ / ▼ to reposition ring charts in bag"}
           </Text>
         </Box>
 
@@ -430,7 +571,7 @@ export default function ChartOutput({ bag, clubs, settings, isWidgetMode }) {
         gap="16px"
         alignItems="start"
       >
-        {bag.map((entry) => {
+        {bag.map((entry, idx) => {
           const club = clubs.find((c) => c.id === entry.clubId);
           if (!club) return null;
           const level = Math.min(Math.max(entry.level, 1), club.maxLevel);
@@ -441,6 +582,16 @@ export default function ChartOutput({ bag, clubs, settings, isWidgetMode }) {
               level={level}
               mode={mode}
               settings={settings}
+              canMoveUp={canReorder && idx > 0}
+              canMoveDown={canReorder && idx < bag.length - 1}
+              onMoveUp={() => handleMove(idx, -1)}
+              onMoveDown={() => handleMove(idx, 1)}
+              onDragStart={(e) => e.dataTransfer?.setData("text/plain", String(idx))}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                const from = parseInt(e.dataTransfer?.getData("text/plain"), 10);
+                if (!isNaN(from)) handleDragDrop(from, idx);
+              }}
             />
           );
         })}

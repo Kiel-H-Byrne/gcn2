@@ -19,6 +19,12 @@ import {
   trackProfileSave,
 } from "../lib/analytics";
 
+const ELEVATION_OPTIONS = [
+  -50, -45, -40, -35, -30, -25, -20, -15, -10, -5,
+  0,
+  5, 10, 15, 20, 25, 30, 35, 40, 45, 50,
+];
+
 export default function ChartControls({
   bag = [],
   setBag,
@@ -212,7 +218,8 @@ export default function ChartControls({
         templateColumns={{
           base: "1fr",
           sm: "repeat(2, 1fr)",
-          lg: settings.variant === "wind" ? "repeat(4, 1fr)" : "repeat(3, 1fr)",
+          md: "repeat(3, 1fr)",
+          lg: settings.variant === "wind" ? "repeat(5, 1fr)" : "repeat(4, 1fr)",
         }}
         gap="14px"
         alignItems="end"
@@ -396,6 +403,69 @@ export default function ChartControls({
               {balls.map((b) => (
                 <option key={b.name} value={b.name}>
                   {b.name} (Power {b.power})
+                </option>
+              ))}
+            </NativeSelect.Field>
+            <NativeSelect.Indicator />
+          </NativeSelect.Root>
+        </Box>
+
+        {/* 3. Elevation Selection (Increments of 5%) */}
+        <Box>
+          <Flex justify="space-between" align="center" mb="6px">
+            <Text
+              as="label"
+              htmlFor="chart-elevation-select"
+              fontSize="0.8rem"
+              fontWeight="600"
+              color="var(--text-secondary)"
+            >
+              Elevation (
+              {Number(settings.elevation) > 0
+                ? `+${settings.elevation}%`
+                : `${settings.elevation || 0}%`}
+              )
+            </Text>
+            {Number(settings.elevation) !== 0 && (
+              <Button
+                size="xs"
+                variant="ghost"
+                color="var(--brand-primary)"
+                fontSize="0.7rem"
+                h="auto"
+                p="0"
+                onClick={() => setSettings({ ...settings, elevation: 0 })}
+              >
+                Reset (0%)
+              </Button>
+            )}
+          </Flex>
+          <NativeSelect.Root>
+            <NativeSelect.Field
+              id="chart-elevation-select"
+              value={Number(settings.elevation) || 0}
+              onChange={(e) =>
+                setSettings({ ...settings, elevation: Number(e.target.value) })
+              }
+              bg="var(--surface-2)"
+              fontSize="0.84rem"
+              h="36px"
+              fontWeight={Number(settings.elevation) !== 0 ? "700" : "normal"}
+              color={
+                Number(settings.elevation) > 0
+                  ? "var(--brand-primary, #2563eb)"
+                  : Number(settings.elevation) < 0
+                  ? "var(--danger, #ef4444)"
+                  : "inherit"
+              }
+            >
+              {ELEVATION_OPTIONS.map((val) => (
+                <option key={val} value={val}>
+                  {val === 0
+                    ? "0% (Flat / Level)"
+                    : val > 0
+                    ? `+${val}% (Downhill)`
+                    : `${val}% (Uphill)`}
                 </option>
               ))}
             </NativeSelect.Field>

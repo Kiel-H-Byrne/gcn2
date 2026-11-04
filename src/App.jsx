@@ -237,7 +237,7 @@ export default function App() {
             />
           )}
 
-          <ChartOutput bag={bag} clubs={clubs} settings={settings} />
+          <ChartOutput bag={bag} setBag={setBag} clubs={clubs} settings={settings} />
 
           <Footer onNavigate={navigate} />
         </>
@@ -272,6 +272,7 @@ export default function App() {
       {isFullscreenOpen && (
         <FullscreenOverlay
           bag={bag}
+          setBag={setBag}
           clubs={clubs}
           settings={settings}
           onClose={() => {
