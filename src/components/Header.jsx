@@ -202,19 +202,26 @@ export default function Header({
             style={
               isWidgetMode
                 ? {
-                    padding: "4px",
-                    borderRadius: "50%",
-                    minWidth: "28px",
+                    padding: "4px 10px",
+                    borderRadius: "16px",
                     height: "28px",
-                    display: "flex",
+                    display: "inline-flex",
                     alignItems: "center",
-                    justifyContent: "center",
+                    gap: "4px",
+                    background: "var(--surface-2)",
+                    border: "1px solid var(--border-strong)",
+                    fontSize: "0.75rem",
+                    fontWeight: 700,
+                    color: "var(--text-primary)",
                   }
                 : undefined
             }
           >
             {isWidgetMode ? (
-              <X size={16} />
+              <>
+                <X size={14} style={{ color: "#ef4444" }} />
+                <span>Exit Widget</span>
+              </>
             ) : (
               <>
                 <Maximize size={14} />

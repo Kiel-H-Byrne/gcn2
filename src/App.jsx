@@ -6,6 +6,7 @@ import ChartControls from "./components/ChartControls";
 import ChartOutput from "./components/ChartOutput";
 import ClubEditorModal from "./components/ClubEditorModal";
 import ClubGrid from "./components/ClubGrid";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Footer from "./components/Footer";
 import FullscreenOverlay from "./components/FullscreenOverlay";
 import Header from "./components/Header";
@@ -265,16 +266,22 @@ export default function App() {
           <Footer onNavigate={navigate} />
         </>
       ) : (
-        <WidgetView
-          bag={bag}
-          setBag={setBag}
-          clubs={clubs}
-          settings={settings}
-          setSettings={setSettings}
-          savedProfiles={savedProfiles}
-          setSavedProfiles={setSavedProfiles}
-          navigate={navigate}
-        />
+        <ErrorBoundary
+          onReset={() => setIsWidgetMode(false)}
+          resetLabel="← Exit Widget Mode"
+        >
+          <WidgetView
+            bag={bag}
+            setBag={setBag}
+            clubs={clubs}
+            settings={settings}
+            setSettings={setSettings}
+            savedProfiles={savedProfiles}
+            setSavedProfiles={setSavedProfiles}
+            navigate={navigate}
+            onExitWidget={() => setIsWidgetMode(false)}
+          />
+        </ErrorBoundary>
       )}
 
       {isEditorOpen && (
@@ -339,19 +346,24 @@ export default function App() {
               </button>
             </div>
             <div className="bag-editor-body" style={{ padding: "14px" }}>
-              <UniversalChart
-                clubs={clubs}
-                settings={settings}
-                setSettings={setSettings}
-                setBag={setBag}
-                onLoadToSimulator={(loadedBag, loadedSettings) => {
-                  if (setBag) setBag(loadedBag);
-                  if (setSettings && loadedSettings) setSettings(loadedSettings);
-                  setIsUniversalOpen(false);
-                }}
-                onClose={() => setIsUniversalOpen(false)}
-                navigate={navigate}
-              />
+              <ErrorBoundary
+                onReset={() => setIsUniversalOpen(false)}
+                resetLabel="← Close Universal Chart"
+              >
+                <UniversalChart
+                  clubs={clubs}
+                  settings={settings}
+                  setSettings={setSettings}
+                  setBag={setBag}
+                  onLoadToSimulator={(loadedBag, loadedSettings) => {
+                    if (setBag) setBag(loadedBag);
+                    if (setSettings && loadedSettings) setSettings(loadedSettings);
+                    setIsUniversalOpen(false);
+                  }}
+                  onClose={() => setIsUniversalOpen(false)}
+                  navigate={navigate}
+                />
+              </ErrorBoundary>
             </div>
           </div>
         </div>

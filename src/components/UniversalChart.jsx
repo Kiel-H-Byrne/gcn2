@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Grid, Heading, Image, Input, Select, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Grid, Heading, Image, Input, Text } from "@chakra-ui/react";
 import {
   ArrowUpDown,
   Award,
@@ -549,14 +549,20 @@ export default function UniversalChart({
                 <Text fontSize="0.75rem" fontWeight="bold" color="var(--text-muted)">
                   Category:
                 </Text>
-                <Select
-                  size="sm"
-                  borderRadius="var(--radius-sm)"
-                  bg="var(--surface-1)"
-                  borderColor="var(--border)"
+                <select
+                  className="hud-club-select"
+                  style={{
+                    padding: "4px 8px",
+                    fontSize: "0.8rem",
+                    background: "var(--surface-1)",
+                    color: "var(--text-primary)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "var(--radius-sm)",
+                    cursor: "pointer",
+                    height: "32px",
+                  }}
                   value={matrixCategory}
                   onChange={(e) => setMatrixCategory(e.target.value)}
-                  fontSize="0.8rem"
                 >
                   <option value="All">All Clubs (Normalized 1.0)</option>
                   <option value="Drivers">Drivers (240y)</option>
@@ -566,7 +572,7 @@ export default function UniversalChart({
                   <option value="Wedges">Wedges (45y)</option>
                   <option value="RoughIrons">Rough Irons (135y, 1.45×)</option>
                   <option value="SandWedges">Sand Wedges (120y, 1.15×)</option>
-                </Select>
+                </select>
               </Flex>
 
               {/* Ball Power Selector */}
@@ -1250,11 +1256,19 @@ export default function UniversalChart({
                 <Text fontSize="0.75rem" fontWeight="bold" color="var(--text-muted)">
                   Club:
                 </Text>
-                <Select
-                  size="sm"
-                  borderRadius="var(--radius-sm)"
-                  bg="var(--surface-1)"
-                  borderColor="var(--border)"
+                <select
+                  className="hud-club-select"
+                  style={{
+                    padding: "4px 8px",
+                    fontSize: "0.82rem",
+                    fontWeight: "bold",
+                    background: "var(--surface-1)",
+                    color: "var(--text-primary)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "var(--radius-sm)",
+                    cursor: "pointer",
+                    height: "32px",
+                  }}
                   value={cpcSelectedClubId}
                   onChange={(e) => {
                     const nextId = e.target.value;
@@ -1266,15 +1280,13 @@ export default function UniversalChart({
                       );
                     }
                   }}
-                  fontSize="0.82rem"
-                  fontWeight="bold"
                 >
                   {clubsInCategory.map((club) => (
                     <option key={club.id} value={club.id}>
                       {club.name} ({club.type})
                     </option>
                   ))}
-                </Select>
+                </select>
               </Flex>
 
               {/* Ball Selector for CPC */}
@@ -1282,22 +1294,28 @@ export default function UniversalChart({
                 <Text fontSize="0.75rem" fontWeight="bold" color="var(--text-muted)">
                   Ball:
                 </Text>
-                <Select
-                  size="sm"
-                  width="130px"
-                  borderRadius="var(--radius-sm)"
-                  bg="var(--surface-1)"
-                  borderColor="var(--border)"
+                <select
+                  className="hud-club-select"
+                  style={{
+                    width: "130px",
+                    padding: "4px 8px",
+                    fontSize: "0.78rem",
+                    background: "var(--surface-1)",
+                    color: "var(--text-primary)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "var(--radius-sm)",
+                    cursor: "pointer",
+                    height: "32px",
+                  }}
                   value={cpcBallName}
                   onChange={(e) => setCpcBallName(e.target.value)}
-                  fontSize="0.78rem"
                 >
                   {balls.slice(0, 15).map((b) => (
                     <option key={b.name} value={b.name}>
                       {b.name} (P{b.power ?? 0})
                     </option>
                   ))}
-                </Select>
+                </select>
               </Flex>
 
               {/* Elevation */}

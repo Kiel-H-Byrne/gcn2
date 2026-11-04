@@ -1,5 +1,5 @@
 import { Box, Flex, Text } from "@chakra-ui/react";
-import { ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpDown, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ChartOutput from "./ChartOutput";
 import ReferenceGraph from "./ReferenceGraph";
@@ -25,6 +25,7 @@ export default function WidgetView({
   savedProfiles = {},
   setSavedProfiles,
   navigate,
+  onExitWidget,
 }) {
   const scrollRef = useRef(null);
   const tabStripRef = useRef(null);
@@ -247,6 +248,19 @@ export default function WidgetView({
         >
           <ChevronRight size={16} />
         </button>
+
+        {onExitWidget && (
+          <button
+            type="button"
+            className="widget-tab-arrow"
+            onClick={onExitWidget}
+            title="Exit Widget Mode"
+            aria-label="Exit Widget Mode"
+            style={{ marginLeft: "4px", color: "#ef4444" }}
+          >
+            <X size={14} />
+          </button>
+        )}
       </Flex>
 
       {/* Swipeable scroll container */}
