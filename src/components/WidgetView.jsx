@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ChartOutput from "./ChartOutput";
 import ReferenceGraph from "./ReferenceGraph";
 import ShotCalculator from "./ShotCalculator";
-import UniversalChart from "./UniversalChart";
+import QuickChart from "./QuickChart";
 import { sortBagClubs } from "../utils";
 
 function isSameBag(bagA, bagB) {
@@ -105,12 +105,12 @@ export default function WidgetView({
       });
     }
 
-    // Always include the Universal / Golden / CPC Reference Chart tab
+    // Always include the Universal quick chart tab (generic, no setup)
     list.push({
       id: "universal-chart",
       type: "universal",
       label: "Universal",
-      title: "Universal & Checkpoint Chart",
+      title: "Universal Quick Chart",
     });
 
     // Always include the Reference Graph tab
@@ -296,19 +296,14 @@ export default function WidgetView({
                 </Box>
               )
             ) : page.type === "universal" ? (
-              <UniversalChart
-                clubs={clubs}
-                settings={settings}
-                setSettings={setSettings}
-                setBag={setBag}
-                onLoadToSimulator={(loadedBag, loadedSettings) => {
-                  if (setBag) setBag(loadedBag);
-                  if (setSettings && loadedSettings) setSettings(loadedSettings);
-                  scrollToPage(0);
-                }}
-                isWidgetMode={true}
-                navigate={navigate}
-              />
+              <Box
+                bg="var(--surface-1)"
+                border="1px solid var(--border)"
+                borderRadius="var(--radius-lg)"
+                p="8px"
+              >
+                <QuickChart isWidgetMode={true} />
+              </Box>
             ) : page.type === "reference" ? (
               <ReferenceGraph
                 bag={bag}

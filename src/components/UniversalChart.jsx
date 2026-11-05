@@ -29,6 +29,7 @@ import CategoryIcon from "./CategoryIcon";
 import { ClubChartCard } from "./ChartOutput";
 import DistanceSlider from "./DistanceSlider";
 import LevelPicker from "./LevelPicker";
+import QuickChart from "./QuickChart";
 
 // Category nominal max carry distances and multipliers (Golf Clash physics)
 const CATEGORY_NOMINAL = {
@@ -62,7 +63,7 @@ export default function UniversalChart({
   onClose,
   navigate,
 }) {
-  const [activeTab, setActiveTab] = useState("matrix"); // "matrix" | "golden" | "cpc"
+  const [activeTab, setActiveTab] = useState("quick"); // "quick" | "matrix" | "golden" | "cpc"
 
   // ----------------------------------------------------
   // SUB-MODE 1: UNIVERSAL ACCURACY MATRIX
@@ -480,7 +481,7 @@ export default function UniversalChart({
               Universal Reference Chart
             </Heading>
             <Text fontSize="0.7rem" color="var(--text-muted)" m="0">
-              One-size-fits-all ring adjustments · Golden Shot · Checkpoint Challenge
+              Quick chart works for any club · advanced tools in the other tabs
             </Text>
           </Box>
         </Flex>
@@ -492,7 +493,20 @@ export default function UniversalChart({
           borderRadius="var(--radius-sm)"
           border="1px solid var(--border)"
           gap="2px"
+          maxW="100%"
+          overflowX="auto"
+          className="no-scrollbar"
+          css={{ "& button": { whiteSpace: "nowrap", flexShrink: 0 } }}
         >
+          <button
+            type="button"
+            className={`universal-subtab-btn ${activeTab === "quick" ? "is-active" : ""}`}
+            onClick={() => setActiveTab("quick")}
+            title="Quick Chart: one generic table for any club, no setup"
+          >
+            <Zap size={13} style={{ marginRight: "4px", color: "#22c55e" }} />
+            Quick
+          </button>
           <button
             type="button"
             className={`universal-subtab-btn ${activeTab === "matrix" ? "is-active" : ""}`}
@@ -500,7 +514,7 @@ export default function UniversalChart({
             title="Universal Accuracy Matrix: 0 to 100 Accuracy reference table"
           >
             <Target size={13} style={{ marginRight: "4px" }} />
-            Accuracy Matrix
+            {isWidgetMode ? "Matrix" : "Accuracy Matrix"}
           </button>
           <button
             type="button"
@@ -518,10 +532,12 @@ export default function UniversalChart({
             title="Checkpoint Challenge: Quick on-the-fly club and level lookup without saving to bag"
           >
             <Zap size={13} style={{ marginRight: "4px", color: "#3b82f6" }} />
-            Checkpoint (CPC)
+            {isWidgetMode ? "CPC" : "Checkpoint (CPC)"}
           </button>
         </Flex>
       </Flex>
+
+      {activeTab === "quick" && <QuickChart isWidgetMode={isWidgetMode} />}
 
       {/* ==================================================== */}
       {/* 1. ACCURACY MATRIX TAB                               */}
