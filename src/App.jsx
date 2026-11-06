@@ -267,7 +267,7 @@ export default function App() {
       ) : (
         <ErrorBoundary
           onReset={() => setIsWidgetMode(false)}
-          resetLabel="← Exit Widget Mode"
+          resetLabel="← Exit Live Play"
         >
           <WidgetView
             bag={bag}

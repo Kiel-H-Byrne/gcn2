@@ -2,14 +2,16 @@ import { Box, Flex, Heading, Text, Grid } from "@chakra-ui/react";
 import {
   BookOpen,
   Briefcase,
+  Gamepad2,
   Info,
   Lightbulb,
-  Maximize,
+  Moon,
+  Sun,
   TrendingUp,
   Trophy,
   X,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   trackGuideToggle,
   trackReferenceToggle,
@@ -68,6 +70,27 @@ export default function Header({
   };
 
   const activeBagName = settings?.title?.trim() || "";
+
+  const [systemDark, setSystemDark] = useState(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return false;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (e) => setSystemDark(e.matches);
+    mediaQuery.addEventListener?.("change", handler);
+    return () => mediaQuery.removeEventListener?.("change", handler);
+  }, []);
+
+  const isDark = theme === "dark" || (theme === "system" && systemDark);
+
+  const handleToggleTheme = () => {
+    const nextTheme = isDark ? "light" : "dark";
+    setTheme(nextTheme);
+    trackThemeChange(nextTheme);
+  };
 
   return (
     <Box as="header" className="app-header" mb={isWidgetMode ? "4px" : "16px"}>
@@ -197,8 +220,8 @@ export default function Header({
               }
               trackViewModeChange(next ? "widget" : "standard");
             }}
-            title={isWidgetMode ? "Exit Widget Mode" : "Toggle Widget Mode (compact view)"}
-            aria-label={isWidgetMode ? "Exit Widget Mode" : "Widget Mode"}
+            title={isWidgetMode ? "Exit Live Play" : "Switch to Live Play Mode (in-game HUD)"}
+            aria-label={isWidgetMode ? "Exit Live Play" : "Live Play Mode"}
             style={
               isWidgetMode
                 ? {
@@ -220,32 +243,44 @@ export default function Header({
             {isWidgetMode ? (
               <>
                 <X size={14} style={{ color: "#ef4444" }} />
-                <span>Exit Widget</span>
+                <span>Exit Live Play</span>
               </>
             ) : (
               <>
-                <Maximize size={14} />
-                <span className="header-btn-text">Widget</span>
+                <Gamepad2 size={14} style={{ color: "#10b981" }} />
+                <span className="header-btn-text">Live Play</span>
               </>
             )}
           </button>
 
-          {!isWidgetMode && (
-            <select
-              value={theme}
-              onChange={(e) => {
-                setTheme(e.target.value);
-                trackThemeChange(e.target.value);
-              }}
-              className="header-select"
-              title="Theme Selection"
-              aria-label="Theme Selection"
-            >
-              <option value="system">Auto</option>
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-            </select>
-          )}
+          <button
+            type="button"
+            className="btn-ghost header-btn"
+            onClick={handleToggleTheme}
+            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            aria-label={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            style={
+              isWidgetMode
+                ? {
+                    padding: "4px",
+                    width: "28px",
+                    height: "28px",
+                    minWidth: "28px",
+                    borderRadius: "6px",
+                    justifyContent: "center",
+                  }
+                : undefined
+            }
+          >
+            {isDark ? (
+              <Sun size={14} style={{ color: "#eab308" }} />
+            ) : (
+              <Moon size={14} style={{ color: "#818cf8" }} />
+            )}
+            {!isWidgetMode && (
+              <span className="header-btn-text">{isDark ? "Light" : "Dark"}</span>
+            )}
+          </button>
         </Flex>
       </Flex>
 

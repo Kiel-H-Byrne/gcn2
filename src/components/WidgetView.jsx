@@ -254,8 +254,8 @@ export default function WidgetView({
             type="button"
             className="widget-tab-arrow"
             onClick={onExitWidget}
-            title="Exit Widget Mode"
-            aria-label="Exit Widget Mode"
+            title="Exit Live Play"
+            aria-label="Exit Live Play"
             style={{ marginLeft: "4px", color: "#ef4444" }}
           >
             <X size={14} />
@@ -291,7 +291,7 @@ export default function WidgetView({
                     No Active Bag Loaded
                   </Text>
                   <Text mb="12px">
-                    Swipe right to view a saved bag and tap &quot;Load in Simulator&quot;, or exit widget mode to add clubs.
+                    Swipe right to view a saved bag and tap &quot;Load in Simulator&quot;, or exit Live Play to add clubs.
                   </Text>
                 </Box>
               )

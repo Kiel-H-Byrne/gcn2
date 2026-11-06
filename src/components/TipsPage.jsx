@@ -194,7 +194,7 @@ export const VETTED_TIPS = [
       "If Accuracy is 100: WPR is 1.0 at Max distance (1 ring per 1 mph on Woods/Long Irons).",
       "If Accuracy is 50: WPR is 2.0 at Max distance (1 ring per 2 mph on Woods/Long Irons).",
       "If Accuracy is 0: WPR is 3.0 at Max distance (1 ring per 3 mph).",
-      "Use our Universal Chart / CPC Quick Roster tab in the widget to look up your club in 2 taps without touching your saved bags.",
+      "Use our Universal Chart / CPC Quick Roster tab in Live Play to look up your club in 2 taps without touching your saved bags.",
     ],
     example: "Handed a Sniper 8 (Acc 100) on a shootout: adjust 1 ring per 1.0 mph wind. Handed a Big Dawg 5 (Acc 30): adjust 1 ring per 2.4 mph wind.",
     citation: {
