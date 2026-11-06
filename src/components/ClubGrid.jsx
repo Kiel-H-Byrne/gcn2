@@ -6,6 +6,7 @@ import {
   CATEGORY_ORDER,
   accentVar,
   getClubImageUrl,
+  sortBagClubs,
 } from "../utils";
 import CategoryIcon from "./CategoryIcon";
 import LevelPicker from "./LevelPicker";
@@ -43,7 +44,10 @@ export default function ClubGrid({
     const suggested = lastLevel
       ? Math.min(Math.max(lastLevel, 1), club.maxLevel)
       : club.maxLevel;
-    const newBag = [...bag, { clubId: club.id, level: suggested }];
+    const newBag = sortBagClubs(
+      [...bag, { clubId: club.id, level: suggested }],
+      clubs
+    );
     setBag(newBag);
     setLastLevel(suggested);
 

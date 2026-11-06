@@ -1,17 +1,21 @@
 import { Box, Grid } from "@chakra-ui/react";
-import { X } from "lucide-react";
+import { Trophy, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import BagPanel from "./components/BagPanel";
 import ChartControls from "./components/ChartControls";
 import ChartOutput from "./components/ChartOutput";
 import ClubEditorModal from "./components/ClubEditorModal";
 import ClubGrid from "./components/ClubGrid";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Footer from "./components/Footer";
 import FullscreenOverlay from "./components/FullscreenOverlay";
 import Header from "./components/Header";
 import PrintSheet from "./components/PrintSheet";
 import ReferenceGraph from "./components/ReferenceGraph";
 import ShotCalculator from "./components/ShotCalculator";
+import TipsPage from "./components/TipsPage";
+import ResourcesPage from "./components/ResourcesPage";
+import UniversalChart from "./components/UniversalChart";
 import WidgetView from "./components/WidgetView";
 import LandingPage from "./components/landing/LandingPage";
 import { useApp } from "./hooks/useApp";
@@ -56,8 +60,16 @@ export default function App() {
   const [isWidgetMode, setIsWidgetMode] = useState(false);
   const [isBagEditingOpen, setIsBagEditingOpen] = useState(bag.length === 0);
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
+  const [isUniversalOpen, setIsUniversalOpen] = useState(false);
 
-  const { currentPath, navigate, landingConfig, isLandingPage } = useRoute();
+  const {
+    currentPath,
+    navigate,
+    landingConfig,
+    isLandingPage,
+    isTipsPage,
+    isResourcesPage,
+  } = useRoute();
 
   useEffect(() => {
     initGA();
@@ -65,13 +77,13 @@ export default function App() {
     checkAndTrackReturnVisit();
     setupPWAInstallTracking();
 
-    if (!isLandingPage) {
+    if (!isLandingPage && !isTipsPage && !isResourcesPage) {
       trackPageView();
       if (bag.length === 0) {
         trackBagStarted({ source: "initial_modal" });
       }
     }
-  }, [isLandingPage]);
+  }, [isLandingPage, isTipsPage, isResourcesPage]);
 
   const handleCloseBagEditor = () => {
     setIsBagEditingOpen(false);
@@ -88,6 +100,14 @@ export default function App() {
       });
     }
   };
+
+  if (isTipsPage) {
+    return <TipsPage navigate={navigate} onBack={() => navigate("/")} />;
+  }
+
+  if (isResourcesPage) {
+    return <ResourcesPage navigate={navigate} onBack={() => navigate("/")} />;
+  }
 
   if (isLandingPage && landingConfig) {
     return (
@@ -117,6 +137,9 @@ export default function App() {
         setIsBagEditingOpen={setIsBagEditingOpen}
         isReferenceOpen={isReferenceOpen}
         setIsReferenceOpen={setIsReferenceOpen}
+        isUniversalOpen={isUniversalOpen}
+        setIsUniversalOpen={setIsUniversalOpen}
+        navigate={navigate}
         theme={theme}
         setTheme={setTheme}
         bag={bag}
@@ -237,20 +260,27 @@ export default function App() {
             />
           )}
 
-          <ChartOutput bag={bag} clubs={clubs} settings={settings} />
+          <ChartOutput bag={bag} setBag={setBag} clubs={clubs} settings={settings} />
 
           <Footer onNavigate={navigate} />
         </>
       ) : (
-        <WidgetView
-          bag={bag}
-          setBag={setBag}
-          clubs={clubs}
-          settings={settings}
-          setSettings={setSettings}
-          savedProfiles={savedProfiles}
-          setSavedProfiles={setSavedProfiles}
-        />
+        <ErrorBoundary
+          onReset={() => setIsWidgetMode(false)}
+          resetLabel="← Exit Live Play"
+        >
+          <WidgetView
+            bag={bag}
+            setBag={setBag}
+            clubs={clubs}
+            settings={settings}
+            setSettings={setSettings}
+            savedProfiles={savedProfiles}
+            setSavedProfiles={setSavedProfiles}
+            navigate={navigate}
+            onExitWidget={() => setIsWidgetMode(false)}
+          />
+        </ErrorBoundary>
       )}
 
       {isEditorOpen && (
@@ -272,6 +302,7 @@ export default function App() {
       {isFullscreenOpen && (
         <FullscreenOverlay
           bag={bag}
+          setBag={setBag}
           clubs={clubs}
           settings={settings}
           onClose={() => {
@@ -279,6 +310,63 @@ export default function App() {
             trackViewModeChange(isWidgetMode ? "widget" : "standard");
           }}
         />
+      )}
+
+      {isUniversalOpen && (
+        <div
+          className="bag-editor-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Universal Reference Chart"
+          onClick={(e) => {
+            if (e.target.classList.contains("bag-editor-overlay")) {
+              setIsUniversalOpen(false);
+            }
+          }}
+        >
+          <div className="bag-editor-content universal-modal-content" style={{ maxWidth: "1080px" }}>
+            <div className="bag-editor-header">
+              <h2 style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <Trophy size={18} style={{ color: "#eab308" }} />
+                Universal Reference Chart
+              </h2>
+              <button
+                className="icon-btn"
+                type="button"
+                aria-label="Close Universal Chart"
+                onClick={() => setIsUniversalOpen(false)}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  cursor: "pointer",
+                  color: "var(--text-primary)",
+                }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="bag-editor-body universal-modal-body" style={{ padding: "14px" }}>
+              <ErrorBoundary
+                onReset={() => setIsUniversalOpen(false)}
+                resetLabel="← Close Universal Chart"
+              >
+                <UniversalChart
+                  clubs={clubs}
+                  settings={settings}
+                  setSettings={setSettings}
+                  setBag={setBag}
+                  onLoadToSimulator={(loadedBag, loadedSettings) => {
+                    if (setBag) setBag(loadedBag);
+                    if (setSettings && loadedSettings) setSettings(loadedSettings);
+                    setIsUniversalOpen(false);
+                  }}
+                  onClose={() => setIsUniversalOpen(false)}
+                  navigate={navigate}
+                />
+              </ErrorBoundary>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Dedicated single-page, one-sided Print & PDF sheet */}

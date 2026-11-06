@@ -15,6 +15,30 @@ export function accentVar(category) {
   return `var(--series-${CATEGORY_SLOT[category] || 1})`;
 }
 
+/**
+ * Sorts clubs in a bag to the standard Golf Clash in-game order:
+ * Drivers -> Woods -> Long Irons -> Short Irons -> Wedges -> Rough Irons -> Sand Wedges.
+ * If multiple clubs are in the same category, orders them by tour ascending, then name.
+ */
+export function sortBagClubs(bagList, allClubs = []) {
+  if (!Array.isArray(bagList) || bagList.length <= 1) return bagList || [];
+  return [...bagList].sort((a, b) => {
+    const clubA = allClubs.find((c) => c.id === a.clubId);
+    const clubB = allClubs.find((c) => c.id === b.clubId);
+    if (!clubA && !clubB) return 0;
+    if (!clubA) return 1;
+    if (!clubB) return -1;
+    const catA = CATEGORY_ORDER.indexOf(clubA.category);
+    const catB = CATEGORY_ORDER.indexOf(clubB.category);
+    const idxA = catA === -1 ? 999 : catA;
+    const idxB = catB === -1 ? 999 : catB;
+    if (idxA !== idxB) {
+      return idxA - idxB;
+    }
+    return (clubA.tour || 0) - (clubB.tour || 0) || clubA.name.localeCompare(clubB.name);
+  });
+}
+
 export function clamp(n, min, max) {
   return Math.min(max, Math.max(min, n));
 }

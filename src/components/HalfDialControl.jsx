@@ -54,7 +54,7 @@ export default function HalfDialControl({
     let newValue = min + percent * (max - min);
     
     const steppedValue = Math.round(newValue / step) * step;
-    let clampedValue = steppedValue;
+    let clampedValue = Number(steppedValue.toFixed(2));
     if (clampedValue < min) clampedValue = min;
     if (clampedValue > max) clampedValue = max;
     
@@ -99,30 +99,52 @@ export default function HalfDialControl({
         height="50px"
       >
         {/* Ticks */}
-        {Array.from({ length: 11 }).map((_, i) => {
-          const angle = -90 + (i * 180) / 10;
-          const isCardinal = i === 0 || i === 5 || i === 10;
-          return (
-            <Box
-              key={i}
-              position="absolute"
-              top={orientation === "down" ? "0" : "auto"}
-              bottom={orientation === "up" ? "0" : "auto"}
-              left="50%"
-              transform={`translateX(-50%) rotate(${angle}deg)`}
-              transformOrigin={orientation === "up" ? "50% 100%" : "50% 0%"}
-              width="2px"
-              height={isCardinal ? "50px" : "44px"}
-            >
-              <Box 
-                width="2px" 
-                height={isCardinal ? "6px" : "3px"} 
-                bg={isCardinal ? "var(--text-secondary)" : "var(--border-strong)"} 
-                mt={orientation === "down" ? (isCardinal ? "44px" : "41px") : "0px"}
-              />
-            </Box>
-          );
-        })}
+        {(() => {
+          const totalSteps =
+            max !== undefined && min !== undefined && step > 0
+              ? Math.min(20, Math.round((max - min) / step))
+              : 10;
+          return Array.from({ length: totalSteps + 1 }).map((_, i) => {
+            const angle = -90 + (i * 180) / totalSteps;
+            const isCardinal =
+              i === 0 || i === Math.round(totalSteps / 2) || i === totalSteps;
+            const isSubCardinal = totalSteps >= 20 ? i % 2 === 0 : false;
+            return (
+              <Box
+                key={i}
+                position="absolute"
+                top={orientation === "down" ? "0" : "auto"}
+                bottom={orientation === "up" ? "0" : "auto"}
+                left="50%"
+                transform={`translateX(-50%) rotate(${angle}deg)`}
+                transformOrigin={orientation === "up" ? "50% 100%" : "50% 0%"}
+                width="2px"
+                height={isCardinal ? "50px" : isSubCardinal ? "46px" : "44px"}
+              >
+                <Box
+                  width="2px"
+                  height={isCardinal ? "6px" : isSubCardinal ? "4px" : "3px"}
+                  bg={
+                    isCardinal
+                      ? "var(--text-secondary)"
+                      : isSubCardinal
+                      ? "var(--border-strong)"
+                      : "var(--border)"
+                  }
+                  mt={
+                    orientation === "down"
+                      ? isCardinal
+                        ? "44px"
+                        : isSubCardinal
+                        ? "46px"
+                        : "47px"
+                      : "0px"
+                  }
+                />
+              </Box>
+            );
+          });
+        })()}
 
         {/* The Knob Clip Container (which is a perfect half-circle with a border) */}
         <Box

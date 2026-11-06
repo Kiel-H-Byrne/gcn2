@@ -139,7 +139,42 @@ function buildRingsPerWindTable(club, level, mode, elevation = 0, { minWind = 1,
   return rows;
 }
 
+/**
+ * Generic (club-less) wind chart: rings of adjustment per wind speed for an
+ * "any club" accuracy value. Used by the Quick Chart so a player can read a
+ * single table without picking a club, level or bag.
+ */
+const GENERIC_FLOOR = 0.75; // Driver/Wood-style min-power floor
+
+function genericWindPerRing(accuracy, powerIdx = 0) {
+  const mode = WIND_MODES[powerIdx] || WIND_MODES[0];
+  const base = 1 + (100 - accuracy) * 0.02;
+  const maxP = mode.powerCoefficient;
+  const minP = GENERIC_FLOOR * mode.powerCoefficient;
+  const midP = (maxP + minP) / 2;
+  return { max: base / maxP, mid: base / midP, min: base / minP };
+}
+
+/** Rows of { wind, max, mid, min } ring counts for a generic accuracy value. */
+function buildGenericRingsPerWindTable(accuracy, { powerIdx = 0, minWind = 1, maxWind = 16, step = 1 } = {}) {
+  const wpr = genericWindPerRing(accuracy, powerIdx);
+  const rows = [];
+  const steps = Math.round((maxWind - minWind) / step);
+  for (let i = 0; i <= steps; i++) {
+    const wind = Math.round((minWind + i * step) * 100) / 100;
+    rows.push({
+      wind,
+      max: Math.floor((wind / wpr.max) * 10) / 10,
+      mid: Math.floor((wind / wpr.mid) * 10) / 10,
+      min: Math.floor((wind / wpr.min) * 10) / 10,
+    });
+  }
+  return rows;
+}
+
 export {
+  genericWindPerRing,
+  buildGenericRingsPerWindTable,
   CATEGORY_MAX_DISTANCE,
   WIND_MODES,
   maxPower,

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Box, Flex, Heading, Text, Button, Input } from '@chakra-ui/react';
-import { Check, Edit2, Plus, Trash2, X } from 'lucide-react';
+import { ArrowUpDown, Check, ChevronDown, ChevronUp, Edit2, Plus, Trash2, X } from 'lucide-react';
 import CategoryIcon from './CategoryIcon';
-import { accentVar, slugifyClubName } from '../utils';
+import { accentVar, slugifyClubName, sortBagClubs } from '../utils';
 import LevelPicker from './LevelPicker';
 import {
   trackClubRemove,
@@ -160,6 +160,19 @@ export default function BagPanel({
         setSettings(prev => ({ ...prev, title: '' }));
       }
     }
+  };
+
+  const handleMoveClub = (index, delta) => {
+    const target = index + delta;
+    if (target < 0 || target >= bag.length) return;
+    const newBag = [...bag];
+    const [item] = newBag.splice(index, 1);
+    newBag.splice(target, 0, item);
+    setBag(newBag);
+  };
+
+  const handleSortStandard = () => {
+    setBag(sortBagClubs(bag, clubs));
   };
 
   return (
@@ -368,14 +381,27 @@ export default function BagPanel({
       </Box>
 
       {/* Bag Clubs List Header */}
-      <Flex justify="space-between" align="center" mb="16px" pl="4px">
+      <Flex justify="space-between" align="center" mb="16px" pl="4px" wrap="wrap" gap="6px">
         <Heading as="h2" fontSize="1.1rem" m="0" display="flex" alignItems="center" gap="8px">
           Clubs in Bag 
           <Box as="span" bg="var(--surface-2)" border="1px solid var(--border-strong)" px="6px" py="2px" borderRadius="12px" fontSize="0.85rem">
             {bag.length}
           </Box>
         </Heading>
-        <Flex gap="8px">
+        <Flex gap="6px" align="center">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleSortStandard} 
+            disabled={bag.length <= 1} 
+            px="8px" 
+            h="28px"
+            fontSize="0.75rem"
+            title="Sort clubs into standard in-game order: Drivers -> Woods -> Long Irons -> Short Irons -> Wedges -> Rough Irons -> Sand Wedges"
+          >
+            <ArrowUpDown size={13} style={{ marginRight: "4px" }} />
+            Game Order
+          </Button>
           <Button variant="ghost" size="sm" onClick={handleShare} disabled={bag.length === 0} px="8px" h="28px">
             {copied ? 'Copied!' : 'Share'}
           </Button>
@@ -386,7 +412,7 @@ export default function BagPanel({
       </Flex>
       
       <Box className="bag-list">
-        {bag.map(entry => {
+        {bag.map((entry, idx) => {
           const club = clubs.find(c => c.id === entry.clubId);
           if (!club) return null;
           return (
@@ -395,14 +421,58 @@ export default function BagPanel({
                 <CategoryIcon category={club.category} size={18} className="bag-chip-icon" />
                 <span className="bag-chip-name">{club.name}</span>
                 <span className="club-card-level-badge" style={{ background: accentVar(club.category) }}>Lv {entry.level}</span>
-                <button 
-                  className="bag-chip-remove" 
-                  type="button" 
-                  aria-label={`Remove ${club.name}`}
-                  onClick={() => handleRemove(club.id)}
-                >
-                  <X size={14} />
-                </button>
+                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', marginLeft: 'auto' }}>
+                  <button 
+                    className="bag-chip-move" 
+                    type="button" 
+                    aria-label={`Move ${club.name} up`}
+                    title="Move up in bag"
+                    disabled={idx === 0}
+                    onClick={() => handleMoveClub(idx, -1)}
+                    style={{
+                      border: 'none',
+                      background: 'transparent',
+                      cursor: idx === 0 ? 'default' : 'pointer',
+                      opacity: idx === 0 ? 0.25 : 0.75,
+                      padding: '2px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      color: 'var(--text-primary)',
+                    }}
+                  >
+                    <ChevronUp size={14} />
+                  </button>
+                  <button 
+                    className="bag-chip-move" 
+                    type="button" 
+                    aria-label={`Move ${club.name} down`}
+                    title="Move down in bag"
+                    disabled={idx === bag.length - 1}
+                    onClick={() => handleMoveClub(idx, 1)}
+                    style={{
+                      border: 'none',
+                      background: 'transparent',
+                      cursor: idx === bag.length - 1 ? 'default' : 'pointer',
+                      opacity: idx === bag.length - 1 ? 0.25 : 0.75,
+                      padding: '2px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      color: 'var(--text-primary)',
+                    }}
+                  >
+                    <ChevronDown size={14} />
+                  </button>
+                  <button 
+                    className="bag-chip-remove" 
+                    type="button" 
+                    aria-label={`Remove ${club.name}`}
+                    onClick={() => handleRemove(club.id)}
+                    style={{ marginLeft: '4px' }}
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
               </div>
               <LevelPicker club={club} level={entry.level} onChange={(lvl) => handleSetLevel(club.id, lvl)} source="bag" />
             </Box>

@@ -25,6 +25,8 @@ export default defineConfig({
         grizzlyChart: path.resolve(__dirname, 'golf-clash-grizzly-wind-chart.html'),
         windChart: path.resolve(__dirname, 'golf-clash-wind-chart.html'),
         elevationCalc: path.resolve(__dirname, 'golf-clash-elevation-calculator.html'),
+        tips: path.resolve(__dirname, 'golf-clash-tips.html'),
+        resources: path.resolve(__dirname, 'golf-clash-resources.html'),
       },
     },
   },

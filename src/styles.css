@@ -348,8 +348,14 @@ select {
   .header-btn .header-btn-text {
     display: none;
   }
-  .header-btn {
-    padding: 6px 8px;
+  .header-btn:not(.is-active) {
+    padding: 6px;
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+    justify-content: center;
+  }
+  .header-btn.is-active {
     min-width: 32px;
     height: 32px;
   }
@@ -739,6 +745,30 @@ select {
 .bag-chip-remove:hover {
   color: var(--danger);
   background: var(--surface-1);
+}
+
+.bag-chip-move {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.bag-chip-move:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--surface-1);
+}
+
+.bag-chip-move:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
 }
 
 .bag-empty-hint {
@@ -1158,6 +1188,58 @@ select {
   color: var(--calc-accent, var(--text));
   text-align: center;
 }
+/* ---------- Shot Distance Slider ---------- */
+.shot-slider-container {
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s ease;
+}
+
+.shot-slider-range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--surface-1);
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.shot-slider-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--calc-accent, var(--brand-primary, #3b82f6));
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  border: 2px solid var(--surface-1);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.shot-slider-range::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+}
+
+.shot-slider-range::-webkit-slider-thumb:active {
+  transform: scale(1.25);
+}
+
+.shot-slider-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--calc-accent, var(--brand-primary, #3b82f6));
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  border: 2px solid var(--surface-1);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.shot-slider-range::-moz-range-thumb:hover {
+  transform: scale(1.15);
+}
 /* ---------- HUD Screens (Universal LED) ---------- */
 .hud-screen {
   background-color: var(--surface-2);
@@ -1256,6 +1338,50 @@ select {
   border-radius: var(--radius-lg);
   padding: 12px;
   overflow: hidden;
+}
+
+.club-chart-card[draggable="true"] {
+  cursor: grab;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.club-chart-card[draggable="true"]:active {
+  cursor: grabbing;
+  opacity: 0.85;
+}
+
+.club-chart-move-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.club-reorder-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  background: var(--surface-3);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.club-reorder-btn:hover:not(:disabled) {
+  background: var(--brand-primary);
+  color: #fff;
+  border-color: var(--brand-primary);
+  transform: translateY(-1px);
+}
+
+.club-reorder-btn:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .club-chart-head {
@@ -2675,6 +2801,17 @@ html:has(.is-widget-mode) {
   padding: 24px;
   overflow-y: auto;
   flex: 1;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+/* Prevent nested double scrollbars inside modals, widget/HUD screens, and universal panels */
+.bag-editor-body .club-chart-table-wrap,
+.universal-modal-body .club-chart-table-wrap,
+.widget-screen .club-chart-table-wrap,
+.universal-chart-panel .club-chart-table-wrap {
+  max-height: none !important;
+  overflow-y: visible !important;
 }
 
 .bag-editor-footer {
@@ -2713,6 +2850,66 @@ html:has(.is-widget-mode) {
   text-decoration: underline !important;
   color: var(--brand-primary-hover, #2563eb) !important;
 }
+
+/* ---------- Universal Reference Chart (Golden Shot & CPC) ---------- */
+.universal-chart-panel {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.universal-subtab-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 12px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.universal-subtab-btn:hover {
+  background: var(--surface-3);
+  color: var(--text-primary);
+}
+
+.universal-subtab-btn.is-active {
+  background: var(--brand-primary);
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.matrix-table-row {
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.matrix-table-row:hover {
+  background-color: var(--surface-2);
+}
+
+.golden-club-chip:hover {
+  border-color: #eab308 !important;
+  transform: translateY(-1px);
+}
+
+.cpc-cat-pill:hover {
+  background: var(--surface-3) !important;
+  color: var(--text-primary) !important;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 
 
 

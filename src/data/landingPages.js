@@ -209,8 +209,8 @@ export const LANDING_PAGES = {
         text: "The calculator breaks down crosswind and headwind components, giving you estimated ball guide deflection in grid squares after bounce.",
       },
       {
-        title: "Widget Mode for In-Game Play",
-        text: "Toggle Widget Mode in the header for a compact, single-screen HUD overlay designed to sit alongside your mobile device or tablet while playing.",
+        title: "Live Play Mode for Matches",
+        text: "Toggle Live Play in the header for a compact, single-screen HUD overlay designed to sit alongside your mobile device or tablet while playing.",
       },
     ],
     faqs: [

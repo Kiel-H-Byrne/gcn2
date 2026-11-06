@@ -1,9 +1,11 @@
 import { Box, Flex, Text } from "@chakra-ui/react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpDown, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ChartOutput from "./ChartOutput";
 import ReferenceGraph from "./ReferenceGraph";
 import ShotCalculator from "./ShotCalculator";
+import QuickChart from "./QuickChart";
+import { sortBagClubs } from "../utils";
 
 function isSameBag(bagA, bagB) {
   if (!bagA || !bagB) return false;
@@ -22,6 +24,8 @@ export default function WidgetView({
   setSettings,
   savedProfiles = {},
   setSavedProfiles,
+  navigate,
+  onExitWidget,
 }) {
   const scrollRef = useRef(null);
   const tabStripRef = useRef(null);
@@ -101,6 +105,14 @@ export default function WidgetView({
       });
     }
 
+    // Always include the Universal quick chart tab (generic, no setup)
+    list.push({
+      id: "universal-chart",
+      type: "universal",
+      label: "Universal",
+      title: "Universal Quick Chart",
+    });
+
     // Always include the Reference Graph tab
     list.push({
       id: "quick-ref",
@@ -159,6 +171,47 @@ export default function WidgetView({
     scrollToPage(0);
   };
 
+  const handleReorderBagClubs = (page, fromIndex, toIndex) => {
+    const currentBag = page.bag || bag;
+    if (fromIndex === toIndex || toIndex < 0 || toIndex >= currentBag.length) return;
+    const newBag = [...currentBag];
+    const [moved] = newBag.splice(fromIndex, 1);
+    newBag.splice(toIndex, 0, moved);
+
+    if (page.isActive || isSameBag(page.bag, bag)) {
+      if (setBag) setBag(newBag);
+    }
+
+    if (page.isSaved && setSavedProfiles) {
+      setSavedProfiles((prev) => ({
+        ...prev,
+        [page.label]: {
+          ...prev[page.label],
+          bag: newBag,
+        },
+      }));
+    }
+  };
+
+  const handleSortBag = (page) => {
+    const currentBag = page.bag || bag;
+    const sorted = sortBagClubs(currentBag, clubs);
+
+    if (page.isActive || isSameBag(page.bag, bag)) {
+      if (setBag) setBag(sorted);
+    }
+
+    if (page.isSaved && setSavedProfiles) {
+      setSavedProfiles((prev) => ({
+        ...prev,
+        [page.label]: {
+          ...prev[page.label],
+          bag: sorted,
+        },
+      }));
+    }
+  };
+
   return (
     <Box className="widget-view">
       {/* Top Tab Bar Navigation */}
@@ -195,6 +248,19 @@ export default function WidgetView({
         >
           <ChevronRight size={16} />
         </button>
+
+        {onExitWidget && (
+          <button
+            type="button"
+            className="widget-tab-arrow"
+            onClick={onExitWidget}
+            title="Exit Live Play"
+            aria-label="Exit Live Play"
+            style={{ marginLeft: "4px", color: "#ef4444" }}
+          >
+            <X size={14} />
+          </button>
+        )}
       </Flex>
 
       {/* Swipeable scroll container */}
@@ -225,10 +291,19 @@ export default function WidgetView({
                     No Active Bag Loaded
                   </Text>
                   <Text mb="12px">
-                    Swipe right to view a saved bag and tap &quot;Load in Simulator&quot;, or exit widget mode to add clubs.
+                    Swipe right to view a saved bag and tap &quot;Load in Simulator&quot;, or exit Live Play to add clubs.
                   </Text>
                 </Box>
               )
+            ) : page.type === "universal" ? (
+              <Box
+                bg="var(--surface-1)"
+                border="1px solid var(--border)"
+                borderRadius="var(--radius-lg)"
+                p="8px"
+              >
+                <QuickChart isWidgetMode={true} />
+              </Box>
             ) : page.type === "reference" ? (
               <ReferenceGraph
                 bag={bag}
@@ -270,6 +345,28 @@ export default function WidgetView({
                     </Text>
                   </Box>
                   <Flex gap="6px" align="center">
+                    {page.bag?.length > 1 && (
+                      <button
+                        type="button"
+                        className="widget-bag-load-btn"
+                        onClick={() => handleSortBag(page)}
+                        title="Sort clubs in standard in-game order (Drivers -> Sand Wedges)"
+                        style={{
+                          background: "var(--surface-1)",
+                          color: "var(--text-secondary)",
+                          border: "1px solid var(--border-strong)",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "3px",
+                          padding: "3px 8px",
+                          fontSize: "0.68rem",
+                          height: "26px",
+                        }}
+                      >
+                        <ArrowUpDown size={11} />
+                        Game Order
+                      </button>
+                    )}
                     {isSameBag(page.bag, bag) ? (
                       <Box
                         fontSize="0.68rem"
@@ -315,6 +412,9 @@ export default function WidgetView({
                   clubs={clubs}
                   settings={page.settings}
                   isWidgetMode={true}
+                  onReorderClub={(fromIndex, toIndex) =>
+                    handleReorderBagClubs(page, fromIndex, toIndex)
+                  }
                 />
               </Box>
             )}

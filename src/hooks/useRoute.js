@@ -46,11 +46,15 @@ export function useRoute() {
   }, []);
 
   const landingConfig = LANDING_PAGES[currentPath] || null;
+  const isTipsPage = currentPath === "/tips" || currentPath === "/golf-clash-tips";
+  const isResourcesPage = currentPath === "/resources" || currentPath === "/golf-clash-resources";
 
   return {
     currentPath,
     navigate,
     landingConfig,
     isLandingPage: Boolean(landingConfig),
+    isTipsPage,
+    isResourcesPage,
   };
 }
