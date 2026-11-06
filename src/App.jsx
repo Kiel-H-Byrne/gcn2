@@ -1,5 +1,5 @@
 import { Box, Grid } from "@chakra-ui/react";
-import { X } from "lucide-react";
+import { Trophy, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import BagPanel from "./components/BagPanel";
 import ChartControls from "./components/ChartControls";
@@ -248,7 +248,6 @@ export default function App() {
                 });
                 trackViewModeChange("fullscreen");
               }}
-              openUniversalChart={() => setIsUniversalOpen(true)}
             />
           )}
 
@@ -325,9 +324,10 @@ export default function App() {
             }
           }}
         >
-          <div className="bag-editor-content" style={{ maxWidth: "1080px" }}>
+          <div className="bag-editor-content universal-modal-content" style={{ maxWidth: "1080px" }}>
             <div className="bag-editor-header">
               <h2 style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <Trophy size={18} style={{ color: "#eab308" }} />
                 Universal Reference Chart
               </h2>
               <button
@@ -345,7 +345,7 @@ export default function App() {
                 <X size={20} />
               </button>
             </div>
-            <div className="bag-editor-body" style={{ padding: "14px" }}>
+            <div className="bag-editor-body universal-modal-body" style={{ padding: "14px" }}>
               <ErrorBoundary
                 onReset={() => setIsUniversalOpen(false)}
                 resetLabel="← Close Universal Chart"

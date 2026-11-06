@@ -456,37 +456,23 @@ export default function UniversalChart({
         flexWrap="wrap"
         gap="8px"
         mb="12px"
-        pb="10px"
+        pb={isWidgetMode ? "6px" : "10px"}
         borderBottom="1px solid var(--border)"
       >
-        <Flex align="center" gap="8px">
-          <Box
-            p="6px"
-            borderRadius="8px"
-            bg="linear-gradient(135deg, #eab308 0%, #ca8a04 100%)"
-            color="#fff"
-            boxShadow="0 2px 6px rgba(234, 179, 8, 0.4)"
-          >
-            <Trophy size={18} />
-          </Box>
-          <Box>
-            <Heading
-              as="h3"
-              fontSize={isWidgetMode ? "0.95rem" : "1.15rem"}
-              fontWeight="800"
-              m="0"
-              lineHeight="1.2"
-              color="var(--text-primary)"
-            >
+        {isWidgetMode ? (
+          <Flex align="center" gap="6px">
+            <Trophy size={16} style={{ color: "#eab308" }} />
+            <Text fontSize="0.85rem" fontWeight="800" m="0" color="var(--text-primary)">
               Universal Reference Chart
-            </Heading>
-            <Text fontSize="0.7rem" color="var(--text-muted)" m="0">
-              Quick chart works for any club · advanced tools in the other tabs
             </Text>
-          </Box>
-        </Flex>
+          </Flex>
+        ) : (
+          <Text fontSize="0.75rem" color="var(--text-muted)" m="0">
+            Quick chart works for any club · Golden Shot & Checkpoint Challenge tools
+          </Text>
+        )}
 
-        {/* 3 Main Mode Switcher Pills */}
+        {/* 4 Main Mode Switcher Pills */}
         <Flex
           bg="var(--surface-2)"
           p="3px"
@@ -832,8 +818,7 @@ export default function UniversalChart({
           {/* The Universal Matrix Table */}
           <Box
             className="club-chart-table-wrap"
-            maxH={isWidgetMode ? "360px" : "480px"}
-            overflowY="auto"
+            overflowX="auto"
           >
             <table className="wind-table">
               <thead>

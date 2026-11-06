@@ -2795,6 +2795,17 @@ html:has(.is-widget-mode) {
   padding: 24px;
   overflow-y: auto;
   flex: 1;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+/* Prevent nested double scrollbars inside modals, widget/HUD screens, and universal panels */
+.bag-editor-body .club-chart-table-wrap,
+.universal-modal-body .club-chart-table-wrap,
+.widget-screen .club-chart-table-wrap,
+.universal-chart-panel .club-chart-table-wrap {
+  max-height: none !important;
+  overflow-y: visible !important;
 }
 
 .bag-editor-footer {

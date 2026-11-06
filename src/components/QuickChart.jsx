@@ -55,8 +55,7 @@ export default function QuickChart({ isWidgetMode = false }) {
 
       <Box
         className="club-chart-table-wrap"
-        maxH={isWidgetMode ? "none" : "520px"}
-        overflowY="auto"
+        overflowX="auto"
       >
         <table className="wind-table">
           <thead>
