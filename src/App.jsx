@@ -57,10 +57,18 @@ export default function App() {
 
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
-  const [isWidgetMode, setIsWidgetMode] = useState(false);
+  const [isWidgetMode, setIsWidgetMode] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const params = new URLSearchParams(window.location.search);
+    return params.get("widget") === "1" || params.get("mode") === "widget" || window.location.hash.includes("widget");
+  });
   const [isBagEditingOpen, setIsBagEditingOpen] = useState(bag.length === 0);
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
-  const [isUniversalOpen, setIsUniversalOpen] = useState(false);
+  const [isUniversalOpen, setIsUniversalOpen] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const params = new URLSearchParams(window.location.search);
+    return params.get("universal") === "1" || window.location.hash.includes("universal");
+  });
 
   const {
     currentPath,

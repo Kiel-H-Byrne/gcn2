@@ -46,8 +46,18 @@ export function useRoute() {
   }, []);
 
   const landingConfig = LANDING_PAGES[currentPath] || null;
-  const isTipsPage = currentPath === "/tips" || currentPath === "/golf-clash-tips";
-  const isResourcesPage = currentPath === "/resources" || currentPath === "/golf-clash-resources";
+  const isTipsPage =
+    currentPath === "/tips" ||
+    currentPath === "/golf-clash-tips" ||
+    currentPath.endsWith("/tips") ||
+    currentPath.endsWith("/golf-clash-tips") ||
+    currentPath.includes("tips");
+  const isResourcesPage =
+    currentPath === "/resources" ||
+    currentPath === "/golf-clash-resources" ||
+    currentPath.endsWith("/resources") ||
+    currentPath.endsWith("/golf-clash-resources") ||
+    currentPath.includes("resources");
 
   return {
     currentPath,

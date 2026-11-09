@@ -5,6 +5,7 @@ import {
   Gamepad2,
   Info,
   Lightbulb,
+  Menu,
   Moon,
   Sun,
   TrendingUp,
@@ -86,6 +87,8 @@ export default function Header({
 
   const isDark = theme === "dark" || (theme === "system" && systemDark);
 
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const handleToggleTheme = () => {
     const nextTheme = isDark ? "light" : "dark";
     setTheme(nextTheme);
@@ -125,7 +128,13 @@ export default function Header({
           </Box>
         </Flex>
 
-        <Flex gap="6px" align="center" className="no-print">
+        {/* Desktop Navigation Bar (Full Labels + Icons) */}
+        <Flex
+          gap="6px"
+          align="center"
+          className="desktop-header-nav no-print"
+          display={{ base: "none", md: "flex" }}
+        >
           {!isWidgetMode && (
             <>
               <button
@@ -282,7 +291,324 @@ export default function Header({
             )}
           </button>
         </Flex>
+
+        {/* Mobile Navigation Bar (Clean, Identifiable Buttons + Menu Drawer) */}
+        <Flex
+          gap="5px"
+          align="center"
+          className="mobile-header-nav no-print"
+          display={{ base: "flex", md: "none" }}
+        >
+          <button
+            type="button"
+            className={`btn-ghost header-btn ${isWidgetMode ? "is-active" : ""}`}
+            onClick={() => {
+              const next = !isWidgetMode;
+              setIsWidgetMode(next);
+              if (next) {
+                trackWidgetOpened({ bagSize: bag.length, source: "header" });
+              }
+              trackViewModeChange(next ? "widget" : "standard");
+            }}
+            title={isWidgetMode ? "Exit Live Play" : "Live Play Mode"}
+            aria-label={isWidgetMode ? "Exit Live Play" : "Live Play Mode"}
+            style={{
+              padding: "4px 8px",
+              height: "30px",
+              fontSize: "0.74rem",
+              fontWeight: 700,
+              gap: "4px",
+            }}
+          >
+            {isWidgetMode ? (
+              <>
+                <X size={14} style={{ color: "#ef4444" }} />
+                <span>Exit</span>
+              </>
+            ) : (
+              <>
+                <Gamepad2 size={14} style={{ color: "#10b981" }} />
+                <span>Play</span>
+              </>
+            )}
+          </button>
+
+          {!isWidgetMode && (
+            <button
+              type="button"
+              className={`btn-ghost header-btn ${isBagEditingOpen ? "is-active" : ""}`}
+              onClick={() => {
+                if (!isBagEditingOpen && bag.length === 0) {
+                  trackBagStarted({ source: "header_edit_bag" });
+                }
+                setIsBagEditingOpen(!isBagEditingOpen);
+              }}
+              title="Edit Bag Clubs & Levels"
+              aria-label="Edit Bag"
+              style={{
+                padding: "4px 8px",
+                height: "30px",
+                fontSize: "0.74rem",
+                fontWeight: 700,
+                gap: "4px",
+              }}
+            >
+              <Briefcase size={14} style={{ color: "var(--brand-primary, #3b82f6)" }} />
+              <span>Bag ({bag.length})</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            className="btn-ghost header-btn"
+            onClick={handleToggleTheme}
+            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            aria-label={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            style={{
+              padding: "4px",
+              width: "30px",
+              height: "30px",
+              minWidth: "30px",
+              justifyContent: "center",
+            }}
+          >
+            {isDark ? (
+              <Sun size={14} style={{ color: "#eab308" }} />
+            ) : (
+              <Moon size={14} style={{ color: "#818cf8" }} />
+            )}
+          </button>
+
+          {!isWidgetMode && (
+            <button
+              type="button"
+              className={`btn-ghost header-btn ${isMobileMenuOpen ? "is-active" : ""}`}
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              title="Navigation Menu"
+              aria-label="Navigation Menu"
+              style={{
+                padding: "4px 8px",
+                height: "30px",
+                fontSize: "0.74rem",
+                fontWeight: 700,
+                gap: "4px",
+              }}
+            >
+              {isMobileMenuOpen ? <X size={15} /> : <Menu size={15} />}
+              <span>Menu</span>
+            </button>
+          )}
+        </Flex>
       </Flex>
+
+      {/* Mobile Navigation Sheet Drawer */}
+      {!isWidgetMode && isMobileMenuOpen && (
+        <Box
+          className="mobile-nav-drawer no-print"
+          position="fixed"
+          top="50px"
+          left="0"
+          right="0"
+          bottom="0"
+          bg="rgba(0,0,0,0.65)"
+          backdropFilter="blur(6px)"
+          zIndex="1200"
+          p="12px"
+          onClick={(e) => {
+            if (e.target.classList.contains("mobile-nav-drawer")) {
+              setIsMobileMenuOpen(false);
+            }
+          }}
+        >
+          <Box
+            bg="var(--surface-1)"
+            border="1px solid var(--border-strong)"
+            borderRadius="var(--radius-lg)"
+            p="14px"
+            maxH="calc(100vh - 75px)"
+            overflowY="auto"
+            boxShadow="var(--shadow-3)"
+            className="mobile-nav-card"
+          >
+            <Flex justify="space-between" align="center" mb="12px" pb="8px" borderBottom="1px solid var(--border)">
+              <Text fontSize="0.85rem" fontWeight="800" color="var(--text-primary)" m="0">
+                🧭 Compass Tools &amp; Navigation
+              </Text>
+              <button
+                type="button"
+                className="icon-btn"
+                onClick={() => setIsMobileMenuOpen(false)}
+                style={{ border: "none", background: "transparent", cursor: "pointer", color: "var(--text-muted)" }}
+                aria-label="Close menu"
+              >
+                <X size={18} />
+              </button>
+            </Flex>
+
+            <Flex direction="column" gap="8px">
+              {/* 1. Live Play Mode */}
+              <button
+                type="button"
+                className={`mobile-nav-item ${isWidgetMode ? "is-active" : ""}`}
+                onClick={() => {
+                  setIsWidgetMode(true);
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <Box className="mobile-nav-icon-box" bg="rgba(16, 185, 129, 0.15)" color="#10b981">
+                  <Gamepad2 size={20} />
+                </Box>
+                <Box textAlign="left" flex="1">
+                  <Text fontWeight="700" fontSize="0.85rem" color="var(--text-primary)" m="0">
+                    Live Play Mode
+                  </Text>
+                  <Text fontSize="0.7rem" color="var(--text-muted)" m="0">
+                    Swipeable in-match companion HUD for active gameplay
+                  </Text>
+                </Box>
+              </button>
+
+              {/* 2. Edit Bag */}
+              <button
+                type="button"
+                className={`mobile-nav-item ${isBagEditingOpen ? "is-active" : ""}`}
+                onClick={() => {
+                  if (!isBagEditingOpen && bag.length === 0) {
+                    trackBagStarted({ source: "header_edit_bag" });
+                  }
+                  setIsBagEditingOpen(true);
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <Box className="mobile-nav-icon-box" bg="rgba(59, 130, 246, 0.15)" color="#3b82f6">
+                  <Briefcase size={20} />
+                </Box>
+                <Box textAlign="left" flex="1">
+                  <Text fontWeight="700" fontSize="0.85rem" color="var(--text-primary)" m="0">
+                    Edit Bag &amp; Clubs
+                  </Text>
+                  <Text fontSize="0.7rem" color="var(--text-muted)" m="0">
+                    Customize your 7 clubs, card levels, ball &amp; elevation
+                  </Text>
+                </Box>
+                <Box className="mobile-nav-badge" bg="var(--surface-2)" color="var(--text-secondary)">
+                  {bag.length} clubs
+                </Box>
+              </button>
+
+              {/* 3. Universal Chart */}
+              <button
+                type="button"
+                className={`mobile-nav-item ${isUniversalOpen ? "is-active" : ""}`}
+                onClick={() => {
+                  setIsUniversalOpen(true);
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <Box className="mobile-nav-icon-box" bg="rgba(234, 179, 8, 0.15)" color="#eab308">
+                  <Trophy size={20} />
+                </Box>
+                <Box textAlign="left" flex="1">
+                  <Text fontWeight="700" fontSize="0.85rem" color="var(--text-primary)" m="0">
+                    Universal Reference Chart
+                  </Text>
+                  <Text fontSize="0.7rem" color="var(--text-muted)" m="0">
+                    Golden Shot guides, Checkpoint Challenge &amp; ring table
+                  </Text>
+                </Box>
+              </button>
+
+              {/* 4. Trajectory Graph */}
+              <button
+                type="button"
+                className={`mobile-nav-item ${isReferenceOpen ? "is-active" : ""}`}
+                onClick={() => {
+                  setIsReferenceOpen(true);
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <Box className="mobile-nav-icon-box" bg="rgba(139, 92, 246, 0.15)" color="#8b5cf6">
+                  <TrendingUp size={20} />
+                </Box>
+                <Box textAlign="left" flex="1">
+                  <Text fontWeight="700" fontSize="0.85rem" color="var(--text-primary)" m="0">
+                    Trajectory &amp; Wind Graph
+                  </Text>
+                  <Text fontSize="0.7rem" color="var(--text-muted)" m="0">
+                    Interactive carry distance &amp; ring adjustment curves
+                  </Text>
+                </Box>
+              </button>
+
+              {/* 5. Vetted Pro Tips */}
+              <button
+                type="button"
+                className="mobile-nav-item"
+                onClick={() => {
+                  navigate?.("/tips");
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <Box className="mobile-nav-icon-box" bg="rgba(59, 130, 246, 0.15)" color="#3b82f6">
+                  <Lightbulb size={20} />
+                </Box>
+                <Box textAlign="left" flex="1">
+                  <Text fontWeight="700" fontSize="0.85rem" color="var(--text-primary)" m="0">
+                    Vetted Pro Tips
+                  </Text>
+                  <Text fontSize="0.7rem" color="var(--text-muted)" m="0">
+                    Elevation rules, ring pullback &amp; landing mechanics
+                  </Text>
+                </Box>
+              </button>
+
+              {/* 6. Community Resources */}
+              <button
+                type="button"
+                className="mobile-nav-item"
+                onClick={() => {
+                  navigate?.("/resources");
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <Box className="mobile-nav-icon-box" bg="rgba(16, 185, 129, 0.15)" color="#10b981">
+                  <BookOpen size={20} />
+                </Box>
+                <Box textAlign="left" flex="1">
+                  <Text fontWeight="700" fontSize="0.85rem" color="var(--text-primary)" m="0">
+                    Community Resources
+                  </Text>
+                  <Text fontSize="0.7rem" color="var(--text-muted)" m="0">
+                    Curated video guides, forums &amp; tournament sheets
+                  </Text>
+                </Box>
+              </button>
+
+              {/* 7. How Rings Work Guide */}
+              <button
+                type="button"
+                className={`mobile-nav-item ${isGuideOpen ? "is-active" : ""}`}
+                onClick={() => {
+                  handleToggleGuide();
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <Box className="mobile-nav-icon-box" bg="rgba(107, 114, 128, 0.15)" color="var(--text-secondary)">
+                  <Info size={20} />
+                </Box>
+                <Box textAlign="left" flex="1">
+                  <Text fontWeight="700" fontSize="0.85rem" color="var(--text-primary)" m="0">
+                    How Rings Work Guide
+                  </Text>
+                  <Text fontSize="0.7rem" color="var(--text-muted)" m="0">
+                    3-step beginner tutorial on Golf Clash ring adjustments
+                  </Text>
+                </Box>
+              </button>
+            </Flex>
+          </Box>
+        </Box>
+      )}
 
       {/* Collapsible 3-Step Guide */}
       {!isWidgetMode && isGuideOpen && (

@@ -237,58 +237,50 @@ export function ClubChartCard({
       <Flex
         className="club-chart-head"
         align="center"
-        gap="10px"
+        justify="space-between"
+        gap="6px"
         bg="var(--surface-2)"
         borderBottom="1px solid var(--border)"
       >
-        <Image
-          src={getClubImageUrl(club.name, "64x64")}
-          alt=""
-          className="club-chart-img"
-          objectFit="contain"
-          onError={(e) => {
-            e.target.style.display = "none";
-            if (e.target.nextElementSibling)
-              e.target.nextElementSibling.style.display = "block";
-          }}
-        />
-        <Box display="none">
-          <CategoryIcon category={club.category} size={32} />
-        </Box>
-        <Flex direction="column" flex="1" className="club-chart-titles">
-          <Heading
-            as="h4"
-            m="0"
-            className="club-chart-name"
-            color="var(--text-primary)"
-            lineHeight="1.2"
-          >
-            {club.name}
-          </Heading>
-          <Flex align="center" gap="8px" mt="2px" className="club-chart-sub">
-            <Text color="var(--text-secondary)">Lv {level}</Text>
-            <Flex
-              align="center"
-              gap="4px"
-              className="acc-badge"
-              borderRadius="12px"
-              border="1px solid"
-              borderColor={accColor}
-              bg={`${accColor}15`}
+        <Flex align="center" gap="8px" flex="1" minW="0">
+          <Image
+            src={getClubImageUrl(club.name, "32x32")}
+            alt=""
+            className="club-chart-img"
+            objectFit="contain"
+            onError={(e) => {
+              e.target.style.display = "none";
+              if (e.target.nextElementSibling)
+                e.target.nextElementSibling.style.display = "block";
+            }}
+          />
+          <Box display="none">
+            <CategoryIcon category={club.category} size={24} />
+          </Box>
+          <Flex direction="column" minW="0" flex="1">
+            <Heading
+              as="h4"
+              m="0"
+              className="club-chart-name"
+              color="var(--text-primary)"
+              lineHeight="1.2"
+              title={`${club.name} (${club.category})`}
             >
-              <Text as="span" color="var(--text-secondary)" fontWeight="normal">
-                {isFullscreen ? "Acc" : "Accuracy"}
-              </Text>
-              <Text as="strong" color={accColor}>
-                {accuracy}
-              </Text>
-            </Flex>
+              {club.name}
+            </Heading>
+            {!isFullscreen && (
+              <Flex align="center" gap="6px" mt="2px" className="club-chart-sub">
+                <Text color="var(--text-secondary)">Lv {level}</Text>
+                <span>·</span>
+                <Text color="var(--text-muted)">Pwr {club.power[level - 1]}</Text>
+              </Flex>
+            )}
           </Flex>
         </Flex>
 
-        {/* Move / Reposition Controls & Stat */}
-        <Flex align="center" gap="8px">
-          {(canMoveUp || canMoveDown) && (
+        {/* Right side: Acc badge, and move controls on standard desktop view */}
+        <Flex align="center" gap="6px" flexShrink={0}>
+          {!isFullscreen && (canMoveUp || canMoveDown) && (
             <Flex
               className="club-chart-move-controls no-print"
               align="center"
@@ -324,13 +316,25 @@ export function ClubChartCard({
           )}
 
           <Flex
-            direction="column"
-            align="flex-end"
-            fontSize="0.75rem"
-            className="club-chart-stat"
+            align="center"
+            gap="3px"
+            className="acc-badge"
+            borderRadius="4px"
+            border="1px solid"
+            borderColor={accColor}
+            bg={`${accColor}18`}
+            px="5px"
+            py="1px"
+            fontSize="0.7rem"
+            fontWeight="700"
           >
-            <Text as="span" color="var(--text-secondary)" fontWeight="normal">
-              {isFullscreen ? "Acc" : "Accuracy"}
+            {isFullscreen && (
+              <Text as="span" color="var(--text-secondary)" fontWeight="600" mr="2px">
+                L{level}
+              </Text>
+            )}
+            <Text as="span" color="var(--text-muted)" fontWeight="500">
+              Acc
             </Text>
             <Text as="strong" color={accColor}>
               {accuracy}
@@ -454,8 +458,8 @@ export default function ChartOutput({
 
   if (isWidgetMode) {
     return (
-      <Box className="fullscreen-body" mt="6px">
-        {bag.map((entry, idx) => {
+      <Box className="fullscreen-body widget-charts-grid" mt="2px">
+        {bag.map((entry) => {
           const club = clubs.find((c) => c.id === entry.clubId);
           if (!club) return null;
           const level = Math.min(Math.max(entry.level, 1), club.maxLevel);
@@ -467,16 +471,6 @@ export default function ChartOutput({
               mode={mode}
               settings={settings}
               isFullscreen
-              canMoveUp={canReorder && idx > 0}
-              canMoveDown={canReorder && idx < bag.length - 1}
-              onMoveUp={() => handleMove(idx, -1)}
-              onMoveDown={() => handleMove(idx, 1)}
-              onDragStart={(e) => e.dataTransfer?.setData("text/plain", String(idx))}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => {
-                const from = parseInt(e.dataTransfer?.getData("text/plain"), 10);
-                if (!isNaN(from)) handleDragDrop(from, idx);
-              }}
             />
           );
         })}
