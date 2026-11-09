@@ -32,6 +32,19 @@ export default function ShotCalculator({
 
   const compassRef = useRef(null);
 
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth <= 768;
+  });
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const shouldUseCompact = isWidgetMode || isMobile;
+
   useEffect(() => {
     if (bag.length > 0 && !bag.find((c) => c.clubId === selectedClubId)) {
       setSelectedClubId(bag[0].clubId);
@@ -365,7 +378,7 @@ export default function ShotCalculator({
         </Flex>
       )}
 
-      {isWidgetMode ? (
+      {shouldUseCompact ? (
         <div className="hud-widget-compact">
           {/* Row 1: Club and Ball Selection */}
           <div className="hud-club-bar" style={{ paddingBottom: '4px', borderBottom: '1px solid var(--border)', marginBottom: '8px' }}>

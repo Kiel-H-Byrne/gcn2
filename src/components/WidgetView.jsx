@@ -280,19 +280,6 @@ export default function WidgetView({
             );
           })}
         </div>
-
-        {onExitWidget && (
-          <button
-            type="button"
-            className="widget-exit-btn"
-            onClick={onExitWidget}
-            title="Exit Live Play"
-            aria-label="Exit Live Play"
-          >
-            <X size={13} />
-            <span>Exit</span>
-          </button>
-        )}
       </Flex>
 
       {/* Swipeable scroll container */}

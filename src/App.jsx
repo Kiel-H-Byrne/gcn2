@@ -135,7 +135,11 @@ export default function App() {
     <Box
       maxW={isWidgetMode ? "100vw" : "1180px"}
       mx="auto"
-      p={isWidgetMode ? "4px 6px" : "20px 16px 48px"}
+      p={
+        isWidgetMode
+          ? "4px 6px"
+          : { base: "12px 8px 36px", md: "20px 16px 48px" }
+      }
       className={`app ${isWidgetMode ? "is-widget-mode" : ""}`}
     >
       <Header

@@ -344,15 +344,25 @@ select {
   display: inline;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .desktop-header-nav {
     display: none !important;
   }
   .mobile-header-nav {
     display: flex !important;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
   }
   .app-header h1 {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header h1 {
+    font-size: 1.05rem;
   }
 }
 
@@ -1032,15 +1042,52 @@ select {
   border-radius: var(--radius-lg);
   padding: 14px;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  width: 100%;
   gap: 16px;
-  align-items: end;
+  box-sizing: border-box;
+}
+
+.chart-controls-grid {
+  display: grid !important;
+  width: 100% !important;
+  grid-template-columns: 1fr !important;
+  gap: 14px !important;
+  align-items: end !important;
+}
+
+@media (min-width: 960px) {
+  .chart-controls-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 16px !important;
+  }
+  .chart-controls-grid.has-wind-step {
+    grid-template-columns: repeat(5, 1fr) !important;
+  }
+}
+
+.chart-controls-grid > div,
+.chart-controls-grid > * {
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.chart-controls .chakra-select__root,
+.chart-controls [data-scope="select"][data-part="root"],
+.chart-controls input[type="text"],
+.chart-controls input,
+.chart-controls select {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .control-group {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  width: 100%;
 }
 
 .control-group label,
@@ -1060,7 +1107,7 @@ select {
   border-radius: var(--radius-sm);
   padding: 8px 10px;
   font-size: 0.86rem;
-  min-width: 140px;
+  width: 100%;
 }
 
 .segmented {
@@ -2867,7 +2914,7 @@ html:has(.is-widget-mode) {
   border-color: #ef4444;
 }
 
-/* ---------- Custom Mobile Navigation Drawer ---------- */
+/* ---------- Custom Mobile Navigation ---------- */
 .mobile-header-nav {
   display: none !important;
 }
@@ -2877,33 +2924,61 @@ html:has(.is-widget-mode) {
   gap: 6px;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .desktop-header-nav {
     display: none !important;
   }
   .mobile-header-nav {
     display: flex !important;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
   }
   .mobile-header-nav .header-btn {
-    padding: 5px 8px;
-    height: 30px;
+    padding: 4px 10px;
+    height: 32px;
     font-size: 0.75rem;
     font-weight: 700;
     gap: 4px;
   }
 }
 
-.mobile-nav-drawer {
+/* ---------- Mobile Responsive Navigation ---------- */
+.mobile-nav-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.mobile-nav-toggle-btn:hover,
+.mobile-nav-toggle-btn:focus-visible {
+  background: var(--surface-2);
+  color: var(--brand-primary, #3b82f6);
+}
+
+.mobile-nav-toggle-btn.is-active {
+  background: var(--surface-2);
+  color: var(--brand-primary, #3b82f6);
+}
+
+.mobile-nav-backdrop {
   animation: fadeIn 0.15s ease-out;
 }
 
-.mobile-nav-card {
-  animation: slideDown 0.2s ease-out;
+.mobile-nav-dropdown {
+  animation: mobileNavFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-@keyframes slideDown {
+@keyframes mobileNavFadeIn {
   from {
     opacity: 0;
     transform: translateY(-8px);
@@ -2914,50 +2989,55 @@ html:has(.is-widget-mode) {
   }
 }
 
-.mobile-nav-item {
+.mobile-nav-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  text-align: left;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.mobile-nav-menu-item:hover,
+.mobile-nav-menu-item:active {
+  background: var(--surface-2);
+}
+
+.mobile-nav-menu-item.is-active {
+  background: var(--surface-2);
+  color: var(--brand-primary, #3b82f6);
+}
+
+.mobile-nav-item-left {
   display: flex;
   align-items: center;
   gap: 12px;
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: var(--radius-md);
+}
+
+.mobile-nav-item-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  cursor: pointer;
-  transition: all 0.15s ease;
-  text-align: left;
-}
-
-.mobile-nav-item:hover,
-.mobile-nav-item:active {
-  background: var(--surface-3);
-  border-color: var(--brand-primary);
-  transform: translateY(-1px);
-}
-
-.mobile-nav-item.is-active {
-  border-color: var(--brand-primary);
-  background: rgba(59, 130, 246, 0.08);
-}
-
-.mobile-nav-icon-box {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  color: var(--text-secondary);
   flex-shrink: 0;
 }
 
-.mobile-nav-badge {
-  font-size: 0.68rem;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 10px;
-  background: var(--brand-primary);
-  color: #fff;
-  flex-shrink: 0;
+.mobile-nav-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+  width: 100%;
 }
 
 .bag-editor-footer {
