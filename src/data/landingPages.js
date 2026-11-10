@@ -284,7 +284,7 @@ export const LANDING_PAGES = {
     proTips: [
       {
         title: "Wind per Ring vs Rings per Wind",
-        text: "Wind per Ring shows how many mph 1 ring cancels. Rings per Wind is a pre-calculated reference matrix showing exact ring counts for wind speeds from 1.0 to 16.0 mph.",
+        text: "Wind per Ring shows how many mph 1 ring cancels. Rings per Wind is a pre-calculated reference matrix showing exact ring counts for wind speeds from 1.0 to 25.0 mph.",
       },
       {
         title: "Single-Page PDF Sheet",

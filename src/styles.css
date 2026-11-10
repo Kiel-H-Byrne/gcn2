@@ -2881,14 +2881,24 @@ html:has(.is-widget-mode) {
 /* Quick chart split-column compact view */
 .quick-chart-widget-wrap {
   max-height: none !important;
-  overflow: visible !important;
+  overflow: hidden !important;
 }
 .quick-chart-widget-wrap table.wind-table {
-  font-size: 0.72rem !important;
+  table-layout: fixed;
+  width: 100%;
+  font-size: clamp(0.72rem, 2.9vw, 0.85rem) !important;
 }
-.quick-chart-widget-wrap table.wind-table td,
-.quick-chart-widget-wrap table.wind-table th {
-  padding: 2px 4px !important;
+.quick-chart-widget-wrap table.wind-table thead th {
+  font-size: 0.62rem !important;
+  letter-spacing: 0.01em !important;
+  padding: 4px 1px !important;
+}
+.quick-chart-widget-wrap table.wind-table td {
+  padding: 2px 1px !important;
+  font-weight: 700;
+}
+.quick-chart-widget-wrap table.wind-table td.quick-wind-cell {
+  font-weight: 800;
 }
 
 /* Widget HUD navigation buttons */

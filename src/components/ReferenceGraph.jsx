@@ -157,7 +157,7 @@ export default function ReferenceGraph({
     const svgX = ((clientX - rect.left) / rect.width) * 520;
     const wind = Math.max(
       0,
-      Math.min(16, ((svgX - plotLeft) / plotWidth) * maxWindAxis)
+      Math.min(maxWindAxis, ((svgX - plotLeft) / plotWidth) * maxWindAxis)
     );
     setSelectedWind(Number(wind.toFixed(1)));
   };
@@ -606,7 +606,7 @@ export default function ReferenceGraph({
                     strokeDasharray="2.5,2.5"
                     opacity="0.7"
                   />
-                  {/* Clamped wind mileage badge so it never clips at 0 or 16 */}
+                  {/* Clamped wind mileage badge so it never clips at 0 or max */}
                   <g
                     transform={`translate(${Math.max(
                       plotLeft + 16,

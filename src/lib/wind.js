@@ -120,7 +120,7 @@ function buildWindPerRingTable(club, level, mode, elevation = 0, ringCount = 10)
 }
 
 /** Rows of { wind, max, mid, min } ring counts for wind speeds minWind..maxWind. */
-function buildRingsPerWindTable(club, level, mode, elevation = 0, { minWind = 1, maxWind = 16, step = 0.5 } = {}) {
+function buildRingsPerWindTable(club, level, mode, elevation = 0, { minWind = 1, maxWind = 25, step = 0.5 } = {}) {
   const perRing = windPerRingByPower(club, level, mode);
   const elevMult = 1 + ((Number(elevation) || 0) / 100);
   const rows = [];
@@ -156,7 +156,7 @@ function genericWindPerRing(accuracy, powerIdx = 0) {
 }
 
 /** Rows of { wind, max, mid, min } ring counts for a generic accuracy value. */
-function buildGenericRingsPerWindTable(accuracy, { powerIdx = 0, minWind = 1, maxWind = 16, step = 1 } = {}) {
+function buildGenericRingsPerWindTable(accuracy, { powerIdx = 0, minWind = 1, maxWind = 25, step = 1 } = {}) {
   const wpr = genericWindPerRing(accuracy, powerIdx);
   const rows = [];
   const steps = Math.round((maxWind - minWind) / step);

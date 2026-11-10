@@ -36,15 +36,6 @@ export default function WidgetView({
 }) {
   const scrollRef = useRef(null);
   const tabStripRef = useRef(null);
-  const [activeIndex, setActiveIndex] = useState(() => {
-    if (typeof window === "undefined") return 0;
-    const params = new URLSearchParams(window.location.search);
-    const tab = params.get("tab") || (window.location.hash.match(/tab=([a-z]+)/) || [])[1];
-    if (tab === "quick") return 1;
-    if (tab === "bag" || tab === "charts") return 2;
-    if (tab === "graph") return 3;
-    return 0;
-  });
 
   const pages = useMemo(() => {
     const list = [
@@ -138,6 +129,21 @@ export default function WidgetView({
 
     return list;
   }, [savedProfiles, bag, settings]);
+
+  const [activeIndex, setActiveIndex] = useState(() => {
+    if (typeof window === "undefined") return 0;
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab") || (window.location.hash.match(/tab=([a-z]+)/) || [])[1];
+    let idx = 0;
+    if (tab === "quick" || tab === "universal") {
+      idx = pages.findIndex((p) => p.type === "universal");
+    } else if (tab === "bag" || tab === "charts") {
+      idx = pages.findIndex((p) => p.type === "bag");
+    } else if (tab === "graph") {
+      idx = pages.findIndex((p) => p.type === "reference");
+    }
+    return idx >= 0 ? idx : 0;
+  });
 
   const isProgrammaticScroll = useRef(false);
 

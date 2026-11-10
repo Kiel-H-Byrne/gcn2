@@ -52,7 +52,7 @@ function WindTableRing({ club, level, mode, elevation }) {
 function WindTableWind({ club, level, mode, elevation, windStep }) {
   const rows = buildRingsPerWindTable(club, level, mode, elevation, {
     minWind: 1,
-    maxWind: 16,
+    maxWind: 25,
     step: windStep,
   });
   return (
@@ -132,7 +132,7 @@ function PrintTable({ club, level, mode, settings, shorthandHeaders }) {
   } else {
     const rows = buildRingsPerWindTable(club, level, mode, settings.elevation, {
       minWind: 1,
-      maxWind: 16,
+      maxWind: 25,
       step: settings.windStep,
     });
     const numCols = 4;
