@@ -103,7 +103,7 @@ export default function ChartControls({
       as="section"
       className="chart-controls"
       bg="var(--surface-1)"
-      p="16px 20px"
+      p={{ base: "12px 14px", md: "16px 20px" }}
       borderRadius="var(--radius-lg)"
       border="1px solid var(--border)"
       boxShadow="var(--shadow-sm)"
@@ -215,17 +215,19 @@ export default function ChartControls({
 
       {/* Grid of Core Controls */}
       <Grid
+        className={`chart-controls-grid ${
+          settings.variant === "wind" ? "has-wind-step" : ""
+        }`}
+        w="100%"
         templateColumns={{
           base: "1fr",
-          sm: "repeat(2, 1fr)",
-          md: "repeat(3, 1fr)",
           lg: settings.variant === "wind" ? "repeat(5, 1fr)" : "repeat(4, 1fr)",
         }}
-        gap="14px"
+        gap={{ base: "12px", md: "14px" }}
         alignItems="end"
       >
         {/* 1. Golf Bag Selector / New / Rename */}
-        <Box>
+        <Box w="100%">
           <Flex justify="space-between" align="center" mb="6px">
             <Text
               as="label"
@@ -255,7 +257,7 @@ export default function ChartControls({
           </Flex>
 
           {isCreatingNew ? (
-            <Flex gap="4px">
+            <Flex gap="4px" w="100%">
               <Input
                 size="sm"
                 placeholder="Bag name..."
@@ -263,6 +265,7 @@ export default function ChartControls({
                 onChange={(e) => setNewProfileName(e.target.value)}
                 bg="var(--surface-2)"
                 maxLength={30}
+                w="100%"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleCreateProfile(newProfileName);
@@ -288,13 +291,14 @@ export default function ChartControls({
               </Button>
             </Flex>
           ) : isRenaming ? (
-            <Flex gap="4px">
+            <Flex gap="4px" w="100%">
               <Input
                 size="sm"
                 value={renameValue}
                 onChange={(e) => setRenameValue(e.target.value)}
                 bg="var(--surface-2)"
                 maxLength={30}
+                w="100%"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleRenameActiveProfile(renameValue);
@@ -319,8 +323,8 @@ export default function ChartControls({
               </Button>
             </Flex>
           ) : hasSavedProfiles ? (
-            <Flex gap="4px" align="center">
-              <NativeSelect.Root flex="1">
+            <Flex gap="4px" align="center" w="100%">
+              <NativeSelect.Root flex="1" w="100%">
                 <NativeSelect.Field
                   id="chart-bag-select"
                   value={isProfileSaved ? activeBagName : "__custom__"}
@@ -329,6 +333,7 @@ export default function ChartControls({
                   fontWeight="600"
                   fontSize="0.84rem"
                   h="36px"
+                  w="100%"
                 >
                   {!isProfileSaved && (
                     <option value="__custom__" disabled>
@@ -372,12 +377,13 @@ export default function ChartControls({
               }
               bg="var(--surface-2)"
               h="36px"
+              w="100%"
             />
           )}
         </Box>
 
         {/* 2. Golf Ball Selection */}
-        <Box>
+        <Box w="100%">
           <Text
             as="label"
             htmlFor="chart-ball-select"
@@ -389,7 +395,7 @@ export default function ChartControls({
           >
             Ball Power
           </Text>
-          <NativeSelect.Root>
+          <NativeSelect.Root w="100%">
             <NativeSelect.Field
               id="chart-ball-select"
               value={settings.ballName}
@@ -399,6 +405,7 @@ export default function ChartControls({
               bg="var(--surface-2)"
               fontSize="0.84rem"
               h="36px"
+              w="100%"
             >
               {balls.map((b) => (
                 <option key={b.name} value={b.name}>
@@ -411,7 +418,7 @@ export default function ChartControls({
         </Box>
 
         {/* 3. Elevation Selection (Increments of 5%) */}
-        <Box>
+        <Box w="100%">
           <Flex justify="space-between" align="center" mb="6px">
             <Text
               as="label"
@@ -440,7 +447,7 @@ export default function ChartControls({
               </Button>
             )}
           </Flex>
-          <NativeSelect.Root>
+          <NativeSelect.Root w="100%">
             <NativeSelect.Field
               id="chart-elevation-select"
               value={Number(settings.elevation) || 0}
@@ -450,6 +457,7 @@ export default function ChartControls({
               bg="var(--surface-2)"
               fontSize="0.84rem"
               h="36px"
+              w="100%"
               fontWeight={Number(settings.elevation) !== 0 ? "700" : "normal"}
               color={
                 Number(settings.elevation) > 0
@@ -473,8 +481,8 @@ export default function ChartControls({
           </NativeSelect.Root>
         </Box>
 
-        {/* 3. Chart Type Selection */}
-        <Box>
+        {/* 4. Chart Type Selection */}
+        <Box w="100%">
           <Text
             fontSize="0.8rem"
             fontWeight="600"
@@ -490,6 +498,7 @@ export default function ChartControls({
             p="2px"
             borderRadius="var(--radius-sm)"
             h="36px"
+            w="100%"
             align="center"
           >
             <Button
@@ -515,6 +524,8 @@ export default function ChartControls({
               }
               h="30px"
               fontSize="0.78rem"
+              whiteSpace="nowrap"
+              minW="0"
               _hover={{
                 bg:
                   settings.variant === "ring"
@@ -547,6 +558,8 @@ export default function ChartControls({
               }
               h="30px"
               fontSize="0.78rem"
+              whiteSpace="nowrap"
+              minW="0"
               _hover={{
                 bg:
                   settings.variant === "wind"
@@ -559,9 +572,9 @@ export default function ChartControls({
           </Flex>
         </Box>
 
-        {/* 4. Wind Step (Only for Rings per Wind) */}
+        {/* 5. Wind Step (Only for Rings per Wind) */}
         {settings.variant === "wind" && (
-          <Box>
+          <Box w="100%">
             <Text
               as="label"
               htmlFor="wind-step-select"
@@ -573,7 +586,7 @@ export default function ChartControls({
             >
               Wind Step
             </Text>
-            <NativeSelect.Root>
+            <NativeSelect.Root w="100%">
               <NativeSelect.Field
                 id="wind-step-select"
                 value={settings.windStep}
@@ -583,6 +596,7 @@ export default function ChartControls({
                 bg="var(--surface-2)"
                 fontSize="0.84rem"
                 h="36px"
+                w="100%"
               >
                 <option value={0.2}>0.2 mph</option>
                 <option value={0.5}>0.5 mph</option>
@@ -595,7 +609,7 @@ export default function ChartControls({
       </Grid>
 
       {/* Hole Notes Section (Multi-line textarea, cleanly integrated) */}
-      <Box borderTop="1px solid var(--border)" w="1/4">
+      <Box borderTop="1px solid var(--border)" mt="14px" pt="12px" w="100%">
         <Flex justify="space-between" align="center" mb="6px">
           <Text
             as="label"
@@ -621,6 +635,7 @@ export default function ChartControls({
           fontSize="0.84rem"
           rows={2}
           resize="vertical"
+          w="100%"
           borderRadius="var(--radius-sm)"
         />
       </Box>

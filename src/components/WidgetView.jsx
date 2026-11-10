@@ -1,5 +1,12 @@
 import { Box, Flex, Text } from "@chakra-ui/react";
-import { ArrowUpDown, ChevronLeft, ChevronRight, X } from "lucide-react";
+import {
+  ArrowUpDown,
+  Briefcase,
+  Target,
+  TrendingUp,
+  X,
+  Zap,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ChartOutput from "./ChartOutput";
 import ReferenceGraph from "./ReferenceGraph";
@@ -29,7 +36,6 @@ export default function WidgetView({
 }) {
   const scrollRef = useRef(null);
   const tabStripRef = useRef(null);
-  const [activeIndex, setActiveIndex] = useState(0);
 
   const pages = useMemo(() => {
     const list = [
@@ -124,8 +130,26 @@ export default function WidgetView({
     return list;
   }, [savedProfiles, bag, settings]);
 
+  const [activeIndex, setActiveIndex] = useState(() => {
+    if (typeof window === "undefined") return 0;
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab") || (window.location.hash.match(/tab=([a-z]+)/) || [])[1];
+    let idx = 0;
+    if (tab === "quick" || tab === "universal") {
+      idx = pages.findIndex((p) => p.type === "universal");
+    } else if (tab === "bag" || tab === "charts") {
+      idx = pages.findIndex((p) => p.type === "bag");
+    } else if (tab === "graph") {
+      idx = pages.findIndex((p) => p.type === "reference");
+    }
+    return idx >= 0 ? idx : 0;
+  });
+
+  const isProgrammaticScroll = useRef(false);
+
   // Track scroll position to update the active dot/tab
   const handleScroll = useCallback(() => {
+    if (isProgrammaticScroll.current) return;
     const el = scrollRef.current;
     if (!el) return;
     const scrollLeft = el.scrollLeft;
@@ -147,9 +171,23 @@ export default function WidgetView({
   const scrollToPage = (index) => {
     const el = scrollRef.current;
     if (!el) return;
-    el.scrollTo({ left: index * el.offsetWidth, behavior: "smooth" });
+    const width = el.offsetWidth || el.clientWidth || window.innerWidth;
+    isProgrammaticScroll.current = true;
     setActiveIndex(index);
+    el.scrollLeft = index * width;
+    setTimeout(() => {
+      isProgrammaticScroll.current = false;
+    }, 150);
   };
+
+  // Sync horizontal scroll container with activeIndex
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (activeIndex >= 0 && el) {
+      const width = el.offsetWidth || el.clientWidth || window.innerWidth;
+      el.scrollLeft = activeIndex * width;
+    }
+  }, [activeIndex]);
 
   // Keep active tab in view inside horizontal tab strip
   useEffect(() => {
@@ -215,52 +253,39 @@ export default function WidgetView({
   return (
     <Box className="widget-view">
       {/* Top Tab Bar Navigation */}
-      <Flex className="widget-tabs" align="center" justify="space-between">
-        <button
-          type="button"
-          className="widget-tab-arrow"
-          onClick={() => scrollToPage(Math.max(0, activeIndex - 1))}
-          disabled={activeIndex === 0}
-          aria-label="Previous page"
-        >
-          <ChevronLeft size={16} />
-        </button>
-
-        <div className="widget-tabs-scroll" ref={tabStripRef}>
-          {pages.map((page, i) => (
-            <button
-              key={page.id}
-              type="button"
-              className={`widget-tab ${activeIndex === i ? "is-active" : ""}`}
-              onClick={() => scrollToPage(i)}
-            >
-              {page.label}
-            </button>
-          ))}
+      <Flex className="widget-tabs" align="center" justify="space-between" gap="4px">
+        <div className="widget-tabs-scroll no-scrollbar" ref={tabStripRef}>
+          {pages.map((page, i) => {
+            const isActive = activeIndex === i;
+            return (
+              <button
+                key={page.id}
+                type="button"
+                className={`widget-tab ${isActive ? "is-active" : ""}`}
+                onClick={() => scrollToPage(i)}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "5px",
+                }}
+              >
+                {page.type === "simulator" && (
+                  <Target size={13} style={{ color: isActive ? "#fff" : "#3b82f6" }} />
+                )}
+                {page.type === "universal" && (
+                  <Zap size={13} style={{ color: isActive ? "#fff" : "#eab308" }} />
+                )}
+                {page.type === "bag" && (
+                  <Briefcase size={13} style={{ color: isActive ? "#fff" : "#10b981" }} />
+                )}
+                {page.type === "reference" && (
+                  <TrendingUp size={13} style={{ color: isActive ? "#fff" : "#8b5cf6" }} />
+                )}
+                <span>{page.label}</span>
+              </button>
+            );
+          })}
         </div>
-
-        <button
-          type="button"
-          className="widget-tab-arrow"
-          onClick={() => scrollToPage(Math.min(pages.length - 1, activeIndex + 1))}
-          disabled={activeIndex === pages.length - 1}
-          aria-label="Next page"
-        >
-          <ChevronRight size={16} />
-        </button>
-
-        {onExitWidget && (
-          <button
-            type="button"
-            className="widget-tab-arrow"
-            onClick={onExitWidget}
-            title="Exit Live Play"
-            aria-label="Exit Live Play"
-            style={{ marginLeft: "4px", color: "#ef4444" }}
-          >
-            <X size={14} />
-          </button>
-        )}
       </Flex>
 
       {/* Swipeable scroll container */}
@@ -319,38 +344,37 @@ export default function WidgetView({
                   justify="space-between"
                   align="center"
                   bg="var(--surface-2)"
-                  p="6px 10px"
+                  p="3px 8px"
                   borderRadius="var(--radius-sm)"
                   border="1px solid var(--border)"
-                  mb="4px"
+                  mb="2px"
                 >
-                  <Box>
+                  <Flex align="center" gap="6px" minW="0" flex="1">
                     <Text
                       fontWeight="bold"
-                      fontSize="0.85rem"
+                      fontSize="0.78rem"
                       color="var(--text-primary)"
                       lineHeight="1.2"
                       m="0"
+                      isTruncated
                     >
                       {page.title}
                     </Text>
-                    <Text fontSize="0.7rem" color="var(--text-muted)" m="0">
-                      {page.settings?.ballName || "Basic"} Ball ·{" "}
-                      {page.settings?.variant === "ring"
-                        ? "Wind per Ring"
-                        : "Rings per Wind"}
+                    <Text fontSize="0.65rem" color="var(--text-muted)" m="0" isTruncated>
+                      {page.settings?.ballName || "Basic"} ·{" "}
+                      {page.settings?.variant === "ring" ? "WPR" : "RPW"}
                       {Number(page.settings?.elevation) !== 0
-                        ? ` · ${Number(page.settings.elevation) > 0 ? "+" : ""}${page.settings.elevation}% Elev`
+                        ? ` · ${Number(page.settings.elevation) > 0 ? "+" : ""}${page.settings.elevation}%`
                         : ""}
                     </Text>
-                  </Box>
-                  <Flex gap="6px" align="center">
+                  </Flex>
+                  <Flex gap="4px" align="center" flexShrink={0}>
                     {page.bag?.length > 1 && (
                       <button
                         type="button"
                         className="widget-bag-load-btn"
                         onClick={() => handleSortBag(page)}
-                        title="Sort clubs in standard in-game order (Drivers -> Sand Wedges)"
+                        title="Sort clubs in standard in-game order"
                         style={{
                           background: "var(--surface-1)",
                           color: "var(--text-secondary)",
@@ -358,24 +382,24 @@ export default function WidgetView({
                           display: "inline-flex",
                           alignItems: "center",
                           gap: "3px",
-                          padding: "3px 8px",
-                          fontSize: "0.68rem",
-                          height: "26px",
+                          padding: "2px 6px",
+                          fontSize: "0.65rem",
+                          height: "22px",
                         }}
                       >
-                        <ArrowUpDown size={11} />
+                        <ArrowUpDown size={10} />
                         Game Order
                       </button>
                     )}
                     {isSameBag(page.bag, bag) ? (
                       <Box
-                        fontSize="0.68rem"
+                        fontSize="0.65rem"
                         fontWeight="bold"
                         bg="var(--brand-primary)"
                         color="white"
-                        px="8px"
-                        py="3px"
-                        borderRadius="10px"
+                        px="6px"
+                        py="2px"
+                        borderRadius="6px"
                       >
                         In Simulator
                       </Box>
@@ -385,8 +409,13 @@ export default function WidgetView({
                         className="widget-bag-load-btn"
                         onClick={() => handleLoadBag(page)}
                         title="Load this bag into the Simulator"
+                        style={{
+                          padding: "2px 6px",
+                          fontSize: "0.65rem",
+                          height: "22px",
+                        }}
                       >
-                        Load in Simulator
+                        Load
                       </button>
                     )}
                   </Flex>
@@ -395,26 +424,24 @@ export default function WidgetView({
                 {page.settings?.notes?.trim() && (
                   <Box
                     bg="var(--surface-1)"
-                    p="6px 10px"
+                    p="4px 8px"
                     borderRadius="var(--radius-sm)"
                     border="1px solid var(--border)"
-                    mb="4px"
-                    fontSize="0.75rem"
+                    mb="2px"
+                    fontSize="0.7rem"
                     color="var(--text-secondary)"
                     whiteSpace="pre-wrap"
+                    isTruncated
                   >
                     {page.settings.notes.trim()}
                   </Box>
                 )}
 
                 <ChartOutput
-                  bag={page.bag}
+                  bag={page.bag || []}
                   clubs={clubs}
                   settings={page.settings}
                   isWidgetMode={true}
-                  onReorderClub={(fromIndex, toIndex) =>
-                    handleReorderBagClubs(page, fromIndex, toIndex)
-                  }
                 />
               </Box>
             )}
@@ -427,8 +454,8 @@ export default function WidgetView({
         className="widget-dots"
         justify="center"
         align="center"
-        gap="8px"
-        mt="10px"
+        gap="6px"
+        mt="2px"
       >
         {pages.map((page, i) => (
           <button

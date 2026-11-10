@@ -49,6 +49,7 @@ export default function PrintSheet({ bag, clubs, settings }) {
               mode={mode}
               settings={settings}
               isFullscreen={true}
+              isPrintSheet={true}
             />
           );
         })}

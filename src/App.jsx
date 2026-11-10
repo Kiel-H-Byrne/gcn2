@@ -57,10 +57,18 @@ export default function App() {
 
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
-  const [isWidgetMode, setIsWidgetMode] = useState(false);
+  const [isWidgetMode, setIsWidgetMode] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const params = new URLSearchParams(window.location.search);
+    return params.get("widget") === "1" || params.get("mode") === "widget" || window.location.hash.includes("widget");
+  });
   const [isBagEditingOpen, setIsBagEditingOpen] = useState(bag.length === 0);
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
-  const [isUniversalOpen, setIsUniversalOpen] = useState(false);
+  const [isUniversalOpen, setIsUniversalOpen] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const params = new URLSearchParams(window.location.search);
+    return params.get("universal") === "1" || window.location.hash.includes("universal");
+  });
 
   const {
     currentPath,
@@ -127,7 +135,11 @@ export default function App() {
     <Box
       maxW={isWidgetMode ? "100vw" : "1180px"}
       mx="auto"
-      p={isWidgetMode ? "4px 6px" : "20px 16px 48px"}
+      p={
+        isWidgetMode
+          ? "4px 6px"
+          : { base: "12px 8px 36px", md: "20px 16px 48px" }
+      }
       className={`app ${isWidgetMode ? "is-widget-mode" : ""}`}
     >
       <Header
