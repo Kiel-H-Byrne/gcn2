@@ -79,7 +79,7 @@ function WindTableWind({ club, level, mode, elevation, windStep }) {
   );
 }
 
-function PrintTable({ club, level, mode, settings, shorthandHeaders }) {
+function PrintTable({ club, level, mode, settings, shorthandHeaders, isPrintSheet = false }) {
   const L_WIND = shorthandHeaders ? "W" : "Wind";
   const L_RING = shorthandHeaders ? "R" : "Ring";
   const L_MAX = shorthandHeaders ? "Mx" : "Max";
@@ -98,6 +98,16 @@ function PrintTable({ club, level, mode, settings, shorthandHeaders }) {
     const right = rows.slice(5, 10);
     return (
       <table className="wind-table wind-table-print">
+        <colgroup>
+          <col style={{ width: "8%" }} />
+          <col style={{ width: "13.75%" }} />
+          <col style={{ width: "13.75%" }} />
+          <col style={{ width: "13.75%" }} />
+          <col style={{ width: "9.5%" }} />
+          <col style={{ width: "13.75%" }} />
+          <col style={{ width: "13.75%" }} />
+          <col style={{ width: "13.75%" }} />
+        </colgroup>
         <thead>
           <tr>
             <th>{L_RING}</th>
@@ -135,7 +145,7 @@ function PrintTable({ club, level, mode, settings, shorthandHeaders }) {
       maxWind: 25,
       step: settings.windStep,
     });
-    const numCols = 4;
+    const numCols = isPrintSheet ? 4 : 2;
     const rowsPerCol = Math.ceil(rows.length / numCols);
     const cols = [];
     for (let i = 0; i < numCols; i++) {
@@ -143,6 +153,11 @@ function PrintTable({ club, level, mode, settings, shorthandHeaders }) {
     }
     return (
       <table className="wind-table wind-table-print">
+        <colgroup>
+          {Array.from({ length: numCols * 4 }).map((_, i) => (
+            <col key={`col-${i}`} style={{ width: `${100 / (numCols * 4)}%` }} />
+          ))}
+        </colgroup>
         <thead>
           <tr>
             {cols.map((_, i) => (
@@ -205,6 +220,7 @@ export function ClubChartCard({
   mode,
   settings,
   isFullscreen,
+  isPrintSheet = false,
   canMoveUp = false,
   canMoveDown = false,
   onMoveUp,
@@ -370,6 +386,7 @@ export function ClubChartCard({
               mode={mode}
               settings={settings}
               shorthandHeaders={true}
+              isPrintSheet={true}
             />
           </Box>
         </>
@@ -381,6 +398,7 @@ export function ClubChartCard({
             mode={mode}
             settings={settings}
             shorthandHeaders
+            isPrintSheet={isPrintSheet}
           />
         </Box>
       )}
@@ -458,7 +476,12 @@ export default function ChartOutput({
 
   if (isWidgetMode) {
     return (
-      <Box className="fullscreen-body widget-charts-grid" mt="2px">
+      <Box
+        className={`fullscreen-body widget-charts-grid ${
+          settings.variant === "wind" ? "is-wind-variant" : ""
+        }`}
+        mt="2px"
+      >
         {bag.map((entry) => {
           const club = clubs.find((c) => c.id === entry.clubId);
           if (!club) return null;

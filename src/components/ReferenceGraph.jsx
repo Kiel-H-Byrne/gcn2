@@ -679,6 +679,7 @@ export default function ReferenceGraph({
       {/* Bag Clubs Calculation Table */}
       {bagClubs.length > 0 && (
         <Box
+          className="ref-graph-table-box"
           bg="var(--surface-1)"
           p="4px 6px"
           borderRadius="var(--radius-sm)"
@@ -686,8 +687,8 @@ export default function ReferenceGraph({
         >
           <Box overflowX="auto">
             <table
-              className="wind-table"
-              style={{ width: "100%", fontSize: "0.7rem", lineHeight: "1.2" }}
+              className="wind-table ref-graph-table"
+              style={{ width: "100%", fontSize: "0.72rem", lineHeight: "1.2" }}
               aria-label="Clubs in selected bag calculation table"
             >
               <thead>
@@ -696,14 +697,14 @@ export default function ReferenceGraph({
                     Club
                   </th>
                   <th
-                    style={{ padding: "3px 4px" }}
+                    style={{ padding: "3px 3px" }}
                     scope="col"
                     title="Club Accuracy Stat (0–100)"
                   >
                     Acc
                   </th>
                   <th
-                    style={{ padding: "3px 4px" }}
+                    style={{ padding: "3px 3px" }}
                     scope="col"
                     title="Base Wind Per Ring at Max extension = 2 − (Acc × 0.01)"
                   >
@@ -711,7 +712,7 @@ export default function ReferenceGraph({
                   </th>
                   <th
                     style={{
-                      padding: "3px 4px",
+                      padding: "3px 3px",
                       color:
                         distanceRatio !== 1.0
                           ? "var(--brand-primary)"
@@ -724,7 +725,7 @@ export default function ReferenceGraph({
                     WPR ({distanceMode})
                   </th>
                   <th
-                    style={{ padding: "3px 4px" }}
+                    style={{ padding: "3px 3px" }}
                     scope="col"
                     title="Rings to adjust for selected wind speed"
                   >
@@ -760,47 +761,43 @@ export default function ReferenceGraph({
                       <td
                         style={{
                           textAlign: "left",
-                          fontWeight: "bold",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
+                          fontWeight: "600",
                           padding: "3px 4px",
                         }}
                       >
-                        <CategoryIcon
-                          category={item.club.category}
-                          size={12}
-                          style={{ color }}
-                        />
-                        <span>{item.club.name}</span>
-                        <span
-                          style={{
-                            fontSize: "0.58rem",
-                            padding: "0 3px",
-                            borderRadius: "5px",
-                            background: color,
-                            color: "#fff",
-                          }}
-                        >
-                          Lv {item.level}
-                        </span>
+                        <Flex align="center" gap="4px" minW="0">
+                          <CategoryIcon
+                            category={item.club.category}
+                            size={12}
+                            style={{ color, flexShrink: 0 }}
+                          />
+                          <span>{item.club.name}</span>
+                          <span
+                            style={{
+                              fontSize: "0.58rem",
+                              padding: "0 3px",
+                              borderRadius: "5px",
+                              background: color,
+                              color: "#fff",
+                              whiteSpace: "nowrap",
+                              flexShrink: 0,
+                            }}
+                          >
+                            Lv {item.level}
+                          </span>
+                        </Flex>
                       </td>
-                      <td style={{ fontWeight: "bold", padding: "3px 4px" }}>
+                      <td className="ref-num-cell" style={{ padding: "3px 3px" }}>
                         {item.accuracy}
                       </td>
-                      <td
-                        style={{
-                          fontFamily: "monospace",
-                          padding: "3px 4px",
-                        }}
-                      >
+                      <td className="ref-num-cell" style={{ padding: "3px 3px" }}>
                         {item.ringValue.toFixed(2)}
                       </td>
                       <td
+                        className="ref-num-cell"
                         style={{
-                          fontFamily: "monospace",
                           fontWeight: "600",
-                          padding: "3px 4px",
+                          padding: "3px 3px",
                           color:
                             distanceRatio !== 1.0
                               ? "var(--brand-primary)"
@@ -810,12 +807,12 @@ export default function ReferenceGraph({
                         {item.effectiveWpr.toFixed(2)}
                       </td>
                       <td
+                        className="ref-num-cell"
                         style={{
-                          fontFamily: "monospace",
-                          fontWeight: "800",
+                          fontWeight: "700",
                           fontSize: "0.78rem",
                           color: "var(--brand-primary)",
-                          padding: "3px 4px",
+                          padding: "3px 3px",
                         }}
                       >
                         {finalRings}r

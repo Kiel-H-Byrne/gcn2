@@ -142,7 +142,7 @@ export default function FullscreenOverlay({ bag, setBag, clubs, settings, onClos
           </button>
         </div>
       </div>
-      <div className="fullscreen-body">
+      <div className={`fullscreen-body ${settings.variant === 'wind' ? 'is-wind-variant' : ''}`}>
         {bag.map((entry, idx) => {
           const club = clubs.find(c => c.id === entry.clubId);
           if (!club) return null;

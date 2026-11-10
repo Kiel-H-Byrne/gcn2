@@ -50,6 +50,13 @@
   --radar-5: #94a3b8;
 
   --danger: #d03b3b;
+  --font-mono-narrow:
+    "Inconsolata",
+    ui-monospace,
+    "SFMono-Regular",
+    Menlo,
+    Consolas,
+    monospace;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 18px;
@@ -1875,31 +1882,49 @@ table.levels-editor .remove-level-btn:hover {
 
 .fullscreen-body {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 3px;
   align-items: stretch;
   width: 100%;
 }
 
+.fullscreen-body.is-wind-variant {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+}
+
 @media (min-width: 540px) {
   .fullscreen-body {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 4px;
+  }
+
+  .fullscreen-body.is-wind-variant {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
   }
 }
 
 @media (min-width: 840px) {
   .fullscreen-body {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 6px;
   }
 }
 
+@media (min-width: 1024px) {
+  .fullscreen-body.is-wind-variant {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+}
+
 .fullscreen-body .club-chart-card {
+  container-type: inline-size;
   border-width: 1px;
   border-top: 3px solid var(--chart-accent, var(--series-1));
   border-radius: 6px;
-  padding: 2px 3px;
+  padding: 2px;
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -1907,7 +1932,7 @@ table.levels-editor .remove-level-btn:hover {
 }
 
 .fullscreen-body .club-chart-head {
-  padding: 2px 4px;
+  padding: 2px 3px;
   margin-bottom: 1px;
   min-height: 20px;
 }
@@ -1919,7 +1944,7 @@ table.levels-editor .remove-level-btn:hover {
 }
 
 .fullscreen-body .club-chart-name {
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 700;
   line-height: 1.1;
   white-space: nowrap;
@@ -1928,7 +1953,7 @@ table.levels-editor .remove-level-btn:hover {
 }
 
 .fullscreen-body .acc-badge {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   padding: 1px 4px;
   line-height: 1.15;
   white-space: nowrap;
@@ -1949,30 +1974,50 @@ table.levels-editor .remove-level-btn:hover {
 }
 
 .fullscreen-body table.wind-table {
-  font-size: 0.62rem;
-  line-height: 1.1;
+  font-family: var(--font-mono-narrow);
+  font-size: 0.6rem;
+  font-size: clamp(0.54rem, 5.4cqi, 0.75rem);
+  line-height: 1.12;
   table-layout: fixed;
   width: 100%;
   border-collapse: collapse;
-}
-
-.fullscreen-body table.wind-table thead th {
-  font-size: 0.58rem;
-  padding: 1px 1px;
-  position: static;
-  line-height: 1.1;
-}
-
-.fullscreen-body table.wind-table td {
-  padding: 1px 1px;
-  font-weight: 700;
-  line-height: 1.15;
-  text-align: center;
   font-variant-numeric: tabular-nums;
 }
 
-.fullscreen-body table.wind-table td:first-child {
-  font-weight: 800;
+.fullscreen-body.is-wind-variant table.wind-table {
+  font-size: 0.72rem;
+  font-size: clamp(0.68rem, 4.1cqi, 0.84rem);
+}
+
+.fullscreen-body table.wind-table thead th {
+  font-size: 0.56rem;
+  font-size: clamp(0.5rem, 4.8cqi, 0.64rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  padding: 2px 0.5px;
+  position: static;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.fullscreen-body.is-wind-variant table.wind-table thead th {
+  font-size: 0.64rem;
+  font-size: clamp(0.58rem, 3.4cqi, 0.7rem);
+}
+
+.fullscreen-body table.wind-table td {
+  padding: 1.5px 0.5px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.fullscreen-body table.wind-table td:first-child,
+.fullscreen-body table.wind-table td.print-split {
+  font-weight: 700;
   color: var(--text-secondary);
 }
 
@@ -1982,11 +2027,10 @@ table.levels-editor .remove-level-btn:hover {
 }
 
 @media (min-width: 768px) {
-  .fullscreen-body table.wind-table {
-    font-size: 0.68rem;
+  .fullscreen-body .club-chart-card {
+    padding: 3px 4px;
   }
   .fullscreen-body table.wind-table thead th {
-    font-size: 0.62rem;
     padding: 2px 1px;
   }
   .fullscreen-body table.wind-table td {
@@ -2653,6 +2697,16 @@ html:has(.is-widget-mode) {
   scrollbar-width: thin;
 }
 
+@media (max-width: 540px) {
+  .app.is-widget-mode {
+    padding: 4px 4px 2px !important;
+  }
+
+  .widget-screen {
+    padding: 0 2px;
+  }
+}
+
 /* ---------- Widget Tab Bar ---------- */
 .widget-tabs {
   display: flex;
@@ -2886,19 +2940,39 @@ html:has(.is-widget-mode) {
 .quick-chart-widget-wrap table.wind-table {
   table-layout: fixed;
   width: 100%;
-  font-size: clamp(0.72rem, 2.9vw, 0.85rem) !important;
+  font-family: var(--font-mono-narrow);
+  font-size: clamp(0.74rem, 3.1vw, 0.9rem) !important;
+  font-variant-numeric: tabular-nums;
 }
 .quick-chart-widget-wrap table.wind-table thead th {
   font-size: 0.62rem !important;
+  font-weight: 600;
   letter-spacing: 0.01em !important;
   padding: 4px 1px !important;
+  white-space: nowrap;
 }
 .quick-chart-widget-wrap table.wind-table td {
   padding: 2px 1px !important;
-  font-weight: 700;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 .quick-chart-widget-wrap table.wind-table td.quick-wind-cell {
-  font-weight: 800;
+  font-weight: 700;
+}
+
+/* Reference Graph numeric cells */
+.ref-graph-table .ref-num-cell {
+  font-family: var(--font-mono-narrow);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+@media (max-width: 540px) {
+  .ref-graph-table {
+    font-size: 0.66rem !important;
+  }
 }
 
 /* Widget HUD navigation buttons */
