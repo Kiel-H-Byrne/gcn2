@@ -2972,10 +2972,12 @@ html:has(.is-widget-mode) {
 
 .mobile-nav-backdrop {
   animation: fadeIn 0.15s ease-out;
+  z-index: 1200 !important;
 }
 
 .mobile-nav-dropdown {
   animation: mobileNavFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  z-index: 1300 !important;
 }
 
 @keyframes mobileNavFadeIn {

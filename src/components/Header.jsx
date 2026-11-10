@@ -105,8 +105,9 @@ export default function Header({
   };
 
   return (
-    <Box as="header" className="app-header" mb={isWidgetMode ? "4px" : "16px"} position="relative">
-      <Flex justify="space-between" align="center" flexWrap="nowrap" gap={{ base: "6px", sm: "10px" }} w="100%">
+    <Box as="header" className="app-header" mb={isWidgetMode ? "4px" : "16px"}>
+      <Box className="app-header-bar" position="relative" w="100%">
+        <Flex justify="space-between" align="center" flexWrap="nowrap" gap={{ base: "6px", sm: "10px" }} w="100%">
         <Flex
           align="center"
           gap={{ base: "6px", sm: "10px" }}
@@ -577,6 +578,7 @@ export default function Header({
           </Box>
         </>
       )}
+      </Box>
 
       {/* Collapsible 3-Step Guide */}
       {!isWidgetMode && isGuideOpen && (
@@ -589,6 +591,7 @@ export default function Header({
           boxShadow="var(--shadow-sm)"
           className="no-print"
           position="relative"
+          zIndex="1"
         >
           <Flex justify="space-between" align="center" mb="10px">
             <Flex align="center" gap="6px">

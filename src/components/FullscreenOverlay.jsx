@@ -8,6 +8,12 @@ import { trackPrintChart } from '../lib/analytics';
 
 export default function FullscreenOverlay({ bag, setBag, clubs, settings, onClose }) {
   const overlayRef = useRef(null);
+  const onCloseRef = useRef(onClose);
+  const isPrintingRef = useRef(false);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   const handleMove = (index, delta) => {
     if (!setBag) return;
@@ -27,27 +33,45 @@ export default function FullscreenOverlay({ bag, setBag, clubs, settings, onClos
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') onCloseRef.current?.();
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  }, []);
 
   useEffect(() => {
+    const handleBeforePrint = () => {
+      isPrintingRef.current = true;
+    };
+    const handleAfterPrint = () => {
+      setTimeout(() => {
+        isPrintingRef.current = false;
+      }, 500);
+    };
+    window.addEventListener('beforeprint', handleBeforePrint);
+    window.addEventListener('afterprint', handleAfterPrint);
+
     if (overlayRef.current && overlayRef.current.requestFullscreen) {
       overlayRef.current.requestFullscreen().catch(() => {});
     }
     const handleFsChange = () => {
-      if (!document.fullscreenElement) onClose();
+      if (!document.fullscreenElement) {
+        if (isPrintingRef.current) {
+          return;
+        }
+        onCloseRef.current?.();
+      }
     };
     document.addEventListener('fullscreenchange', handleFsChange);
     return () => {
+      window.removeEventListener('beforeprint', handleBeforePrint);
+      window.removeEventListener('afterprint', handleAfterPrint);
       document.removeEventListener('fullscreenchange', handleFsChange);
       if (document.fullscreenElement) {
         document.exitFullscreen().catch(() => {});
       }
     };
-  }, [onClose]);
+  }, []);
 
   if (bag.length === 0) return null;
 
@@ -97,6 +121,7 @@ export default function FullscreenOverlay({ bag, setBag, clubs, settings, onClos
             type="button"
             aria-label="Print / Save PDF"
             onClick={() => {
+              isPrintingRef.current = true;
               trackPrintChart({
                 bagSize: bag.length,
                 ballName: settings.ballName,
@@ -104,6 +129,9 @@ export default function FullscreenOverlay({ bag, setBag, clubs, settings, onClos
                 source: "fullscreen_overlay",
               });
               window.print();
+              setTimeout(() => {
+                isPrintingRef.current = false;
+              }, 1000);
             }}
             title="Print / Save PDF"
           >
